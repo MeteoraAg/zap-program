@@ -1,0 +1,26 @@
+[package]
+name = "zap"
+version = "0.1.0"
+description = "Created with Anchor"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "zap"
+
+[features]
+default = []
+local = []
+cpi = ["no-entrypoint"]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+idl-build = ["anchor-lang/idl-build", "anchor-spl/idl-build"]
+
+
+[dependencies]
+anchor-lang = { workspace = true, features = ["event-cpi"] }
+anchor-spl = { workspace = true, features = [] }
+bytemuck = { workspace = true, features = ["min_const_generics"] }
+const-crypto = "0.3.0"
+damm-v2 = { path = "../../libs/damm-v2" }
