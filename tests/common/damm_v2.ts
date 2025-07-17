@@ -31,6 +31,17 @@ import {
   U64_MAX,
 } from "./utils";
 import { expect } from "chai";
+import { deriveZapAuthorityAddress } from "./zap";
+import {
+  deriveDammV2CustomizablePoolAddress,
+  deriveDammV2EventAuthority,
+  deriveDammV2PoolAuthority,
+  deriveDammV2PositionAddress,
+  deriveDammV2PositionNftAccount,
+  deriveDammV2TokenVaultAddress,
+  getDammV2Pool,
+  getDammV2Position,
+} from "./pda";
 
 export const DAMM_V2_PROGRAM_ID = new PublicKey(CpAmmIDL.address);
 
@@ -48,94 +59,10 @@ export function createDammV2Program() {
   return program;
 }
 
-export function getDammV2Pool(svm: LiteSVM, pool: PublicKey): Pool {
-  const program = createDammV2Program();
-  const account = svm.getAccount(pool);
-  return program.coder.accounts.decode("pool", Buffer.from(account.data));
-}
-
-export function getDammV2Position(svm: LiteSVM, position: PublicKey): Position {
-  const program = createDammV2Program();
-  const account = svm.getAccount(position);
-  return program.coder.accounts.decode("position", Buffer.from(account.data));
-}
-
-export function getSecondKey(key1: PublicKey, key2: PublicKey) {
-  const buf1 = key1.toBuffer();
-  const buf2 = key2.toBuffer();
-  // Buf1 > buf2
-  if (Buffer.compare(buf1, buf2) === 1) {
-    return buf2;
-  }
-  return buf1;
-}
-
-export function getFirstKey(key1: PublicKey, key2: PublicKey) {
-  const buf1 = key1.toBuffer();
-  const buf2 = key2.toBuffer();
-  // Buf1 > buf2
-  if (Buffer.compare(buf1, buf2) === 1) {
-    return buf1;
-  }
-  return buf2;
-}
-
-export function deriveDammV2CustomizablePoolAddress(
-  tokenAMint: PublicKey,
-  tokenBMint: PublicKey
-): PublicKey {
-  return PublicKey.findProgramAddressSync(
-    [
-      Buffer.from("cpool"),
-      getFirstKey(tokenAMint, tokenBMint),
-      getSecondKey(tokenAMint, tokenBMint),
-    ],
-    DAMM_V2_PROGRAM_ID
-  )[0];
-}
-
-export function deriveDammV2TokenVaultAddress(
-  tokenMint: PublicKey,
-  pool: PublicKey
-): PublicKey {
-  return PublicKey.findProgramAddressSync(
-    [Buffer.from("token_vault"), tokenMint.toBuffer(), pool.toBuffer()],
-    DAMM_V2_PROGRAM_ID
-  )[0];
-}
-
-export function deriveDammV2EventAuthority() {
-  return PublicKey.findProgramAddressSync(
-    [Buffer.from("__event_authority")],
-    DAMM_V2_PROGRAM_ID
-  )[0];
-}
-export function deriveDammV2PositionAddress(positionNft: PublicKey): PublicKey {
-  return PublicKey.findProgramAddressSync(
-    [Buffer.from("position"), positionNft.toBuffer()],
-    DAMM_V2_PROGRAM_ID
-  )[0];
-}
-
-export function deriveDammV2PositionNftAccount(
-  positionNftMint: PublicKey
-): PublicKey {
-  return PublicKey.findProgramAddressSync(
-    [Buffer.from("position_nft_account"), positionNftMint.toBuffer()],
-    DAMM_V2_PROGRAM_ID
-  )[0];
-}
-
-export function deriveDammV2PoolAuthority(): PublicKey {
-  return PublicKey.findProgramAddressSync(
-    [Buffer.from("pool_authority")],
-    DAMM_V2_PROGRAM_ID
-  )[0];
-}
-
 export function getDammV2RemainingAccounts(
   svm: LiteSVM,
   pool: PublicKey,
+  inputTokenAccount: PublicKey,
   outputTokenAccount: PublicKey,
   tokenAProgram = TOKEN_PROGRAM_ID,
   tokenBProgram = TOKEN_PROGRAM_ID
@@ -155,6 +82,11 @@ export function getDammV2RemainingAccounts(
       isSigner: false,
       isWritable: true,
       pubkey: pool,
+    },
+    {
+      isSigner: false,
+      isWritable: true,
+      pubkey: inputTokenAccount,
     },
     {
       isSigner: false,
@@ -184,6 +116,11 @@ export function getDammV2RemainingAccounts(
     {
       isSigner: false,
       isWritable: false,
+      pubkey: deriveZapAuthorityAddress(),
+    },
+    {
+      isSigner: false,
+      isWritable: false,
       pubkey: tokenAProgram,
     },
     {
@@ -194,7 +131,17 @@ export function getDammV2RemainingAccounts(
     {
       isSigner: false,
       isWritable: false,
+      pubkey: DAMM_V2_PROGRAM_ID,
+    },
+    {
+      isSigner: false,
+      isWritable: false,
       pubkey: deriveDammV2EventAuthority(),
+    },
+    {
+      isSigner: false,
+      isWritable: false,
+      pubkey: DAMM_V2_PROGRAM_ID,
     },
   ];
 

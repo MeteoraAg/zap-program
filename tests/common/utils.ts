@@ -9,18 +9,24 @@ import ZapIDL from "../../target/idl/zap.json";
 import {
   createAssociatedTokenAccountInstruction,
   createInitializeMint2Instruction,
+  createInitializeTransferHookInstruction,
   createMintToInstruction,
+  ExtensionType,
   getAssociatedTokenAddressSync,
+  getMintLen,
   MINT_SIZE,
+  TOKEN_2022_PROGRAM_ID,
   TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
 import {
   Keypair,
   LAMPORTS_PER_SOL,
   PublicKey,
+  Signer,
   SystemProgram,
   Transaction,
 } from "@solana/web3.js";
+import { expect } from "chai";
 
 export const TOKEN_DECIMALS = 9;
 export const RAW_AMOUNT = 1_000_000_000 * 10 ** TOKEN_DECIMALS;
@@ -66,20 +72,66 @@ export function createToken(
   return mintKeypair.publicKey;
 }
 
+export function createTokenWithTransferHook(
+  svm: LiteSVM,
+  payer: Signer,
+  mintAuthority: PublicKey,
+  freezeAuthority: PublicKey | null,
+  hookProgramId: PublicKey
+): PublicKey {
+  const keypair = Keypair.generate();
+  const mintLen = getMintLen([ExtensionType.TransferHook]);
+  const lamports = svm.getRent().minimumBalance(BigInt(mintLen));
+
+  const transaction = new Transaction().add(
+    SystemProgram.createAccount({
+      fromPubkey: payer.publicKey,
+      newAccountPubkey: keypair.publicKey,
+      space: mintLen,
+      lamports: Number(lamports),
+      programId: TOKEN_2022_PROGRAM_ID,
+    }),
+    createInitializeTransferHookInstruction(
+      keypair.publicKey,
+      payer.publicKey,
+      hookProgramId,
+      TOKEN_2022_PROGRAM_ID
+    ),
+    createInitializeMint2Instruction(
+      keypair.publicKey,
+      TOKEN_DECIMALS,
+      mintAuthority,
+      freezeAuthority,
+      TOKEN_2022_PROGRAM_ID
+    )
+  );
+
+  transaction.recentBlockhash = svm.latestBlockhash();
+  transaction.sign(payer, keypair);
+
+  const result = svm.sendTransaction(transaction);
+  expect(result).instanceOf(TransactionMetadata);
+
+  return keypair.publicKey;
+}
+
 export function mintToken(
   svm: LiteSVM,
   payer: Keypair,
   mint: PublicKey,
   mintAuthority: Keypair,
-  toWallet: PublicKey
+  toWallet: PublicKey,
+  tokenProgram = TOKEN_PROGRAM_ID
 ) {
-  const destination = getOrCreateAtA(svm, payer, mint, toWallet);
+  const destination = getOrCreateAtA(svm, payer, mint, toWallet, tokenProgram);
 
   const mintIx = createMintToInstruction(
     mint,
     destination,
     mintAuthority.publicKey,
-    RAW_AMOUNT
+    RAW_AMOUNT,
+    [],
+    tokenProgram
   );
 
   let transaction = new Transaction();
@@ -87,7 +139,11 @@ export function mintToken(
   transaction.add(mintIx);
   transaction.sign(payer, mintAuthority);
 
-  svm.sendTransaction(transaction);
+  const result = svm.sendTransaction(transaction);
+  if (result instanceof FailedTransactionMetadata) {
+    console.log(result.meta().logs());
+  }
+  expect(result).instanceOf(TransactionMetadata);
 }
 
 export function getOrCreateAtA(
@@ -95,7 +151,7 @@ export function getOrCreateAtA(
   payer: Keypair,
   mint: PublicKey,
   owner: PublicKey,
-  tokenProgram = TOKEN_PROGRAM_ID
+  tokenProgram: PublicKey
 ): PublicKey {
   const ataKey = getAssociatedTokenAddressSync(mint, owner, true, tokenProgram);
 

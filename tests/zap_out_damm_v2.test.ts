@@ -8,12 +8,10 @@ import {
 import {
   createZapProgram,
   createToken,
-  deriveTokenLedgerAddress,
-  deriveZapAuthorityAddress,
   initializeTokenLedger,
   mintToken,
   ZapProgram,
-  zapOut,
+  zapOutDammv2,
 } from "./common";
 import { TOKEN_PROGRAM_ID } from "@coral-xyz/anchor/dist/cjs/utils/token";
 import { expect } from "chai";
@@ -25,7 +23,10 @@ import {
   createPositionAndAddLiquidity,
   removeLiquidity,
 } from "./common/damm_v2";
-import { getAssociatedTokenAddressSync } from "@solana/spl-token";
+import {
+  getAssociatedTokenAddressSync,
+  TOKEN_2022_PROGRAM_ID,
+} from "@solana/spl-token";
 
 describe("Zap out damm V2", () => {
   let zapProgram: ZapProgram;
@@ -62,49 +63,12 @@ describe("Zap out damm V2", () => {
     mintToken(svm, admin, tokenBMint, admin, user.publicKey);
   });
 
-  it("initialize token ledger", async () => {
-    const tokenLedgerAccountTokenA = deriveTokenLedgerAddress(tokenAMint);
-    const tokenLedgerAccountTokenB = deriveTokenLedgerAddress(tokenBMint);
-
-    const tx1 = await zapProgram.methods
-      .initializeTokenLedger()
-      .accountsPartial({
-        zapAuthority: deriveZapAuthorityAddress(),
-        tokenLedgerAccount: tokenLedgerAccountTokenA,
-        tokenMint: tokenAMint,
-        payer: user.publicKey,
-        tokenProgram: TOKEN_PROGRAM_ID,
-      })
-      .transaction();
-
-    const tx2 = await zapProgram.methods
-      .initializeTokenLedger()
-      .accountsPartial({
-        zapAuthority: deriveZapAuthorityAddress(),
-        tokenLedgerAccount: tokenLedgerAccountTokenB,
-        tokenMint: tokenBMint,
-        payer: user.publicKey,
-        tokenProgram: TOKEN_PROGRAM_ID,
-      })
-      .transaction();
-
-    const tx = new Transaction().add(tx1).add(tx2);
-
-    tx.recentBlockhash = svm.latestBlockhash();
-    tx.sign(user);
-
-    const result = svm.sendTransaction(tx);
-
-    expect(result).instanceOf(TransactionMetadata);
-    const tokenLedgerAccountAData = svm.getAccount(tokenLedgerAccountTokenA);
-    const tokenLedgerAccountBData = svm.getAccount(tokenLedgerAccountTokenA);
-    expect(tokenLedgerAccountAData).not.to.be.null;
-    expect(tokenLedgerAccountBData).not.to.be.null;
-  });
-
-  it("zap out", async () => {
-    await initializeTokenLedger(svm, user, tokenAMint, tokenBMint);
-    const tokenLedgerAccountTokenA = deriveTokenLedgerAddress(tokenAMint);
+  it("full flow zap out", async () => {
+    const tokenLedgerAccountTokenA = await initializeTokenLedger(
+      svm,
+      user,
+      tokenAMint
+    );
     const pool = await createDammV2Pool(svm, admin, tokenAMint, tokenBMint);
     const userPosition = await createPositionAndAddLiquidity(svm, user, pool);
     const tokenAAccount = tokenLedgerAccountTokenA;
@@ -123,7 +87,12 @@ describe("Zap out damm V2", () => {
       tokenBAccount
     );
 
-    const zapOutTx = await zapOut(svm, pool, tokenAAccount, tokenBAccount);
+    const zapOutTx = await zapOutDammv2(
+      svm,
+      pool,
+      tokenAAccount,
+      tokenBAccount
+    );
 
     const finalTransaction = new Transaction()
       .add(removeLiquidityTx)

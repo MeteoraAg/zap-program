@@ -11,8 +11,6 @@ pub enum ZapError {
     #[msg("Unsupported program")]
     UnsupportedAmmProgram,
 
-    #[msg("Missing damm v2 remaining accounts")]
-    MissingDammV2RemainingAccount,
-    #[msg("Invalid accounts for damm v2")]
-    InvalidDammV2Accounts,
+    #[msg("Missing dlmm remaining accounts info parameter")]
+    MissingDlmmRemainingAccountInfo,
 }

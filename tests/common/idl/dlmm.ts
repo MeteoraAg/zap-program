@@ -1,13 +1,19 @@
-{
-  "address": "LBUZKhRxPF3XUpBCjp4YzTKgLccjZhTSDM9YuVaPwxo",
+/**
+ * Program IDL in camelCase format in order to be used in JS/TS.
+ *
+ * Note that this is only a type helper and is not the actual IDL. The original
+ * IDL can be found at `target/idl/lb_clmm.json`.
+ */
+export type LbClmm = {
+  "address": "LbVRzDTvBDEcrthxfZ4RL6yiq3uZw8bS6MwtdY6UhFQ",
   "metadata": {
-    "name": "lb_clmm",
+    "name": "lbClmm",
     "version": "0.9.1",
     "spec": "0.1.0"
   },
   "instructions": [
     {
-      "name": "initialize_lb_pair",
+      "name": "initializeLbPair",
       "discriminator": [
         45,
         154,
@@ -20,26 +26,26 @@
       ],
       "accounts": [
         {
-          "name": "lb_pair",
+          "name": "lbPair",
           "writable": true
         },
         {
-          "name": "bin_array_bitmap_extension",
+          "name": "binArrayBitmapExtension",
           "writable": true,
           "optional": true
         },
         {
-          "name": "token_mint_x"
+          "name": "tokenMintX"
         },
         {
-          "name": "token_mint_y"
+          "name": "tokenMintY"
         },
         {
-          "name": "reserve_x",
+          "name": "reserveX",
           "writable": true
         },
         {
-          "name": "reserve_y",
+          "name": "reserveY",
           "writable": true
         },
         {
@@ -47,7 +53,7 @@
           "writable": true
         },
         {
-          "name": "preset_parameter"
+          "name": "presetParameter"
         },
         {
           "name": "funder",
@@ -55,16 +61,16 @@
           "signer": true
         },
         {
-          "name": "token_program"
+          "name": "tokenProgram"
         },
         {
-          "name": "system_program"
+          "name": "systemProgram"
         },
         {
           "name": "rent"
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -72,17 +78,17 @@
       ],
       "args": [
         {
-          "name": "active_id",
+          "name": "activeId",
           "type": "i32"
         },
         {
-          "name": "bin_step",
+          "name": "binStep",
           "type": "u16"
         }
       ]
     },
     {
-      "name": "initialize_permission_lb_pair",
+      "name": "initializePermissionLbPair",
       "discriminator": [
         108,
         102,
@@ -99,26 +105,26 @@
           "signer": true
         },
         {
-          "name": "lb_pair",
+          "name": "lbPair",
           "writable": true
         },
         {
-          "name": "bin_array_bitmap_extension",
+          "name": "binArrayBitmapExtension",
           "writable": true,
           "optional": true
         },
         {
-          "name": "token_mint_x"
+          "name": "tokenMintX"
         },
         {
-          "name": "token_mint_y"
+          "name": "tokenMintY"
         },
         {
-          "name": "reserve_x",
+          "name": "reserveX",
           "writable": true
         },
         {
-          "name": "reserve_y",
+          "name": "reserveY",
           "writable": true
         },
         {
@@ -131,27 +137,27 @@
           "signer": true
         },
         {
-          "name": "token_badge_x",
+          "name": "tokenBadgeX",
           "optional": true
         },
         {
-          "name": "token_badge_y",
+          "name": "tokenBadgeY",
           "optional": true
         },
         {
-          "name": "token_program_x"
+          "name": "tokenProgramX"
         },
         {
-          "name": "token_program_y"
+          "name": "tokenProgramY"
         },
         {
-          "name": "system_program"
+          "name": "systemProgram"
         },
         {
           "name": "rent"
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -159,17 +165,17 @@
       ],
       "args": [
         {
-          "name": "ix_data",
+          "name": "ixData",
           "type": {
             "defined": {
-              "name": "InitPermissionPairIx"
+              "name": "initPermissionPairIx"
             }
           }
         }
       ]
     },
     {
-      "name": "initialize_customizable_permissionless_lb_pair",
+      "name": "initializeCustomizablePermissionlessLbPair",
       "discriminator": [
         46,
         39,
@@ -182,26 +188,26 @@
       ],
       "accounts": [
         {
-          "name": "lb_pair",
+          "name": "lbPair",
           "writable": true
         },
         {
-          "name": "bin_array_bitmap_extension",
+          "name": "binArrayBitmapExtension",
           "writable": true,
           "optional": true
         },
         {
-          "name": "token_mint_x"
+          "name": "tokenMintX"
         },
         {
-          "name": "token_mint_y"
+          "name": "tokenMintY"
         },
         {
-          "name": "reserve_x",
+          "name": "reserveX",
           "writable": true
         },
         {
-          "name": "reserve_y",
+          "name": "reserveY",
           "writable": true
         },
         {
@@ -209,7 +215,7 @@
           "writable": true
         },
         {
-          "name": "user_token_x"
+          "name": "userTokenX"
         },
         {
           "name": "funder",
@@ -217,16 +223,16 @@
           "signer": true
         },
         {
-          "name": "token_program"
+          "name": "tokenProgram"
         },
         {
-          "name": "system_program"
+          "name": "systemProgram"
         },
         {
-          "name": "user_token_y"
+          "name": "userTokenY"
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -237,14 +243,14 @@
           "name": "params",
           "type": {
             "defined": {
-              "name": "CustomizableParams"
+              "name": "customizableParams"
             }
           }
         }
       ]
     },
     {
-      "name": "initialize_bin_array_bitmap_extension",
+      "name": "initializeBinArrayBitmapExtension",
       "discriminator": [
         47,
         157,
@@ -257,10 +263,10 @@
       ],
       "accounts": [
         {
-          "name": "lb_pair"
+          "name": "lbPair"
         },
         {
-          "name": "bin_array_bitmap_extension",
+          "name": "binArrayBitmapExtension",
           "docs": [
             "Initialize an account to store if a bin array is initialized."
           ],
@@ -272,7 +278,7 @@
           "signer": true
         },
         {
-          "name": "system_program"
+          "name": "systemProgram"
         },
         {
           "name": "rent"
@@ -281,7 +287,7 @@
       "args": []
     },
     {
-      "name": "initialize_bin_array",
+      "name": "initializeBinArray",
       "discriminator": [
         35,
         86,
@@ -294,10 +300,10 @@
       ],
       "accounts": [
         {
-          "name": "lb_pair"
+          "name": "lbPair"
         },
         {
-          "name": "bin_array",
+          "name": "binArray",
           "writable": true
         },
         {
@@ -306,7 +312,7 @@
           "signer": true
         },
         {
-          "name": "system_program"
+          "name": "systemProgram"
         }
       ],
       "args": [
@@ -317,7 +323,7 @@
       ]
     },
     {
-      "name": "add_liquidity",
+      "name": "addLiquidity",
       "discriminator": [
         181,
         157,
@@ -334,42 +340,42 @@
           "writable": true
         },
         {
-          "name": "lb_pair",
+          "name": "lbPair",
           "writable": true
         },
         {
-          "name": "bin_array_bitmap_extension",
+          "name": "binArrayBitmapExtension",
           "writable": true,
           "optional": true
         },
         {
-          "name": "user_token_x",
+          "name": "userTokenX",
           "writable": true
         },
         {
-          "name": "user_token_y",
+          "name": "userTokenY",
           "writable": true
         },
         {
-          "name": "reserve_x",
+          "name": "reserveX",
           "writable": true
         },
         {
-          "name": "reserve_y",
+          "name": "reserveY",
           "writable": true
         },
         {
-          "name": "token_x_mint"
+          "name": "tokenXMint"
         },
         {
-          "name": "token_y_mint"
+          "name": "tokenYMint"
         },
         {
-          "name": "bin_array_lower",
+          "name": "binArrayLower",
           "writable": true
         },
         {
-          "name": "bin_array_upper",
+          "name": "binArrayUpper",
           "writable": true
         },
         {
@@ -377,13 +383,13 @@
           "signer": true
         },
         {
-          "name": "token_x_program"
+          "name": "tokenXProgram"
         },
         {
-          "name": "token_y_program"
+          "name": "tokenYProgram"
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -391,17 +397,17 @@
       ],
       "args": [
         {
-          "name": "liquidity_parameter",
+          "name": "liquidityParameter",
           "type": {
             "defined": {
-              "name": "LiquidityParameter"
+              "name": "liquidityParameter"
             }
           }
         }
       ]
     },
     {
-      "name": "add_liquidity_by_weight",
+      "name": "addLiquidityByWeight",
       "discriminator": [
         28,
         140,
@@ -418,42 +424,42 @@
           "writable": true
         },
         {
-          "name": "lb_pair",
+          "name": "lbPair",
           "writable": true
         },
         {
-          "name": "bin_array_bitmap_extension",
+          "name": "binArrayBitmapExtension",
           "writable": true,
           "optional": true
         },
         {
-          "name": "user_token_x",
+          "name": "userTokenX",
           "writable": true
         },
         {
-          "name": "user_token_y",
+          "name": "userTokenY",
           "writable": true
         },
         {
-          "name": "reserve_x",
+          "name": "reserveX",
           "writable": true
         },
         {
-          "name": "reserve_y",
+          "name": "reserveY",
           "writable": true
         },
         {
-          "name": "token_x_mint"
+          "name": "tokenXMint"
         },
         {
-          "name": "token_y_mint"
+          "name": "tokenYMint"
         },
         {
-          "name": "bin_array_lower",
+          "name": "binArrayLower",
           "writable": true
         },
         {
-          "name": "bin_array_upper",
+          "name": "binArrayUpper",
           "writable": true
         },
         {
@@ -461,13 +467,13 @@
           "signer": true
         },
         {
-          "name": "token_x_program"
+          "name": "tokenXProgram"
         },
         {
-          "name": "token_y_program"
+          "name": "tokenYProgram"
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -475,17 +481,17 @@
       ],
       "args": [
         {
-          "name": "liquidity_parameter",
+          "name": "liquidityParameter",
           "type": {
             "defined": {
-              "name": "LiquidityParameterByWeight"
+              "name": "liquidityParameterByWeight"
             }
           }
         }
       ]
     },
     {
-      "name": "add_liquidity_by_strategy",
+      "name": "addLiquidityByStrategy",
       "discriminator": [
         7,
         3,
@@ -502,42 +508,42 @@
           "writable": true
         },
         {
-          "name": "lb_pair",
+          "name": "lbPair",
           "writable": true
         },
         {
-          "name": "bin_array_bitmap_extension",
+          "name": "binArrayBitmapExtension",
           "writable": true,
           "optional": true
         },
         {
-          "name": "user_token_x",
+          "name": "userTokenX",
           "writable": true
         },
         {
-          "name": "user_token_y",
+          "name": "userTokenY",
           "writable": true
         },
         {
-          "name": "reserve_x",
+          "name": "reserveX",
           "writable": true
         },
         {
-          "name": "reserve_y",
+          "name": "reserveY",
           "writable": true
         },
         {
-          "name": "token_x_mint"
+          "name": "tokenXMint"
         },
         {
-          "name": "token_y_mint"
+          "name": "tokenYMint"
         },
         {
-          "name": "bin_array_lower",
+          "name": "binArrayLower",
           "writable": true
         },
         {
-          "name": "bin_array_upper",
+          "name": "binArrayUpper",
           "writable": true
         },
         {
@@ -545,13 +551,13 @@
           "signer": true
         },
         {
-          "name": "token_x_program"
+          "name": "tokenXProgram"
         },
         {
-          "name": "token_y_program"
+          "name": "tokenYProgram"
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -559,17 +565,17 @@
       ],
       "args": [
         {
-          "name": "liquidity_parameter",
+          "name": "liquidityParameter",
           "type": {
             "defined": {
-              "name": "LiquidityParameterByStrategy"
+              "name": "liquidityParameterByStrategy"
             }
           }
         }
       ]
     },
     {
-      "name": "add_liquidity_by_strategy_one_side",
+      "name": "addLiquidityByStrategyOneSide",
       "discriminator": [
         41,
         5,
@@ -586,16 +592,16 @@
           "writable": true
         },
         {
-          "name": "lb_pair",
+          "name": "lbPair",
           "writable": true
         },
         {
-          "name": "bin_array_bitmap_extension",
+          "name": "binArrayBitmapExtension",
           "writable": true,
           "optional": true
         },
         {
-          "name": "user_token",
+          "name": "userToken",
           "writable": true
         },
         {
@@ -603,14 +609,14 @@
           "writable": true
         },
         {
-          "name": "token_mint"
+          "name": "tokenMint"
         },
         {
-          "name": "bin_array_lower",
+          "name": "binArrayLower",
           "writable": true
         },
         {
-          "name": "bin_array_upper",
+          "name": "binArrayUpper",
           "writable": true
         },
         {
@@ -618,10 +624,10 @@
           "signer": true
         },
         {
-          "name": "token_program"
+          "name": "tokenProgram"
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -629,17 +635,17 @@
       ],
       "args": [
         {
-          "name": "liquidity_parameter",
+          "name": "liquidityParameter",
           "type": {
             "defined": {
-              "name": "LiquidityParameterByStrategyOneSide"
+              "name": "liquidityParameterByStrategyOneSide"
             }
           }
         }
       ]
     },
     {
-      "name": "add_liquidity_one_side",
+      "name": "addLiquidityOneSide",
       "discriminator": [
         94,
         155,
@@ -656,16 +662,16 @@
           "writable": true
         },
         {
-          "name": "lb_pair",
+          "name": "lbPair",
           "writable": true
         },
         {
-          "name": "bin_array_bitmap_extension",
+          "name": "binArrayBitmapExtension",
           "writable": true,
           "optional": true
         },
         {
-          "name": "user_token",
+          "name": "userToken",
           "writable": true
         },
         {
@@ -673,14 +679,14 @@
           "writable": true
         },
         {
-          "name": "token_mint"
+          "name": "tokenMint"
         },
         {
-          "name": "bin_array_lower",
+          "name": "binArrayLower",
           "writable": true
         },
         {
-          "name": "bin_array_upper",
+          "name": "binArrayUpper",
           "writable": true
         },
         {
@@ -688,10 +694,10 @@
           "signer": true
         },
         {
-          "name": "token_program"
+          "name": "tokenProgram"
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -699,17 +705,17 @@
       ],
       "args": [
         {
-          "name": "liquidity_parameter",
+          "name": "liquidityParameter",
           "type": {
             "defined": {
-              "name": "LiquidityOneSideParameter"
+              "name": "liquidityOneSideParameter"
             }
           }
         }
       ]
     },
     {
-      "name": "remove_liquidity",
+      "name": "removeLiquidity",
       "discriminator": [
         80,
         85,
@@ -726,42 +732,42 @@
           "writable": true
         },
         {
-          "name": "lb_pair",
+          "name": "lbPair",
           "writable": true
         },
         {
-          "name": "bin_array_bitmap_extension",
+          "name": "binArrayBitmapExtension",
           "writable": true,
           "optional": true
         },
         {
-          "name": "user_token_x",
+          "name": "userTokenX",
           "writable": true
         },
         {
-          "name": "user_token_y",
+          "name": "userTokenY",
           "writable": true
         },
         {
-          "name": "reserve_x",
+          "name": "reserveX",
           "writable": true
         },
         {
-          "name": "reserve_y",
+          "name": "reserveY",
           "writable": true
         },
         {
-          "name": "token_x_mint"
+          "name": "tokenXMint"
         },
         {
-          "name": "token_y_mint"
+          "name": "tokenYMint"
         },
         {
-          "name": "bin_array_lower",
+          "name": "binArrayLower",
           "writable": true
         },
         {
-          "name": "bin_array_upper",
+          "name": "binArrayUpper",
           "writable": true
         },
         {
@@ -769,13 +775,13 @@
           "signer": true
         },
         {
-          "name": "token_x_program"
+          "name": "tokenXProgram"
         },
         {
-          "name": "token_y_program"
+          "name": "tokenYProgram"
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -783,11 +789,11 @@
       ],
       "args": [
         {
-          "name": "bin_liquidity_removal",
+          "name": "binLiquidityRemoval",
           "type": {
             "vec": {
               "defined": {
-                "name": "BinLiquidityReduction"
+                "name": "binLiquidityReduction"
               }
             }
           }
@@ -795,7 +801,7 @@
       ]
     },
     {
-      "name": "initialize_position",
+      "name": "initializePosition",
       "discriminator": [
         219,
         192,
@@ -818,20 +824,20 @@
           "signer": true
         },
         {
-          "name": "lb_pair"
+          "name": "lbPair"
         },
         {
           "name": "owner",
           "signer": true
         },
         {
-          "name": "system_program"
+          "name": "systemProgram"
         },
         {
           "name": "rent"
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -839,7 +845,7 @@
       ],
       "args": [
         {
-          "name": "lower_bin_id",
+          "name": "lowerBinId",
           "type": "i32"
         },
         {
@@ -849,7 +855,7 @@
       ]
     },
     {
-      "name": "initialize_position_pda",
+      "name": "initializePositionPda",
       "discriminator": [
         46,
         82,
@@ -875,7 +881,7 @@
           "writable": true
         },
         {
-          "name": "lb_pair"
+          "name": "lbPair"
         },
         {
           "name": "owner",
@@ -885,13 +891,13 @@
           "signer": true
         },
         {
-          "name": "system_program"
+          "name": "systemProgram"
         },
         {
           "name": "rent"
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -899,7 +905,7 @@
       ],
       "args": [
         {
-          "name": "lower_bin_id",
+          "name": "lowerBinId",
           "type": "i32"
         },
         {
@@ -909,7 +915,7 @@
       ]
     },
     {
-      "name": "initialize_position_by_operator",
+      "name": "initializePositionByOperator",
       "discriminator": [
         251,
         189,
@@ -935,7 +941,7 @@
           "writable": true
         },
         {
-          "name": "lb_pair"
+          "name": "lbPair"
         },
         {
           "name": "owner"
@@ -948,16 +954,16 @@
           "signer": true
         },
         {
-          "name": "operator_token_x"
+          "name": "operatorTokenX"
         },
         {
-          "name": "owner_token_x"
+          "name": "ownerTokenX"
         },
         {
-          "name": "system_program"
+          "name": "systemProgram"
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -965,7 +971,7 @@
       ],
       "args": [
         {
-          "name": "lower_bin_id",
+          "name": "lowerBinId",
           "type": "i32"
         },
         {
@@ -973,17 +979,17 @@
           "type": "i32"
         },
         {
-          "name": "fee_owner",
+          "name": "feeOwner",
           "type": "pubkey"
         },
         {
-          "name": "lock_release_point",
+          "name": "lockReleasePoint",
           "type": "u64"
         }
       ]
     },
     {
-      "name": "update_position_operator",
+      "name": "updatePositionOperator",
       "discriminator": [
         202,
         184,
@@ -1004,7 +1010,7 @@
           "signer": true
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -1031,41 +1037,41 @@
       ],
       "accounts": [
         {
-          "name": "lb_pair",
+          "name": "lbPair",
           "writable": true
         },
         {
-          "name": "bin_array_bitmap_extension",
+          "name": "binArrayBitmapExtension",
           "optional": true
         },
         {
-          "name": "reserve_x",
+          "name": "reserveX",
           "writable": true
         },
         {
-          "name": "reserve_y",
+          "name": "reserveY",
           "writable": true
         },
         {
-          "name": "user_token_in",
+          "name": "userTokenIn",
           "writable": true
         },
         {
-          "name": "user_token_out",
+          "name": "userTokenOut",
           "writable": true
         },
         {
-          "name": "token_x_mint"
+          "name": "tokenXMint"
         },
         {
-          "name": "token_y_mint"
+          "name": "tokenYMint"
         },
         {
           "name": "oracle",
           "writable": true
         },
         {
-          "name": "host_fee_in",
+          "name": "hostFeeIn",
           "writable": true,
           "optional": true
         },
@@ -1074,13 +1080,13 @@
           "signer": true
         },
         {
-          "name": "token_x_program"
+          "name": "tokenXProgram"
         },
         {
-          "name": "token_y_program"
+          "name": "tokenYProgram"
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -1088,17 +1094,17 @@
       ],
       "args": [
         {
-          "name": "amount_in",
+          "name": "amountIn",
           "type": "u64"
         },
         {
-          "name": "min_amount_out",
+          "name": "minAmountOut",
           "type": "u64"
         }
       ]
     },
     {
-      "name": "swap_exact_out",
+      "name": "swapExactOut",
       "discriminator": [
         250,
         73,
@@ -1111,41 +1117,41 @@
       ],
       "accounts": [
         {
-          "name": "lb_pair",
+          "name": "lbPair",
           "writable": true
         },
         {
-          "name": "bin_array_bitmap_extension",
+          "name": "binArrayBitmapExtension",
           "optional": true
         },
         {
-          "name": "reserve_x",
+          "name": "reserveX",
           "writable": true
         },
         {
-          "name": "reserve_y",
+          "name": "reserveY",
           "writable": true
         },
         {
-          "name": "user_token_in",
+          "name": "userTokenIn",
           "writable": true
         },
         {
-          "name": "user_token_out",
+          "name": "userTokenOut",
           "writable": true
         },
         {
-          "name": "token_x_mint"
+          "name": "tokenXMint"
         },
         {
-          "name": "token_y_mint"
+          "name": "tokenYMint"
         },
         {
           "name": "oracle",
           "writable": true
         },
         {
-          "name": "host_fee_in",
+          "name": "hostFeeIn",
           "writable": true,
           "optional": true
         },
@@ -1154,13 +1160,13 @@
           "signer": true
         },
         {
-          "name": "token_x_program"
+          "name": "tokenXProgram"
         },
         {
-          "name": "token_y_program"
+          "name": "tokenYProgram"
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -1168,17 +1174,17 @@
       ],
       "args": [
         {
-          "name": "max_in_amount",
+          "name": "maxInAmount",
           "type": "u64"
         },
         {
-          "name": "out_amount",
+          "name": "outAmount",
           "type": "u64"
         }
       ]
     },
     {
-      "name": "swap_with_price_impact",
+      "name": "swapWithPriceImpact",
       "discriminator": [
         56,
         173,
@@ -1191,41 +1197,41 @@
       ],
       "accounts": [
         {
-          "name": "lb_pair",
+          "name": "lbPair",
           "writable": true
         },
         {
-          "name": "bin_array_bitmap_extension",
+          "name": "binArrayBitmapExtension",
           "optional": true
         },
         {
-          "name": "reserve_x",
+          "name": "reserveX",
           "writable": true
         },
         {
-          "name": "reserve_y",
+          "name": "reserveY",
           "writable": true
         },
         {
-          "name": "user_token_in",
+          "name": "userTokenIn",
           "writable": true
         },
         {
-          "name": "user_token_out",
+          "name": "userTokenOut",
           "writable": true
         },
         {
-          "name": "token_x_mint"
+          "name": "tokenXMint"
         },
         {
-          "name": "token_y_mint"
+          "name": "tokenYMint"
         },
         {
           "name": "oracle",
           "writable": true
         },
         {
-          "name": "host_fee_in",
+          "name": "hostFeeIn",
           "writable": true,
           "optional": true
         },
@@ -1234,13 +1240,13 @@
           "signer": true
         },
         {
-          "name": "token_x_program"
+          "name": "tokenXProgram"
         },
         {
-          "name": "token_y_program"
+          "name": "tokenYProgram"
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -1248,23 +1254,23 @@
       ],
       "args": [
         {
-          "name": "amount_in",
+          "name": "amountIn",
           "type": "u64"
         },
         {
-          "name": "active_id",
+          "name": "activeId",
           "type": {
             "option": "i32"
           }
         },
         {
-          "name": "max_price_impact_bps",
+          "name": "maxPriceImpactBps",
           "type": "u16"
         }
       ]
     },
     {
-      "name": "withdraw_protocol_fee",
+      "name": "withdrawProtocolFee",
       "discriminator": [
         158,
         201,
@@ -1277,33 +1283,33 @@
       ],
       "accounts": [
         {
-          "name": "lb_pair",
+          "name": "lbPair",
           "writable": true
         },
         {
-          "name": "reserve_x",
+          "name": "reserveX",
           "writable": true
         },
         {
-          "name": "reserve_y",
+          "name": "reserveY",
           "writable": true
         },
         {
-          "name": "token_x_mint"
+          "name": "tokenXMint"
         },
         {
-          "name": "token_y_mint"
+          "name": "tokenYMint"
         },
         {
-          "name": "receiver_token_x",
+          "name": "receiverTokenX",
           "writable": true
         },
         {
-          "name": "receiver_token_y",
+          "name": "receiverTokenY",
           "writable": true
         },
         {
-          "name": "claim_fee_operator"
+          "name": "claimFeeOperator"
         },
         {
           "name": "operator",
@@ -1313,36 +1319,36 @@
           "signer": true
         },
         {
-          "name": "token_x_program"
+          "name": "tokenXProgram"
         },
         {
-          "name": "token_y_program"
+          "name": "tokenYProgram"
         },
         {
-          "name": "memo_program"
+          "name": "memoProgram"
         }
       ],
       "args": [
         {
-          "name": "amount_x",
+          "name": "amountX",
           "type": "u64"
         },
         {
-          "name": "amount_y",
+          "name": "amountY",
           "type": "u64"
         },
         {
-          "name": "remaining_accounts_info",
+          "name": "remainingAccountsInfo",
           "type": {
             "defined": {
-              "name": "RemainingAccountsInfo"
+              "name": "remainingAccountsInfo"
             }
           }
         }
       ]
     },
     {
-      "name": "initialize_reward",
+      "name": "initializeReward",
       "discriminator": [
         95,
         135,
@@ -1355,18 +1361,18 @@
       ],
       "accounts": [
         {
-          "name": "lb_pair",
+          "name": "lbPair",
           "writable": true
         },
         {
-          "name": "reward_vault",
+          "name": "rewardVault",
           "writable": true
         },
         {
-          "name": "reward_mint"
+          "name": "rewardMint"
         },
         {
-          "name": "token_badge",
+          "name": "tokenBadge",
           "optional": true
         },
         {
@@ -1375,16 +1381,16 @@
           "signer": true
         },
         {
-          "name": "token_program"
+          "name": "tokenProgram"
         },
         {
-          "name": "system_program"
+          "name": "systemProgram"
         },
         {
           "name": "rent"
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -1392,11 +1398,11 @@
       ],
       "args": [
         {
-          "name": "reward_index",
+          "name": "rewardIndex",
           "type": "u64"
         },
         {
-          "name": "reward_duration",
+          "name": "rewardDuration",
           "type": "u64"
         },
         {
@@ -1406,7 +1412,7 @@
       ]
     },
     {
-      "name": "fund_reward",
+      "name": "fundReward",
       "discriminator": [
         188,
         50,
@@ -1419,18 +1425,18 @@
       ],
       "accounts": [
         {
-          "name": "lb_pair",
+          "name": "lbPair",
           "writable": true
         },
         {
-          "name": "reward_vault",
+          "name": "rewardVault",
           "writable": true
         },
         {
-          "name": "reward_mint"
+          "name": "rewardMint"
         },
         {
-          "name": "funder_token_account",
+          "name": "funderTokenAccount",
           "writable": true
         },
         {
@@ -1438,14 +1444,14 @@
           "signer": true
         },
         {
-          "name": "bin_array",
+          "name": "binArray",
           "writable": true
         },
         {
-          "name": "token_program"
+          "name": "tokenProgram"
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -1453,7 +1459,7 @@
       ],
       "args": [
         {
-          "name": "reward_index",
+          "name": "rewardIndex",
           "type": "u64"
         },
         {
@@ -1461,21 +1467,21 @@
           "type": "u64"
         },
         {
-          "name": "carry_forward",
+          "name": "carryForward",
           "type": "bool"
         },
         {
-          "name": "remaining_accounts_info",
+          "name": "remainingAccountsInfo",
           "type": {
             "defined": {
-              "name": "RemainingAccountsInfo"
+              "name": "remainingAccountsInfo"
             }
           }
         }
       ]
     },
     {
-      "name": "update_reward_funder",
+      "name": "updateRewardFunder",
       "discriminator": [
         211,
         28,
@@ -1488,7 +1494,7 @@
       ],
       "accounts": [
         {
-          "name": "lb_pair",
+          "name": "lbPair",
           "writable": true
         },
         {
@@ -1496,7 +1502,7 @@
           "signer": true
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -1504,17 +1510,17 @@
       ],
       "args": [
         {
-          "name": "reward_index",
+          "name": "rewardIndex",
           "type": "u64"
         },
         {
-          "name": "new_funder",
+          "name": "newFunder",
           "type": "pubkey"
         }
       ]
     },
     {
-      "name": "update_reward_duration",
+      "name": "updateRewardDuration",
       "discriminator": [
         138,
         174,
@@ -1527,7 +1533,7 @@
       ],
       "accounts": [
         {
-          "name": "lb_pair",
+          "name": "lbPair",
           "writable": true
         },
         {
@@ -1535,11 +1541,11 @@
           "signer": true
         },
         {
-          "name": "bin_array",
+          "name": "binArray",
           "writable": true
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -1547,17 +1553,17 @@
       ],
       "args": [
         {
-          "name": "reward_index",
+          "name": "rewardIndex",
           "type": "u64"
         },
         {
-          "name": "new_duration",
+          "name": "newDuration",
           "type": "u64"
         }
       ]
     },
     {
-      "name": "claim_reward",
+      "name": "claimReward",
       "discriminator": [
         149,
         95,
@@ -1570,7 +1576,7 @@
       ],
       "accounts": [
         {
-          "name": "lb_pair",
+          "name": "lbPair",
           "writable": true
         },
         {
@@ -1578,11 +1584,11 @@
           "writable": true
         },
         {
-          "name": "bin_array_lower",
+          "name": "binArrayLower",
           "writable": true
         },
         {
-          "name": "bin_array_upper",
+          "name": "binArrayUpper",
           "writable": true
         },
         {
@@ -1590,21 +1596,21 @@
           "signer": true
         },
         {
-          "name": "reward_vault",
+          "name": "rewardVault",
           "writable": true
         },
         {
-          "name": "reward_mint"
+          "name": "rewardMint"
         },
         {
-          "name": "user_token_account",
+          "name": "userTokenAccount",
           "writable": true
         },
         {
-          "name": "token_program"
+          "name": "tokenProgram"
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -1612,13 +1618,13 @@
       ],
       "args": [
         {
-          "name": "reward_index",
+          "name": "rewardIndex",
           "type": "u64"
         }
       ]
     },
     {
-      "name": "claim_fee",
+      "name": "claimFee",
       "discriminator": [
         169,
         32,
@@ -1631,7 +1637,7 @@
       ],
       "accounts": [
         {
-          "name": "lb_pair",
+          "name": "lbPair",
           "writable": true
         },
         {
@@ -1639,11 +1645,11 @@
           "writable": true
         },
         {
-          "name": "bin_array_lower",
+          "name": "binArrayLower",
           "writable": true
         },
         {
-          "name": "bin_array_upper",
+          "name": "binArrayUpper",
           "writable": true
         },
         {
@@ -1651,32 +1657,32 @@
           "signer": true
         },
         {
-          "name": "reserve_x",
+          "name": "reserveX",
           "writable": true
         },
         {
-          "name": "reserve_y",
+          "name": "reserveY",
           "writable": true
         },
         {
-          "name": "user_token_x",
+          "name": "userTokenX",
           "writable": true
         },
         {
-          "name": "user_token_y",
+          "name": "userTokenY",
           "writable": true
         },
         {
-          "name": "token_x_mint"
+          "name": "tokenXMint"
         },
         {
-          "name": "token_y_mint"
+          "name": "tokenYMint"
         },
         {
-          "name": "token_program"
+          "name": "tokenProgram"
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -1685,7 +1691,7 @@
       "args": []
     },
     {
-      "name": "close_position",
+      "name": "closePosition",
       "discriminator": [
         123,
         134,
@@ -1702,15 +1708,15 @@
           "writable": true
         },
         {
-          "name": "lb_pair",
+          "name": "lbPair",
           "writable": true
         },
         {
-          "name": "bin_array_lower",
+          "name": "binArrayLower",
           "writable": true
         },
         {
-          "name": "bin_array_upper",
+          "name": "binArrayUpper",
           "writable": true
         },
         {
@@ -1718,11 +1724,11 @@
           "signer": true
         },
         {
-          "name": "rent_receiver",
+          "name": "rentReceiver",
           "writable": true
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -1731,7 +1737,7 @@
       "args": []
     },
     {
-      "name": "update_base_fee_parameters",
+      "name": "updateBaseFeeParameters",
       "discriminator": [
         75,
         168,
@@ -1744,7 +1750,7 @@
       ],
       "accounts": [
         {
-          "name": "lb_pair",
+          "name": "lbPair",
           "writable": true
         },
         {
@@ -1752,7 +1758,7 @@
           "signer": true
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -1760,17 +1766,17 @@
       ],
       "args": [
         {
-          "name": "fee_parameter",
+          "name": "feeParameter",
           "type": {
             "defined": {
-              "name": "BaseFeeParameter"
+              "name": "baseFeeParameter"
             }
           }
         }
       ]
     },
     {
-      "name": "update_dynamic_fee_parameters",
+      "name": "updateDynamicFeeParameters",
       "discriminator": [
         92,
         161,
@@ -1783,7 +1789,7 @@
       ],
       "accounts": [
         {
-          "name": "lb_pair",
+          "name": "lbPair",
           "writable": true
         },
         {
@@ -1791,7 +1797,7 @@
           "signer": true
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -1799,17 +1805,17 @@
       ],
       "args": [
         {
-          "name": "fee_parameter",
+          "name": "feeParameter",
           "type": {
             "defined": {
-              "name": "DynamicFeeParameter"
+              "name": "dynamicFeeParameter"
             }
           }
         }
       ]
     },
     {
-      "name": "increase_oracle_length",
+      "name": "increaseOracleLength",
       "discriminator": [
         190,
         61,
@@ -1831,10 +1837,10 @@
           "signer": true
         },
         {
-          "name": "system_program"
+          "name": "systemProgram"
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -1842,13 +1848,13 @@
       ],
       "args": [
         {
-          "name": "length_to_add",
+          "name": "lengthToAdd",
           "type": "u64"
         }
       ]
     },
     {
-      "name": "initialize_preset_parameter",
+      "name": "initializePresetParameter",
       "discriminator": [
         66,
         188,
@@ -1861,7 +1867,7 @@
       ],
       "accounts": [
         {
-          "name": "preset_parameter",
+          "name": "presetParameter",
           "writable": true
         },
         {
@@ -1870,7 +1876,7 @@
           "signer": true
         },
         {
-          "name": "system_program"
+          "name": "systemProgram"
         },
         {
           "name": "rent"
@@ -1881,14 +1887,14 @@
           "name": "ix",
           "type": {
             "defined": {
-              "name": "InitPresetParametersIx"
+              "name": "initPresetParametersIx"
             }
           }
         }
       ]
     },
     {
-      "name": "close_preset_parameter",
+      "name": "closePresetParameter",
       "discriminator": [
         4,
         148,
@@ -1901,7 +1907,7 @@
       ],
       "accounts": [
         {
-          "name": "preset_parameter",
+          "name": "presetParameter",
           "writable": true
         },
         {
@@ -1910,14 +1916,14 @@
           "signer": true
         },
         {
-          "name": "rent_receiver",
+          "name": "rentReceiver",
           "writable": true
         }
       ],
       "args": []
     },
     {
-      "name": "close_preset_parameter2",
+      "name": "closePresetParameter2",
       "discriminator": [
         39,
         25,
@@ -1930,7 +1936,7 @@
       ],
       "accounts": [
         {
-          "name": "preset_parameter",
+          "name": "presetParameter",
           "writable": true
         },
         {
@@ -1939,14 +1945,14 @@
           "signer": true
         },
         {
-          "name": "rent_receiver",
+          "name": "rentReceiver",
           "writable": true
         }
       ],
       "args": []
     },
     {
-      "name": "remove_all_liquidity",
+      "name": "removeAllLiquidity",
       "discriminator": [
         10,
         51,
@@ -1963,42 +1969,42 @@
           "writable": true
         },
         {
-          "name": "lb_pair",
+          "name": "lbPair",
           "writable": true
         },
         {
-          "name": "bin_array_bitmap_extension",
+          "name": "binArrayBitmapExtension",
           "writable": true,
           "optional": true
         },
         {
-          "name": "user_token_x",
+          "name": "userTokenX",
           "writable": true
         },
         {
-          "name": "user_token_y",
+          "name": "userTokenY",
           "writable": true
         },
         {
-          "name": "reserve_x",
+          "name": "reserveX",
           "writable": true
         },
         {
-          "name": "reserve_y",
+          "name": "reserveY",
           "writable": true
         },
         {
-          "name": "token_x_mint"
+          "name": "tokenXMint"
         },
         {
-          "name": "token_y_mint"
+          "name": "tokenYMint"
         },
         {
-          "name": "bin_array_lower",
+          "name": "binArrayLower",
           "writable": true
         },
         {
-          "name": "bin_array_upper",
+          "name": "binArrayUpper",
           "writable": true
         },
         {
@@ -2006,13 +2012,13 @@
           "signer": true
         },
         {
-          "name": "token_x_program"
+          "name": "tokenXProgram"
         },
         {
-          "name": "token_y_program"
+          "name": "tokenYProgram"
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -2021,7 +2027,7 @@
       "args": []
     },
     {
-      "name": "set_pair_status",
+      "name": "setPairStatus",
       "discriminator": [
         67,
         248,
@@ -2034,7 +2040,7 @@
       ],
       "accounts": [
         {
-          "name": "lb_pair",
+          "name": "lbPair",
           "writable": true
         },
         {
@@ -2050,7 +2056,7 @@
       ]
     },
     {
-      "name": "migrate_position",
+      "name": "migratePosition",
       "discriminator": [
         15,
         132,
@@ -2063,23 +2069,23 @@
       ],
       "accounts": [
         {
-          "name": "position_v2",
+          "name": "positionV2",
           "writable": true,
           "signer": true
         },
         {
-          "name": "position_v1",
+          "name": "positionV1",
           "writable": true
         },
         {
-          "name": "lb_pair"
+          "name": "lbPair"
         },
         {
-          "name": "bin_array_lower",
+          "name": "binArrayLower",
           "writable": true
         },
         {
-          "name": "bin_array_upper",
+          "name": "binArrayUpper",
           "writable": true
         },
         {
@@ -2088,14 +2094,14 @@
           "signer": true
         },
         {
-          "name": "system_program"
+          "name": "systemProgram"
         },
         {
-          "name": "rent_receiver",
+          "name": "rentReceiver",
           "writable": true
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -2104,7 +2110,7 @@
       "args": []
     },
     {
-      "name": "migrate_bin_array",
+      "name": "migrateBinArray",
       "discriminator": [
         17,
         23,
@@ -2117,13 +2123,13 @@
       ],
       "accounts": [
         {
-          "name": "lb_pair"
+          "name": "lbPair"
         }
       ],
       "args": []
     },
     {
-      "name": "update_fees_and_rewards",
+      "name": "updateFeesAndRewards",
       "discriminator": [
         154,
         230,
@@ -2140,15 +2146,15 @@
           "writable": true
         },
         {
-          "name": "lb_pair",
+          "name": "lbPair",
           "writable": true
         },
         {
-          "name": "bin_array_lower",
+          "name": "binArrayLower",
           "writable": true
         },
         {
-          "name": "bin_array_upper",
+          "name": "binArrayUpper",
           "writable": true
         },
         {
@@ -2159,7 +2165,7 @@
       "args": []
     },
     {
-      "name": "withdraw_ineligible_reward",
+      "name": "withdrawIneligibleReward",
       "discriminator": [
         148,
         206,
@@ -2172,18 +2178,18 @@
       ],
       "accounts": [
         {
-          "name": "lb_pair",
+          "name": "lbPair",
           "writable": true
         },
         {
-          "name": "reward_vault",
+          "name": "rewardVault",
           "writable": true
         },
         {
-          "name": "reward_mint"
+          "name": "rewardMint"
         },
         {
-          "name": "funder_token_account",
+          "name": "funderTokenAccount",
           "writable": true
         },
         {
@@ -2191,17 +2197,17 @@
           "signer": true
         },
         {
-          "name": "bin_array",
+          "name": "binArray",
           "writable": true
         },
         {
-          "name": "token_program"
+          "name": "tokenProgram"
         },
         {
-          "name": "memo_program"
+          "name": "memoProgram"
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -2209,21 +2215,21 @@
       ],
       "args": [
         {
-          "name": "reward_index",
+          "name": "rewardIndex",
           "type": "u64"
         },
         {
-          "name": "remaining_accounts_info",
+          "name": "remainingAccountsInfo",
           "type": {
             "defined": {
-              "name": "RemainingAccountsInfo"
+              "name": "remainingAccountsInfo"
             }
           }
         }
       ]
     },
     {
-      "name": "set_activation_point",
+      "name": "setActivationPoint",
       "discriminator": [
         91,
         249,
@@ -2236,7 +2242,7 @@
       ],
       "accounts": [
         {
-          "name": "lb_pair",
+          "name": "lbPair",
           "writable": true
         },
         {
@@ -2247,13 +2253,13 @@
       ],
       "args": [
         {
-          "name": "activation_point",
+          "name": "activationPoint",
           "type": "u64"
         }
       ]
     },
     {
-      "name": "remove_liquidity_by_range",
+      "name": "removeLiquidityByRange",
       "discriminator": [
         26,
         82,
@@ -2270,42 +2276,42 @@
           "writable": true
         },
         {
-          "name": "lb_pair",
+          "name": "lbPair",
           "writable": true
         },
         {
-          "name": "bin_array_bitmap_extension",
+          "name": "binArrayBitmapExtension",
           "writable": true,
           "optional": true
         },
         {
-          "name": "user_token_x",
+          "name": "userTokenX",
           "writable": true
         },
         {
-          "name": "user_token_y",
+          "name": "userTokenY",
           "writable": true
         },
         {
-          "name": "reserve_x",
+          "name": "reserveX",
           "writable": true
         },
         {
-          "name": "reserve_y",
+          "name": "reserveY",
           "writable": true
         },
         {
-          "name": "token_x_mint"
+          "name": "tokenXMint"
         },
         {
-          "name": "token_y_mint"
+          "name": "tokenYMint"
         },
         {
-          "name": "bin_array_lower",
+          "name": "binArrayLower",
           "writable": true
         },
         {
-          "name": "bin_array_upper",
+          "name": "binArrayUpper",
           "writable": true
         },
         {
@@ -2313,13 +2319,13 @@
           "signer": true
         },
         {
-          "name": "token_x_program"
+          "name": "tokenXProgram"
         },
         {
-          "name": "token_y_program"
+          "name": "tokenYProgram"
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -2327,21 +2333,21 @@
       ],
       "args": [
         {
-          "name": "from_bin_id",
+          "name": "fromBinId",
           "type": "i32"
         },
         {
-          "name": "to_bin_id",
+          "name": "toBinId",
           "type": "i32"
         },
         {
-          "name": "bps_to_remove",
+          "name": "bpsToRemove",
           "type": "u16"
         }
       ]
     },
     {
-      "name": "add_liquidity_one_side_precise",
+      "name": "addLiquidityOneSidePrecise",
       "discriminator": [
         161,
         194,
@@ -2358,16 +2364,16 @@
           "writable": true
         },
         {
-          "name": "lb_pair",
+          "name": "lbPair",
           "writable": true
         },
         {
-          "name": "bin_array_bitmap_extension",
+          "name": "binArrayBitmapExtension",
           "writable": true,
           "optional": true
         },
         {
-          "name": "user_token",
+          "name": "userToken",
           "writable": true
         },
         {
@@ -2375,14 +2381,14 @@
           "writable": true
         },
         {
-          "name": "token_mint"
+          "name": "tokenMint"
         },
         {
-          "name": "bin_array_lower",
+          "name": "binArrayLower",
           "writable": true
         },
         {
-          "name": "bin_array_upper",
+          "name": "binArrayUpper",
           "writable": true
         },
         {
@@ -2390,10 +2396,10 @@
           "signer": true
         },
         {
-          "name": "token_program"
+          "name": "tokenProgram"
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -2404,14 +2410,14 @@
           "name": "parameter",
           "type": {
             "defined": {
-              "name": "AddLiquiditySingleSidePreciseParameter"
+              "name": "addLiquiditySingleSidePreciseParameter"
             }
           }
         }
       ]
     },
     {
-      "name": "go_to_a_bin",
+      "name": "goToABin",
       "discriminator": [
         146,
         72,
@@ -2424,23 +2430,23 @@
       ],
       "accounts": [
         {
-          "name": "lb_pair",
+          "name": "lbPair",
           "writable": true
         },
         {
-          "name": "bin_array_bitmap_extension",
+          "name": "binArrayBitmapExtension",
           "optional": true
         },
         {
-          "name": "from_bin_array",
+          "name": "fromBinArray",
           "optional": true
         },
         {
-          "name": "to_bin_array",
+          "name": "toBinArray",
           "optional": true
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -2448,13 +2454,13 @@
       ],
       "args": [
         {
-          "name": "bin_id",
+          "name": "binId",
           "type": "i32"
         }
       ]
     },
     {
-      "name": "set_pre_activation_duration",
+      "name": "setPreActivationDuration",
       "discriminator": [
         165,
         61,
@@ -2467,7 +2473,7 @@
       ],
       "accounts": [
         {
-          "name": "lb_pair",
+          "name": "lbPair",
           "writable": true
         },
         {
@@ -2477,13 +2483,13 @@
       ],
       "args": [
         {
-          "name": "pre_activation_duration",
+          "name": "preActivationDuration",
           "type": "u64"
         }
       ]
     },
     {
-      "name": "set_pre_activation_swap_address",
+      "name": "setPreActivationSwapAddress",
       "discriminator": [
         57,
         139,
@@ -2496,7 +2502,7 @@
       ],
       "accounts": [
         {
-          "name": "lb_pair",
+          "name": "lbPair",
           "writable": true
         },
         {
@@ -2506,13 +2512,13 @@
       ],
       "args": [
         {
-          "name": "pre_activation_swap_address",
+          "name": "preActivationSwapAddress",
           "type": "pubkey"
         }
       ]
     },
     {
-      "name": "set_pair_status_permissionless",
+      "name": "setPairStatusPermissionless",
       "discriminator": [
         78,
         59,
@@ -2525,7 +2531,7 @@
       ],
       "accounts": [
         {
-          "name": "lb_pair",
+          "name": "lbPair",
           "writable": true
         },
         {
@@ -2541,7 +2547,7 @@
       ]
     },
     {
-      "name": "initialize_token_badge",
+      "name": "initializeTokenBadge",
       "discriminator": [
         253,
         77,
@@ -2554,10 +2560,10 @@
       ],
       "accounts": [
         {
-          "name": "token_mint"
+          "name": "tokenMint"
         },
         {
-          "name": "token_badge",
+          "name": "tokenBadge",
           "writable": true
         },
         {
@@ -2566,13 +2572,13 @@
           "signer": true
         },
         {
-          "name": "system_program"
+          "name": "systemProgram"
         }
       ],
       "args": []
     },
     {
-      "name": "create_claim_protocol_fee_operator",
+      "name": "createClaimProtocolFeeOperator",
       "discriminator": [
         51,
         19,
@@ -2585,7 +2591,7 @@
       ],
       "accounts": [
         {
-          "name": "claim_fee_operator",
+          "name": "claimFeeOperator",
           "writable": true
         },
         {
@@ -2597,13 +2603,13 @@
           "signer": true
         },
         {
-          "name": "system_program"
+          "name": "systemProgram"
         }
       ],
       "args": []
     },
     {
-      "name": "close_claim_protocol_fee_operator",
+      "name": "closeClaimProtocolFeeOperator",
       "discriminator": [
         8,
         41,
@@ -2616,11 +2622,11 @@
       ],
       "accounts": [
         {
-          "name": "claim_fee_operator",
+          "name": "claimFeeOperator",
           "writable": true
         },
         {
-          "name": "rent_receiver",
+          "name": "rentReceiver",
           "writable": true
         },
         {
@@ -2631,7 +2637,7 @@
       "args": []
     },
     {
-      "name": "initialize_preset_parameter2",
+      "name": "initializePresetParameter2",
       "discriminator": [
         184,
         7,
@@ -2644,7 +2650,7 @@
       ],
       "accounts": [
         {
-          "name": "preset_parameter",
+          "name": "presetParameter",
           "writable": true
         },
         {
@@ -2653,7 +2659,7 @@
           "signer": true
         },
         {
-          "name": "system_program"
+          "name": "systemProgram"
         }
       ],
       "args": [
@@ -2661,14 +2667,14 @@
           "name": "ix",
           "type": {
             "defined": {
-              "name": "InitPresetParameters2Ix"
+              "name": "initPresetParameters2Ix"
             }
           }
         }
       ]
     },
     {
-      "name": "initialize_lb_pair2",
+      "name": "initializeLbPair2",
       "discriminator": [
         73,
         59,
@@ -2681,26 +2687,26 @@
       ],
       "accounts": [
         {
-          "name": "lb_pair",
+          "name": "lbPair",
           "writable": true
         },
         {
-          "name": "bin_array_bitmap_extension",
+          "name": "binArrayBitmapExtension",
           "writable": true,
           "optional": true
         },
         {
-          "name": "token_mint_x"
+          "name": "tokenMintX"
         },
         {
-          "name": "token_mint_y"
+          "name": "tokenMintY"
         },
         {
-          "name": "reserve_x",
+          "name": "reserveX",
           "writable": true
         },
         {
-          "name": "reserve_y",
+          "name": "reserveY",
           "writable": true
         },
         {
@@ -2708,7 +2714,7 @@
           "writable": true
         },
         {
-          "name": "preset_parameter"
+          "name": "presetParameter"
         },
         {
           "name": "funder",
@@ -2716,24 +2722,24 @@
           "signer": true
         },
         {
-          "name": "token_badge_x",
+          "name": "tokenBadgeX",
           "optional": true
         },
         {
-          "name": "token_badge_y",
+          "name": "tokenBadgeY",
           "optional": true
         },
         {
-          "name": "token_program_x"
+          "name": "tokenProgramX"
         },
         {
-          "name": "token_program_y"
+          "name": "tokenProgramY"
         },
         {
-          "name": "system_program"
+          "name": "systemProgram"
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -2744,14 +2750,14 @@
           "name": "params",
           "type": {
             "defined": {
-              "name": "InitializeLbPair2Params"
+              "name": "initializeLbPair2Params"
             }
           }
         }
       ]
     },
     {
-      "name": "initialize_customizable_permissionless_lb_pair2",
+      "name": "initializeCustomizablePermissionlessLbPair2",
       "discriminator": [
         243,
         73,
@@ -2764,26 +2770,26 @@
       ],
       "accounts": [
         {
-          "name": "lb_pair",
+          "name": "lbPair",
           "writable": true
         },
         {
-          "name": "bin_array_bitmap_extension",
+          "name": "binArrayBitmapExtension",
           "writable": true,
           "optional": true
         },
         {
-          "name": "token_mint_x"
+          "name": "tokenMintX"
         },
         {
-          "name": "token_mint_y"
+          "name": "tokenMintY"
         },
         {
-          "name": "reserve_x",
+          "name": "reserveX",
           "writable": true
         },
         {
-          "name": "reserve_y",
+          "name": "reserveY",
           "writable": true
         },
         {
@@ -2791,7 +2797,7 @@
           "writable": true
         },
         {
-          "name": "user_token_x"
+          "name": "userTokenX"
         },
         {
           "name": "funder",
@@ -2799,27 +2805,27 @@
           "signer": true
         },
         {
-          "name": "token_badge_x",
+          "name": "tokenBadgeX",
           "optional": true
         },
         {
-          "name": "token_badge_y",
+          "name": "tokenBadgeY",
           "optional": true
         },
         {
-          "name": "token_program_x"
+          "name": "tokenProgramX"
         },
         {
-          "name": "token_program_y"
+          "name": "tokenProgramY"
         },
         {
-          "name": "system_program"
+          "name": "systemProgram"
         },
         {
-          "name": "user_token_y"
+          "name": "userTokenY"
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -2830,14 +2836,14 @@
           "name": "params",
           "type": {
             "defined": {
-              "name": "CustomizableParams"
+              "name": "customizableParams"
             }
           }
         }
       ]
     },
     {
-      "name": "claim_fee2",
+      "name": "claimFee2",
       "discriminator": [
         112,
         191,
@@ -2850,7 +2856,7 @@
       ],
       "accounts": [
         {
-          "name": "lb_pair",
+          "name": "lbPair",
           "writable": true
         },
         {
@@ -2862,38 +2868,38 @@
           "signer": true
         },
         {
-          "name": "reserve_x",
+          "name": "reserveX",
           "writable": true
         },
         {
-          "name": "reserve_y",
+          "name": "reserveY",
           "writable": true
         },
         {
-          "name": "user_token_x",
+          "name": "userTokenX",
           "writable": true
         },
         {
-          "name": "user_token_y",
+          "name": "userTokenY",
           "writable": true
         },
         {
-          "name": "token_x_mint"
+          "name": "tokenXMint"
         },
         {
-          "name": "token_y_mint"
+          "name": "tokenYMint"
         },
         {
-          "name": "token_program_x"
+          "name": "tokenProgramX"
         },
         {
-          "name": "token_program_y"
+          "name": "tokenProgramY"
         },
         {
-          "name": "memo_program"
+          "name": "memoProgram"
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -2901,25 +2907,25 @@
       ],
       "args": [
         {
-          "name": "min_bin_id",
+          "name": "minBinId",
           "type": "i32"
         },
         {
-          "name": "max_bin_id",
+          "name": "maxBinId",
           "type": "i32"
         },
         {
-          "name": "remaining_accounts_info",
+          "name": "remainingAccountsInfo",
           "type": {
             "defined": {
-              "name": "RemainingAccountsInfo"
+              "name": "remainingAccountsInfo"
             }
           }
         }
       ]
     },
     {
-      "name": "claim_reward2",
+      "name": "claimReward2",
       "discriminator": [
         190,
         3,
@@ -2932,7 +2938,7 @@
       ],
       "accounts": [
         {
-          "name": "lb_pair",
+          "name": "lbPair",
           "writable": true
         },
         {
@@ -2944,24 +2950,24 @@
           "signer": true
         },
         {
-          "name": "reward_vault",
+          "name": "rewardVault",
           "writable": true
         },
         {
-          "name": "reward_mint"
+          "name": "rewardMint"
         },
         {
-          "name": "user_token_account",
+          "name": "userTokenAccount",
           "writable": true
         },
         {
-          "name": "token_program"
+          "name": "tokenProgram"
         },
         {
-          "name": "memo_program"
+          "name": "memoProgram"
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -2969,29 +2975,29 @@
       ],
       "args": [
         {
-          "name": "reward_index",
+          "name": "rewardIndex",
           "type": "u64"
         },
         {
-          "name": "min_bin_id",
+          "name": "minBinId",
           "type": "i32"
         },
         {
-          "name": "max_bin_id",
+          "name": "maxBinId",
           "type": "i32"
         },
         {
-          "name": "remaining_accounts_info",
+          "name": "remainingAccountsInfo",
           "type": {
             "defined": {
-              "name": "RemainingAccountsInfo"
+              "name": "remainingAccountsInfo"
             }
           }
         }
       ]
     },
     {
-      "name": "add_liquidity2",
+      "name": "addLiquidity2",
       "discriminator": [
         228,
         162,
@@ -3008,48 +3014,48 @@
           "writable": true
         },
         {
-          "name": "lb_pair",
+          "name": "lbPair",
           "writable": true
         },
         {
-          "name": "bin_array_bitmap_extension",
+          "name": "binArrayBitmapExtension",
           "writable": true,
           "optional": true
         },
         {
-          "name": "user_token_x",
+          "name": "userTokenX",
           "writable": true
         },
         {
-          "name": "user_token_y",
+          "name": "userTokenY",
           "writable": true
         },
         {
-          "name": "reserve_x",
+          "name": "reserveX",
           "writable": true
         },
         {
-          "name": "reserve_y",
+          "name": "reserveY",
           "writable": true
         },
         {
-          "name": "token_x_mint"
+          "name": "tokenXMint"
         },
         {
-          "name": "token_y_mint"
+          "name": "tokenYMint"
         },
         {
           "name": "sender",
           "signer": true
         },
         {
-          "name": "token_x_program"
+          "name": "tokenXProgram"
         },
         {
-          "name": "token_y_program"
+          "name": "tokenYProgram"
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -3057,25 +3063,25 @@
       ],
       "args": [
         {
-          "name": "liquidity_parameter",
+          "name": "liquidityParameter",
           "type": {
             "defined": {
-              "name": "LiquidityParameter"
+              "name": "liquidityParameter"
             }
           }
         },
         {
-          "name": "remaining_accounts_info",
+          "name": "remainingAccountsInfo",
           "type": {
             "defined": {
-              "name": "RemainingAccountsInfo"
+              "name": "remainingAccountsInfo"
             }
           }
         }
       ]
     },
     {
-      "name": "add_liquidity_by_strategy2",
+      "name": "addLiquidityByStrategy2",
       "discriminator": [
         3,
         221,
@@ -3092,48 +3098,48 @@
           "writable": true
         },
         {
-          "name": "lb_pair",
+          "name": "lbPair",
           "writable": true
         },
         {
-          "name": "bin_array_bitmap_extension",
+          "name": "binArrayBitmapExtension",
           "writable": true,
           "optional": true
         },
         {
-          "name": "user_token_x",
+          "name": "userTokenX",
           "writable": true
         },
         {
-          "name": "user_token_y",
+          "name": "userTokenY",
           "writable": true
         },
         {
-          "name": "reserve_x",
+          "name": "reserveX",
           "writable": true
         },
         {
-          "name": "reserve_y",
+          "name": "reserveY",
           "writable": true
         },
         {
-          "name": "token_x_mint"
+          "name": "tokenXMint"
         },
         {
-          "name": "token_y_mint"
+          "name": "tokenYMint"
         },
         {
           "name": "sender",
           "signer": true
         },
         {
-          "name": "token_x_program"
+          "name": "tokenXProgram"
         },
         {
-          "name": "token_y_program"
+          "name": "tokenYProgram"
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -3141,25 +3147,25 @@
       ],
       "args": [
         {
-          "name": "liquidity_parameter",
+          "name": "liquidityParameter",
           "type": {
             "defined": {
-              "name": "LiquidityParameterByStrategy"
+              "name": "liquidityParameterByStrategy"
             }
           }
         },
         {
-          "name": "remaining_accounts_info",
+          "name": "remainingAccountsInfo",
           "type": {
             "defined": {
-              "name": "RemainingAccountsInfo"
+              "name": "remainingAccountsInfo"
             }
           }
         }
       ]
     },
     {
-      "name": "add_liquidity_one_side_precise2",
+      "name": "addLiquidityOneSidePrecise2",
       "discriminator": [
         33,
         51,
@@ -3176,16 +3182,16 @@
           "writable": true
         },
         {
-          "name": "lb_pair",
+          "name": "lbPair",
           "writable": true
         },
         {
-          "name": "bin_array_bitmap_extension",
+          "name": "binArrayBitmapExtension",
           "writable": true,
           "optional": true
         },
         {
-          "name": "user_token",
+          "name": "userToken",
           "writable": true
         },
         {
@@ -3193,17 +3199,17 @@
           "writable": true
         },
         {
-          "name": "token_mint"
+          "name": "tokenMint"
         },
         {
           "name": "sender",
           "signer": true
         },
         {
-          "name": "token_program"
+          "name": "tokenProgram"
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -3211,25 +3217,25 @@
       ],
       "args": [
         {
-          "name": "liquidity_parameter",
+          "name": "liquidityParameter",
           "type": {
             "defined": {
-              "name": "AddLiquiditySingleSidePreciseParameter2"
+              "name": "addLiquiditySingleSidePreciseParameter2"
             }
           }
         },
         {
-          "name": "remaining_accounts_info",
+          "name": "remainingAccountsInfo",
           "type": {
             "defined": {
-              "name": "RemainingAccountsInfo"
+              "name": "remainingAccountsInfo"
             }
           }
         }
       ]
     },
     {
-      "name": "remove_liquidity2",
+      "name": "removeLiquidity2",
       "discriminator": [
         230,
         215,
@@ -3246,51 +3252,51 @@
           "writable": true
         },
         {
-          "name": "lb_pair",
+          "name": "lbPair",
           "writable": true
         },
         {
-          "name": "bin_array_bitmap_extension",
+          "name": "binArrayBitmapExtension",
           "writable": true,
           "optional": true
         },
         {
-          "name": "user_token_x",
+          "name": "userTokenX",
           "writable": true
         },
         {
-          "name": "user_token_y",
+          "name": "userTokenY",
           "writable": true
         },
         {
-          "name": "reserve_x",
+          "name": "reserveX",
           "writable": true
         },
         {
-          "name": "reserve_y",
+          "name": "reserveY",
           "writable": true
         },
         {
-          "name": "token_x_mint"
+          "name": "tokenXMint"
         },
         {
-          "name": "token_y_mint"
+          "name": "tokenYMint"
         },
         {
           "name": "sender",
           "signer": true
         },
         {
-          "name": "token_x_program"
+          "name": "tokenXProgram"
         },
         {
-          "name": "token_y_program"
+          "name": "tokenYProgram"
         },
         {
-          "name": "memo_program"
+          "name": "memoProgram"
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -3298,27 +3304,27 @@
       ],
       "args": [
         {
-          "name": "bin_liquidity_removal",
+          "name": "binLiquidityRemoval",
           "type": {
             "vec": {
               "defined": {
-                "name": "BinLiquidityReduction"
+                "name": "binLiquidityReduction"
               }
             }
           }
         },
         {
-          "name": "remaining_accounts_info",
+          "name": "remainingAccountsInfo",
           "type": {
             "defined": {
-              "name": "RemainingAccountsInfo"
+              "name": "remainingAccountsInfo"
             }
           }
         }
       ]
     },
     {
-      "name": "remove_liquidity_by_range2",
+      "name": "removeLiquidityByRange2",
       "discriminator": [
         204,
         2,
@@ -3335,51 +3341,51 @@
           "writable": true
         },
         {
-          "name": "lb_pair",
+          "name": "lbPair",
           "writable": true
         },
         {
-          "name": "bin_array_bitmap_extension",
+          "name": "binArrayBitmapExtension",
           "writable": true,
           "optional": true
         },
         {
-          "name": "user_token_x",
+          "name": "userTokenX",
           "writable": true
         },
         {
-          "name": "user_token_y",
+          "name": "userTokenY",
           "writable": true
         },
         {
-          "name": "reserve_x",
+          "name": "reserveX",
           "writable": true
         },
         {
-          "name": "reserve_y",
+          "name": "reserveY",
           "writable": true
         },
         {
-          "name": "token_x_mint"
+          "name": "tokenXMint"
         },
         {
-          "name": "token_y_mint"
+          "name": "tokenYMint"
         },
         {
           "name": "sender",
           "signer": true
         },
         {
-          "name": "token_x_program"
+          "name": "tokenXProgram"
         },
         {
-          "name": "token_y_program"
+          "name": "tokenYProgram"
         },
         {
-          "name": "memo_program"
+          "name": "memoProgram"
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -3387,22 +3393,22 @@
       ],
       "args": [
         {
-          "name": "from_bin_id",
+          "name": "fromBinId",
           "type": "i32"
         },
         {
-          "name": "to_bin_id",
+          "name": "toBinId",
           "type": "i32"
         },
         {
-          "name": "bps_to_remove",
+          "name": "bpsToRemove",
           "type": "u16"
         },
         {
-          "name": "remaining_accounts_info",
+          "name": "remainingAccountsInfo",
           "type": {
             "defined": {
-              "name": "RemainingAccountsInfo"
+              "name": "remainingAccountsInfo"
             }
           }
         }
@@ -3422,41 +3428,41 @@
       ],
       "accounts": [
         {
-          "name": "lb_pair",
+          "name": "lbPair",
           "writable": true
         },
         {
-          "name": "bin_array_bitmap_extension",
+          "name": "binArrayBitmapExtension",
           "optional": true
         },
         {
-          "name": "reserve_x",
+          "name": "reserveX",
           "writable": true
         },
         {
-          "name": "reserve_y",
+          "name": "reserveY",
           "writable": true
         },
         {
-          "name": "user_token_in",
+          "name": "userTokenIn",
           "writable": true
         },
         {
-          "name": "user_token_out",
+          "name": "userTokenOut",
           "writable": true
         },
         {
-          "name": "token_x_mint"
+          "name": "tokenXMint"
         },
         {
-          "name": "token_y_mint"
+          "name": "tokenYMint"
         },
         {
           "name": "oracle",
           "writable": true
         },
         {
-          "name": "host_fee_in",
+          "name": "hostFeeIn",
           "writable": true,
           "optional": true
         },
@@ -3465,16 +3471,16 @@
           "signer": true
         },
         {
-          "name": "token_x_program"
+          "name": "tokenXProgram"
         },
         {
-          "name": "token_y_program"
+          "name": "tokenYProgram"
         },
         {
-          "name": "memo_program"
+          "name": "memoProgram"
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -3482,25 +3488,25 @@
       ],
       "args": [
         {
-          "name": "amount_in",
+          "name": "amountIn",
           "type": "u64"
         },
         {
-          "name": "min_amount_out",
+          "name": "minAmountOut",
           "type": "u64"
         },
         {
-          "name": "remaining_accounts_info",
+          "name": "remainingAccountsInfo",
           "type": {
             "defined": {
-              "name": "RemainingAccountsInfo"
+              "name": "remainingAccountsInfo"
             }
           }
         }
       ]
     },
     {
-      "name": "swap_exact_out2",
+      "name": "swapExactOut2",
       "discriminator": [
         43,
         215,
@@ -3513,41 +3519,41 @@
       ],
       "accounts": [
         {
-          "name": "lb_pair",
+          "name": "lbPair",
           "writable": true
         },
         {
-          "name": "bin_array_bitmap_extension",
+          "name": "binArrayBitmapExtension",
           "optional": true
         },
         {
-          "name": "reserve_x",
+          "name": "reserveX",
           "writable": true
         },
         {
-          "name": "reserve_y",
+          "name": "reserveY",
           "writable": true
         },
         {
-          "name": "user_token_in",
+          "name": "userTokenIn",
           "writable": true
         },
         {
-          "name": "user_token_out",
+          "name": "userTokenOut",
           "writable": true
         },
         {
-          "name": "token_x_mint"
+          "name": "tokenXMint"
         },
         {
-          "name": "token_y_mint"
+          "name": "tokenYMint"
         },
         {
           "name": "oracle",
           "writable": true
         },
         {
-          "name": "host_fee_in",
+          "name": "hostFeeIn",
           "writable": true,
           "optional": true
         },
@@ -3556,16 +3562,16 @@
           "signer": true
         },
         {
-          "name": "token_x_program"
+          "name": "tokenXProgram"
         },
         {
-          "name": "token_y_program"
+          "name": "tokenYProgram"
         },
         {
-          "name": "memo_program"
+          "name": "memoProgram"
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -3573,25 +3579,25 @@
       ],
       "args": [
         {
-          "name": "max_in_amount",
+          "name": "maxInAmount",
           "type": "u64"
         },
         {
-          "name": "out_amount",
+          "name": "outAmount",
           "type": "u64"
         },
         {
-          "name": "remaining_accounts_info",
+          "name": "remainingAccountsInfo",
           "type": {
             "defined": {
-              "name": "RemainingAccountsInfo"
+              "name": "remainingAccountsInfo"
             }
           }
         }
       ]
     },
     {
-      "name": "swap_with_price_impact2",
+      "name": "swapWithPriceImpact2",
       "discriminator": [
         74,
         98,
@@ -3604,41 +3610,41 @@
       ],
       "accounts": [
         {
-          "name": "lb_pair",
+          "name": "lbPair",
           "writable": true
         },
         {
-          "name": "bin_array_bitmap_extension",
+          "name": "binArrayBitmapExtension",
           "optional": true
         },
         {
-          "name": "reserve_x",
+          "name": "reserveX",
           "writable": true
         },
         {
-          "name": "reserve_y",
+          "name": "reserveY",
           "writable": true
         },
         {
-          "name": "user_token_in",
+          "name": "userTokenIn",
           "writable": true
         },
         {
-          "name": "user_token_out",
+          "name": "userTokenOut",
           "writable": true
         },
         {
-          "name": "token_x_mint"
+          "name": "tokenXMint"
         },
         {
-          "name": "token_y_mint"
+          "name": "tokenYMint"
         },
         {
           "name": "oracle",
           "writable": true
         },
         {
-          "name": "host_fee_in",
+          "name": "hostFeeIn",
           "writable": true,
           "optional": true
         },
@@ -3647,16 +3653,16 @@
           "signer": true
         },
         {
-          "name": "token_x_program"
+          "name": "tokenXProgram"
         },
         {
-          "name": "token_y_program"
+          "name": "tokenYProgram"
         },
         {
-          "name": "memo_program"
+          "name": "memoProgram"
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -3664,31 +3670,31 @@
       ],
       "args": [
         {
-          "name": "amount_in",
+          "name": "amountIn",
           "type": "u64"
         },
         {
-          "name": "active_id",
+          "name": "activeId",
           "type": {
             "option": "i32"
           }
         },
         {
-          "name": "max_price_impact_bps",
+          "name": "maxPriceImpactBps",
           "type": "u16"
         },
         {
-          "name": "remaining_accounts_info",
+          "name": "remainingAccountsInfo",
           "type": {
             "defined": {
-              "name": "RemainingAccountsInfo"
+              "name": "remainingAccountsInfo"
             }
           }
         }
       ]
     },
     {
-      "name": "close_position2",
+      "name": "closePosition2",
       "discriminator": [
         174,
         90,
@@ -3709,11 +3715,11 @@
           "signer": true
         },
         {
-          "name": "rent_receiver",
+          "name": "rentReceiver",
           "writable": true
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -3722,7 +3728,7 @@
       "args": []
     },
     {
-      "name": "update_fees_and_reward2",
+      "name": "updateFeesAndReward2",
       "discriminator": [
         32,
         142,
@@ -3739,7 +3745,7 @@
           "writable": true
         },
         {
-          "name": "lb_pair",
+          "name": "lbPair",
           "writable": true
         },
         {
@@ -3749,17 +3755,17 @@
       ],
       "args": [
         {
-          "name": "min_bin_id",
+          "name": "minBinId",
           "type": "i32"
         },
         {
-          "name": "max_bin_id",
+          "name": "maxBinId",
           "type": "i32"
         }
       ]
     },
     {
-      "name": "close_position_if_empty",
+      "name": "closePositionIfEmpty",
       "discriminator": [
         59,
         124,
@@ -3780,11 +3786,11 @@
           "signer": true
         },
         {
-          "name": "rent_receiver",
+          "name": "rentReceiver",
           "writable": true
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -3795,7 +3801,7 @@
   ],
   "accounts": [
     {
-      "name": "BinArrayBitmapExtension",
+      "name": "binArrayBitmapExtension",
       "discriminator": [
         80,
         111,
@@ -3808,7 +3814,7 @@
       ]
     },
     {
-      "name": "ClaimFeeOperator",
+      "name": "claimFeeOperator",
       "discriminator": [
         166,
         48,
@@ -3821,7 +3827,7 @@
       ]
     },
     {
-      "name": "LbPair",
+      "name": "lbPair",
       "discriminator": [
         33,
         11,
@@ -3834,7 +3840,7 @@
       ]
     },
     {
-      "name": "Oracle",
+      "name": "oracle",
       "discriminator": [
         139,
         194,
@@ -3847,7 +3853,7 @@
       ]
     },
     {
-      "name": "PresetParameter2",
+      "name": "presetParameter2",
       "discriminator": [
         171,
         236,
@@ -3860,7 +3866,7 @@
       ]
     },
     {
-      "name": "PresetParameter",
+      "name": "presetParameter",
       "discriminator": [
         242,
         62,
@@ -3873,7 +3879,7 @@
       ]
     },
     {
-      "name": "TokenBadge",
+      "name": "tokenBadge",
       "discriminator": [
         116,
         219,
@@ -3888,7 +3894,7 @@
   ],
   "events": [
     {
-      "name": "CompositionFee",
+      "name": "compositionFee",
       "discriminator": [
         128,
         151,
@@ -3901,7 +3907,7 @@
       ]
     },
     {
-      "name": "AddLiquidity",
+      "name": "addLiquidity",
       "discriminator": [
         31,
         94,
@@ -3914,7 +3920,7 @@
       ]
     },
     {
-      "name": "RemoveLiquidity",
+      "name": "removeLiquidity",
       "discriminator": [
         116,
         244,
@@ -3927,7 +3933,7 @@
       ]
     },
     {
-      "name": "Swap",
+      "name": "swap",
       "discriminator": [
         81,
         108,
@@ -3940,7 +3946,7 @@
       ]
     },
     {
-      "name": "ClaimReward",
+      "name": "claimReward",
       "discriminator": [
         148,
         116,
@@ -3953,7 +3959,7 @@
       ]
     },
     {
-      "name": "FundReward",
+      "name": "fundReward",
       "discriminator": [
         246,
         228,
@@ -3966,7 +3972,7 @@
       ]
     },
     {
-      "name": "InitializeReward",
+      "name": "initializeReward",
       "discriminator": [
         211,
         153,
@@ -3979,7 +3985,7 @@
       ]
     },
     {
-      "name": "UpdateRewardDuration",
+      "name": "updateRewardDuration",
       "discriminator": [
         223,
         245,
@@ -3992,7 +3998,7 @@
       ]
     },
     {
-      "name": "UpdateRewardFunder",
+      "name": "updateRewardFunder",
       "discriminator": [
         224,
         178,
@@ -4005,7 +4011,7 @@
       ]
     },
     {
-      "name": "PositionClose",
+      "name": "positionClose",
       "discriminator": [
         255,
         196,
@@ -4018,7 +4024,7 @@
       ]
     },
     {
-      "name": "ClaimFee",
+      "name": "claimFee",
       "discriminator": [
         75,
         122,
@@ -4031,7 +4037,7 @@
       ]
     },
     {
-      "name": "LbPairCreate",
+      "name": "lbPairCreate",
       "discriminator": [
         185,
         74,
@@ -4044,7 +4050,7 @@
       ]
     },
     {
-      "name": "PositionCreate",
+      "name": "positionCreate",
       "discriminator": [
         144,
         142,
@@ -4057,7 +4063,7 @@
       ]
     },
     {
-      "name": "IncreasePositionLength",
+      "name": "increasePositionLength",
       "discriminator": [
         157,
         239,
@@ -4070,7 +4076,7 @@
       ]
     },
     {
-      "name": "DecreasePositionLength",
+      "name": "decreasePositionLength",
       "discriminator": [
         52,
         118,
@@ -4083,7 +4089,7 @@
       ]
     },
     {
-      "name": "FeeParameterUpdate",
+      "name": "feeParameterUpdate",
       "discriminator": [
         48,
         76,
@@ -4096,7 +4102,7 @@
       ]
     },
     {
-      "name": "DynamicFeeParameterUpdate",
+      "name": "dynamicFeeParameterUpdate",
       "discriminator": [
         88,
         88,
@@ -4109,7 +4115,7 @@
       ]
     },
     {
-      "name": "IncreaseObservation",
+      "name": "increaseObservation",
       "discriminator": [
         99,
         249,
@@ -4122,7 +4128,7 @@
       ]
     },
     {
-      "name": "WithdrawIneligibleReward",
+      "name": "withdrawIneligibleReward",
       "discriminator": [
         231,
         189,
@@ -4135,7 +4141,7 @@
       ]
     },
     {
-      "name": "UpdatePositionOperator",
+      "name": "updatePositionOperator",
       "discriminator": [
         39,
         115,
@@ -4148,7 +4154,7 @@
       ]
     },
     {
-      "name": "UpdatePositionLockReleasePoint",
+      "name": "updatePositionLockReleasePoint",
       "discriminator": [
         133,
         214,
@@ -4161,7 +4167,7 @@
       ]
     },
     {
-      "name": "GoToABin",
+      "name": "goToABin",
       "discriminator": [
         59,
         138,
@@ -4177,423 +4183,423 @@
   "errors": [
     {
       "code": 6000,
-      "name": "InvalidStartBinIndex",
+      "name": "invalidStartBinIndex",
       "msg": "Invalid start bin index"
     },
     {
       "code": 6001,
-      "name": "InvalidBinId",
+      "name": "invalidBinId",
       "msg": "Invalid bin id"
     },
     {
       "code": 6002,
-      "name": "InvalidInput",
+      "name": "invalidInput",
       "msg": "Invalid input data"
     },
     {
       "code": 6003,
-      "name": "ExceededAmountSlippageTolerance",
+      "name": "exceededAmountSlippageTolerance",
       "msg": "Exceeded amount slippage tolerance"
     },
     {
       "code": 6004,
-      "name": "ExceededBinSlippageTolerance",
+      "name": "exceededBinSlippageTolerance",
       "msg": "Exceeded bin slippage tolerance"
     },
     {
       "code": 6005,
-      "name": "CompositionFactorFlawed",
+      "name": "compositionFactorFlawed",
       "msg": "Composition factor flawed"
     },
     {
       "code": 6006,
-      "name": "NonPresetBinStep",
+      "name": "nonPresetBinStep",
       "msg": "Non preset bin step"
     },
     {
       "code": 6007,
-      "name": "ZeroLiquidity",
+      "name": "zeroLiquidity",
       "msg": "Zero liquidity"
     },
     {
       "code": 6008,
-      "name": "InvalidPosition",
+      "name": "invalidPosition",
       "msg": "Invalid position"
     },
     {
       "code": 6009,
-      "name": "BinArrayNotFound",
+      "name": "binArrayNotFound",
       "msg": "Bin array not found"
     },
     {
       "code": 6010,
-      "name": "InvalidTokenMint",
+      "name": "invalidTokenMint",
       "msg": "Invalid token mint"
     },
     {
       "code": 6011,
-      "name": "InvalidAccountForSingleDeposit",
+      "name": "invalidAccountForSingleDeposit",
       "msg": "Invalid account for single deposit"
     },
     {
       "code": 6012,
-      "name": "PairInsufficientLiquidity",
+      "name": "pairInsufficientLiquidity",
       "msg": "Pair insufficient liquidity"
     },
     {
       "code": 6013,
-      "name": "InvalidFeeOwner",
+      "name": "invalidFeeOwner",
       "msg": "Invalid fee owner"
     },
     {
       "code": 6014,
-      "name": "InvalidFeeWithdrawAmount",
+      "name": "invalidFeeWithdrawAmount",
       "msg": "Invalid fee withdraw amount"
     },
     {
       "code": 6015,
-      "name": "InvalidAdmin",
+      "name": "invalidAdmin",
       "msg": "Invalid admin"
     },
     {
       "code": 6016,
-      "name": "IdenticalFeeOwner",
+      "name": "identicalFeeOwner",
       "msg": "Identical fee owner"
     },
     {
       "code": 6017,
-      "name": "InvalidBps",
+      "name": "invalidBps",
       "msg": "Invalid basis point"
     },
     {
       "code": 6018,
-      "name": "MathOverflow",
+      "name": "mathOverflow",
       "msg": "Math operation overflow"
     },
     {
       "code": 6019,
-      "name": "TypeCastFailed",
+      "name": "typeCastFailed",
       "msg": "Type cast error"
     },
     {
       "code": 6020,
-      "name": "InvalidRewardIndex",
+      "name": "invalidRewardIndex",
       "msg": "Invalid reward index"
     },
     {
       "code": 6021,
-      "name": "InvalidRewardDuration",
+      "name": "invalidRewardDuration",
       "msg": "Invalid reward duration"
     },
     {
       "code": 6022,
-      "name": "RewardInitialized",
+      "name": "rewardInitialized",
       "msg": "Reward already initialized"
     },
     {
       "code": 6023,
-      "name": "RewardUninitialized",
+      "name": "rewardUninitialized",
       "msg": "Reward not initialized"
     },
     {
       "code": 6024,
-      "name": "IdenticalFunder",
+      "name": "identicalFunder",
       "msg": "Identical funder"
     },
     {
       "code": 6025,
-      "name": "RewardCampaignInProgress",
+      "name": "rewardCampaignInProgress",
       "msg": "Reward campaign in progress"
     },
     {
       "code": 6026,
-      "name": "IdenticalRewardDuration",
+      "name": "identicalRewardDuration",
       "msg": "Reward duration is the same"
     },
     {
       "code": 6027,
-      "name": "InvalidBinArray",
+      "name": "invalidBinArray",
       "msg": "Invalid bin array"
     },
     {
       "code": 6028,
-      "name": "NonContinuousBinArrays",
+      "name": "nonContinuousBinArrays",
       "msg": "Bin arrays must be continuous"
     },
     {
       "code": 6029,
-      "name": "InvalidRewardVault",
+      "name": "invalidRewardVault",
       "msg": "Invalid reward vault"
     },
     {
       "code": 6030,
-      "name": "NonEmptyPosition",
+      "name": "nonEmptyPosition",
       "msg": "Position is not empty"
     },
     {
       "code": 6031,
-      "name": "UnauthorizedAccess",
+      "name": "unauthorizedAccess",
       "msg": "Unauthorized access"
     },
     {
       "code": 6032,
-      "name": "InvalidFeeParameter",
+      "name": "invalidFeeParameter",
       "msg": "Invalid fee parameter"
     },
     {
       "code": 6033,
-      "name": "MissingOracle",
+      "name": "missingOracle",
       "msg": "Missing oracle account"
     },
     {
       "code": 6034,
-      "name": "InsufficientSample",
+      "name": "insufficientSample",
       "msg": "Insufficient observation sample"
     },
     {
       "code": 6035,
-      "name": "InvalidLookupTimestamp",
+      "name": "invalidLookupTimestamp",
       "msg": "Invalid lookup timestamp"
     },
     {
       "code": 6036,
-      "name": "BitmapExtensionAccountIsNotProvided",
+      "name": "bitmapExtensionAccountIsNotProvided",
       "msg": "Bitmap extension account is not provided"
     },
     {
       "code": 6037,
-      "name": "CannotFindNonZeroLiquidityBinArrayId",
+      "name": "cannotFindNonZeroLiquidityBinArrayId",
       "msg": "Cannot find non-zero liquidity binArrayId"
     },
     {
       "code": 6038,
-      "name": "BinIdOutOfBound",
+      "name": "binIdOutOfBound",
       "msg": "Bin id out of bound"
     },
     {
       "code": 6039,
-      "name": "InsufficientOutAmount",
+      "name": "insufficientOutAmount",
       "msg": "Insufficient amount in for minimum out"
     },
     {
       "code": 6040,
-      "name": "InvalidPositionWidth",
+      "name": "invalidPositionWidth",
       "msg": "Invalid position width"
     },
     {
       "code": 6041,
-      "name": "ExcessiveFeeUpdate",
+      "name": "excessiveFeeUpdate",
       "msg": "Excessive fee update"
     },
     {
       "code": 6042,
-      "name": "PoolDisabled",
+      "name": "poolDisabled",
       "msg": "Pool disabled"
     },
     {
       "code": 6043,
-      "name": "InvalidPoolType",
+      "name": "invalidPoolType",
       "msg": "Invalid pool type"
     },
     {
       "code": 6044,
-      "name": "ExceedMaxWhitelist",
+      "name": "exceedMaxWhitelist",
       "msg": "Whitelist for wallet is full"
     },
     {
       "code": 6045,
-      "name": "InvalidIndex",
+      "name": "invalidIndex",
       "msg": "Invalid index"
     },
     {
       "code": 6046,
-      "name": "RewardNotEnded",
+      "name": "rewardNotEnded",
       "msg": "Reward not ended"
     },
     {
       "code": 6047,
-      "name": "MustWithdrawnIneligibleReward",
+      "name": "mustWithdrawnIneligibleReward",
       "msg": "Must withdraw ineligible reward"
     },
     {
       "code": 6048,
-      "name": "UnauthorizedAddress",
+      "name": "unauthorizedAddress",
       "msg": "Unauthorized address"
     },
     {
       "code": 6049,
-      "name": "OperatorsAreTheSame",
+      "name": "operatorsAreTheSame",
       "msg": "Cannot update because operators are the same"
     },
     {
       "code": 6050,
-      "name": "WithdrawToWrongTokenAccount",
+      "name": "withdrawToWrongTokenAccount",
       "msg": "Withdraw to wrong token account"
     },
     {
       "code": 6051,
-      "name": "WrongRentReceiver",
+      "name": "wrongRentReceiver",
       "msg": "Wrong rent receiver"
     },
     {
       "code": 6052,
-      "name": "AlreadyPassActivationPoint",
+      "name": "alreadyPassActivationPoint",
       "msg": "Already activated"
     },
     {
       "code": 6053,
-      "name": "ExceedMaxSwappedAmount",
+      "name": "exceedMaxSwappedAmount",
       "msg": "Swapped amount is exceeded max swapped amount"
     },
     {
       "code": 6054,
-      "name": "InvalidStrategyParameters",
+      "name": "invalidStrategyParameters",
       "msg": "Invalid strategy parameters"
     },
     {
       "code": 6055,
-      "name": "LiquidityLocked",
+      "name": "liquidityLocked",
       "msg": "Liquidity locked"
     },
     {
       "code": 6056,
-      "name": "BinRangeIsNotEmpty",
+      "name": "binRangeIsNotEmpty",
       "msg": "Bin range is not empty"
     },
     {
       "code": 6057,
-      "name": "NotExactAmountOut",
+      "name": "notExactAmountOut",
       "msg": "Amount out is not matched with exact amount out"
     },
     {
       "code": 6058,
-      "name": "InvalidActivationType",
+      "name": "invalidActivationType",
       "msg": "Invalid activation type"
     },
     {
       "code": 6059,
-      "name": "InvalidActivationDuration",
+      "name": "invalidActivationDuration",
       "msg": "Invalid activation duration"
     },
     {
       "code": 6060,
-      "name": "MissingTokenAmountAsTokenLaunchProof",
+      "name": "missingTokenAmountAsTokenLaunchProof",
       "msg": "Missing token amount as token launch owner proof"
     },
     {
       "code": 6061,
-      "name": "InvalidQuoteToken",
+      "name": "invalidQuoteToken",
       "msg": "Quote token must be SOL or USDC"
     },
     {
       "code": 6062,
-      "name": "InvalidBinStep",
+      "name": "invalidBinStep",
       "msg": "Invalid bin step"
     },
     {
       "code": 6063,
-      "name": "InvalidBaseFee",
+      "name": "invalidBaseFee",
       "msg": "Invalid base fee"
     },
     {
       "code": 6064,
-      "name": "InvalidPreActivationDuration",
+      "name": "invalidPreActivationDuration",
       "msg": "Invalid pre-activation duration"
     },
     {
       "code": 6065,
-      "name": "AlreadyPassPreActivationSwapPoint",
+      "name": "alreadyPassPreActivationSwapPoint",
       "msg": "Already pass pre-activation swap point"
     },
     {
       "code": 6066,
-      "name": "InvalidStatus",
+      "name": "invalidStatus",
       "msg": "Invalid status"
     },
     {
       "code": 6067,
-      "name": "ExceededMaxOracleLength",
+      "name": "exceededMaxOracleLength",
       "msg": "Exceed max oracle length"
     },
     {
       "code": 6068,
-      "name": "InvalidMinimumLiquidity",
+      "name": "invalidMinimumLiquidity",
       "msg": "Invalid minimum liquidity"
     },
     {
       "code": 6069,
-      "name": "NotSupportMint",
+      "name": "notSupportMint",
       "msg": "Not support token_2022 mint extension"
     },
     {
       "code": 6070,
-      "name": "UnsupportedMintExtension",
+      "name": "unsupportedMintExtension",
       "msg": "Unsupported mint extension"
     },
     {
       "code": 6071,
-      "name": "UnsupportNativeMintToken2022",
+      "name": "unsupportNativeMintToken2022",
       "msg": "Unsupported native mint token2022"
     },
     {
       "code": 6072,
-      "name": "UnmatchTokenMint",
+      "name": "unmatchTokenMint",
       "msg": "Unmatch token mint"
     },
     {
       "code": 6073,
-      "name": "UnsupportedTokenMint",
+      "name": "unsupportedTokenMint",
       "msg": "Unsupported token mint"
     },
     {
       "code": 6074,
-      "name": "InsufficientRemainingAccounts",
+      "name": "insufficientRemainingAccounts",
       "msg": "Insufficient remaining accounts"
     },
     {
       "code": 6075,
-      "name": "InvalidRemainingAccountSlice",
+      "name": "invalidRemainingAccountSlice",
       "msg": "Invalid remaining account slice"
     },
     {
       "code": 6076,
-      "name": "DuplicatedRemainingAccountTypes",
+      "name": "duplicatedRemainingAccountTypes",
       "msg": "Duplicated remaining account types"
     },
     {
       "code": 6077,
-      "name": "MissingRemainingAccountForTransferHook",
+      "name": "missingRemainingAccountForTransferHook",
       "msg": "Missing remaining account for transfer hook"
     },
     {
       "code": 6078,
-      "name": "NoTransferHookProgram",
+      "name": "noTransferHookProgram",
       "msg": "Remaining account was passed for transfer hook but there's no hook program"
     },
     {
       "code": 6079,
-      "name": "ZeroFundedAmount",
+      "name": "zeroFundedAmount",
       "msg": "Zero funded amount"
     },
     {
       "code": 6080,
-      "name": "InvalidSide",
+      "name": "invalidSide",
       "msg": "Invalid side"
     },
     {
       "code": 6081,
-      "name": "InvalidResizeLength",
+      "name": "invalidResizeLength",
       "msg": "Invalid resize length"
     },
     {
       "code": 6082,
-      "name": "NotSupportAtTheMoment",
+      "name": "notSupportAtTheMoment",
       "msg": "Not support at the moment"
     }
   ],
   "types": [
     {
-      "name": "InitPresetParameters2Ix",
+      "name": "initPresetParameters2Ix",
       "type": {
         "kind": "struct",
         "fields": [
@@ -4602,63 +4608,63 @@
             "type": "u16"
           },
           {
-            "name": "bin_step",
+            "name": "binStep",
             "docs": [
               "Bin step. Represent the price increment / decrement."
             ],
             "type": "u16"
           },
           {
-            "name": "base_factor",
+            "name": "baseFactor",
             "docs": [
               "Used for base fee calculation. base_fee_rate = base_factor * bin_step * 10 * 10^base_fee_power_factor"
             ],
             "type": "u16"
           },
           {
-            "name": "filter_period",
+            "name": "filterPeriod",
             "docs": [
               "Filter period determine high frequency trading time window."
             ],
             "type": "u16"
           },
           {
-            "name": "decay_period",
+            "name": "decayPeriod",
             "docs": [
               "Decay period determine when the volatile fee start decay / decrease."
             ],
             "type": "u16"
           },
           {
-            "name": "reduction_factor",
+            "name": "reductionFactor",
             "docs": [
               "Reduction factor controls the volatile fee rate decrement rate."
             ],
             "type": "u16"
           },
           {
-            "name": "variable_fee_control",
+            "name": "variableFeeControl",
             "docs": [
               "Used to scale the variable fee component depending on the dynamic of the market"
             ],
             "type": "u32"
           },
           {
-            "name": "max_volatility_accumulator",
+            "name": "maxVolatilityAccumulator",
             "docs": [
               "Maximum number of bin crossed can be accumulated. Used to cap volatile fee rate."
             ],
             "type": "u32"
           },
           {
-            "name": "protocol_share",
+            "name": "protocolShare",
             "docs": [
               "Portion of swap fees retained by the protocol by controlling protocol_share parameter. protocol_swap_fee = protocol_share * total_swap_fee"
             ],
             "type": "u16"
           },
           {
-            "name": "base_fee_power_factor",
+            "name": "baseFeePowerFactor",
             "docs": [
               "Base fee power factor"
             ],
@@ -4668,61 +4674,61 @@
       }
     },
     {
-      "name": "InitPresetParametersIx",
+      "name": "initPresetParametersIx",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "bin_step",
+            "name": "binStep",
             "docs": [
               "Bin step. Represent the price increment / decrement."
             ],
             "type": "u16"
           },
           {
-            "name": "base_factor",
+            "name": "baseFactor",
             "docs": [
               "Used for base fee calculation. base_fee_rate = base_factor * bin_step * 10 * 10^base_fee_power_factor"
             ],
             "type": "u16"
           },
           {
-            "name": "filter_period",
+            "name": "filterPeriod",
             "docs": [
               "Filter period determine high frequency trading time window."
             ],
             "type": "u16"
           },
           {
-            "name": "decay_period",
+            "name": "decayPeriod",
             "docs": [
               "Decay period determine when the volatile fee start decay / decrease."
             ],
             "type": "u16"
           },
           {
-            "name": "reduction_factor",
+            "name": "reductionFactor",
             "docs": [
               "Reduction factor controls the volatile fee rate decrement rate."
             ],
             "type": "u16"
           },
           {
-            "name": "variable_fee_control",
+            "name": "variableFeeControl",
             "docs": [
               "Used to scale the variable fee component depending on the dynamic of the market"
             ],
             "type": "u32"
           },
           {
-            "name": "max_volatility_accumulator",
+            "name": "maxVolatilityAccumulator",
             "docs": [
               "Maximum number of bin crossed can be accumulated. Used to cap volatile fee rate."
             ],
             "type": "u32"
           },
           {
-            "name": "protocol_share",
+            "name": "protocolShare",
             "docs": [
               "Portion of swap fees retained by the protocol by controlling protocol_share parameter. protocol_swap_fee = protocol_share * total_swap_fee"
             ],
@@ -4732,26 +4738,26 @@
       }
     },
     {
-      "name": "BaseFeeParameter",
+      "name": "baseFeeParameter",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "protocol_share",
+            "name": "protocolShare",
             "docs": [
               "Portion of swap fees retained by the protocol by controlling protocol_share parameter. protocol_swap_fee = protocol_share * total_swap_fee"
             ],
             "type": "u16"
           },
           {
-            "name": "base_factor",
+            "name": "baseFactor",
             "docs": [
               "Base factor for base fee rate"
             ],
             "type": "u16"
           },
           {
-            "name": "base_fee_power_factor",
+            "name": "baseFeePowerFactor",
             "docs": [
               "Base fee power factor"
             ],
@@ -4761,40 +4767,40 @@
       }
     },
     {
-      "name": "DynamicFeeParameter",
+      "name": "dynamicFeeParameter",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "filter_period",
+            "name": "filterPeriod",
             "docs": [
               "Filter period determine high frequency trading time window."
             ],
             "type": "u16"
           },
           {
-            "name": "decay_period",
+            "name": "decayPeriod",
             "docs": [
               "Decay period determine when the volatile fee start decay / decrease."
             ],
             "type": "u16"
           },
           {
-            "name": "reduction_factor",
+            "name": "reductionFactor",
             "docs": [
               "Reduction factor controls the volatile fee rate decrement rate."
             ],
             "type": "u16"
           },
           {
-            "name": "variable_fee_control",
+            "name": "variableFeeControl",
             "docs": [
               "Used to scale the variable fee component depending on the dynamic of the market"
             ],
             "type": "u32"
           },
           {
-            "name": "max_volatility_accumulator",
+            "name": "maxVolatilityAccumulator",
             "docs": [
               "Maximum number of bin crossed can be accumulated. Used to cap volatile fee rate."
             ],
@@ -4804,7 +4810,7 @@
       }
     },
     {
-      "name": "LiquidityParameterByStrategyOneSide",
+      "name": "liquidityParameterByStrategyOneSide",
       "type": {
         "kind": "struct",
         "fields": [
@@ -4816,27 +4822,27 @@
             "type": "u64"
           },
           {
-            "name": "active_id",
+            "name": "activeId",
             "docs": [
               "Active bin that integrator observe off-chain"
             ],
             "type": "i32"
           },
           {
-            "name": "max_active_bin_slippage",
+            "name": "maxActiveBinSlippage",
             "docs": [
               "max active bin slippage allowed"
             ],
             "type": "i32"
           },
           {
-            "name": "strategy_parameters",
+            "name": "strategyParameters",
             "docs": [
               "strategy parameters"
             ],
             "type": {
               "defined": {
-                "name": "StrategyParameters"
+                "name": "strategyParameters"
               }
             }
           }
@@ -4844,46 +4850,46 @@
       }
     },
     {
-      "name": "LiquidityParameterByStrategy",
+      "name": "liquidityParameterByStrategy",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "amount_x",
+            "name": "amountX",
             "docs": [
               "Amount of X token to deposit"
             ],
             "type": "u64"
           },
           {
-            "name": "amount_y",
+            "name": "amountY",
             "docs": [
               "Amount of Y token to deposit"
             ],
             "type": "u64"
           },
           {
-            "name": "active_id",
+            "name": "activeId",
             "docs": [
               "Active bin that integrator observe off-chain"
             ],
             "type": "i32"
           },
           {
-            "name": "max_active_bin_slippage",
+            "name": "maxActiveBinSlippage",
             "docs": [
               "max active bin slippage allowed"
             ],
             "type": "i32"
           },
           {
-            "name": "strategy_parameters",
+            "name": "strategyParameters",
             "docs": [
               "strategy parameters"
             ],
             "type": {
               "defined": {
-                "name": "StrategyParameters"
+                "name": "strategyParameters"
               }
             }
           }
@@ -4891,32 +4897,32 @@
       }
     },
     {
-      "name": "StrategyParameters",
+      "name": "strategyParameters",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "min_bin_id",
+            "name": "minBinId",
             "docs": [
               "min bin id"
             ],
             "type": "i32"
           },
           {
-            "name": "max_bin_id",
+            "name": "maxBinId",
             "docs": [
               "max bin id"
             ],
             "type": "i32"
           },
           {
-            "name": "strategy_type",
+            "name": "strategyType",
             "docs": [
               "strategy type"
             ],
             "type": {
               "defined": {
-                "name": "StrategyType"
+                "name": "strategyType"
               }
             }
           },
@@ -4936,7 +4942,7 @@
       }
     },
     {
-      "name": "LiquidityOneSideParameter",
+      "name": "liquidityOneSideParameter",
       "type": {
         "kind": "struct",
         "fields": [
@@ -4948,28 +4954,28 @@
             "type": "u64"
           },
           {
-            "name": "active_id",
+            "name": "activeId",
             "docs": [
               "Active bin that integrator observe off-chain"
             ],
             "type": "i32"
           },
           {
-            "name": "max_active_bin_slippage",
+            "name": "maxActiveBinSlippage",
             "docs": [
               "max active bin slippage allowed"
             ],
             "type": "i32"
           },
           {
-            "name": "bin_liquidity_dist",
+            "name": "binLiquidityDist",
             "docs": [
               "Liquidity distribution to each bins"
             ],
             "type": {
               "vec": {
                 "defined": {
-                  "name": "BinLiquidityDistributionByWeight"
+                  "name": "binLiquidityDistributionByWeight"
                 }
               }
             }
@@ -4978,12 +4984,12 @@
       }
     },
     {
-      "name": "BinLiquidityDistributionByWeight",
+      "name": "binLiquidityDistributionByWeight",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "bin_id",
+            "name": "binId",
             "docs": [
               "Define the bin ID wish to deposit to."
             ],
@@ -5000,47 +5006,47 @@
       }
     },
     {
-      "name": "LiquidityParameterByWeight",
+      "name": "liquidityParameterByWeight",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "amount_x",
+            "name": "amountX",
             "docs": [
               "Amount of X token to deposit"
             ],
             "type": "u64"
           },
           {
-            "name": "amount_y",
+            "name": "amountY",
             "docs": [
               "Amount of Y token to deposit"
             ],
             "type": "u64"
           },
           {
-            "name": "active_id",
+            "name": "activeId",
             "docs": [
               "Active bin that integrator observe off-chain"
             ],
             "type": "i32"
           },
           {
-            "name": "max_active_bin_slippage",
+            "name": "maxActiveBinSlippage",
             "docs": [
               "max active bin slippage allowed"
             ],
             "type": "i32"
           },
           {
-            "name": "bin_liquidity_dist",
+            "name": "binLiquidityDist",
             "docs": [
               "Liquidity distribution to each bins"
             ],
             "type": {
               "vec": {
                 "defined": {
-                  "name": "BinLiquidityDistributionByWeight"
+                  "name": "binLiquidityDistributionByWeight"
                 }
               }
             }
@@ -5049,7 +5055,7 @@
       }
     },
     {
-      "name": "AddLiquiditySingleSidePreciseParameter",
+      "name": "addLiquiditySingleSidePreciseParameter",
       "type": {
         "kind": "struct",
         "fields": [
@@ -5058,25 +5064,25 @@
             "type": {
               "vec": {
                 "defined": {
-                  "name": "CompressedBinDepositAmount"
+                  "name": "compressedBinDepositAmount"
                 }
               }
             }
           },
           {
-            "name": "decompress_multiplier",
+            "name": "decompressMultiplier",
             "type": "u64"
           }
         ]
       }
     },
     {
-      "name": "CompressedBinDepositAmount",
+      "name": "compressedBinDepositAmount",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "bin_id",
+            "name": "binId",
             "type": "i32"
           },
           {
@@ -5087,26 +5093,26 @@
       }
     },
     {
-      "name": "BinLiquidityDistribution",
+      "name": "binLiquidityDistribution",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "bin_id",
+            "name": "binId",
             "docs": [
               "Define the bin ID wish to deposit to."
             ],
             "type": "i32"
           },
           {
-            "name": "distribution_x",
+            "name": "distributionX",
             "docs": [
               "DistributionX (or distributionY) is the percentages of amountX (or amountY) you want to add to each bin."
             ],
             "type": "u16"
           },
           {
-            "name": "distribution_y",
+            "name": "distributionY",
             "docs": [
               "DistributionX (or distributionY) is the percentages of amountX (or amountY) you want to add to each bin."
             ],
@@ -5116,33 +5122,33 @@
       }
     },
     {
-      "name": "LiquidityParameter",
+      "name": "liquidityParameter",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "amount_x",
+            "name": "amountX",
             "docs": [
               "Amount of X token to deposit"
             ],
             "type": "u64"
           },
           {
-            "name": "amount_y",
+            "name": "amountY",
             "docs": [
               "Amount of Y token to deposit"
             ],
             "type": "u64"
           },
           {
-            "name": "bin_liquidity_dist",
+            "name": "binLiquidityDist",
             "docs": [
               "Liquidity distribution to each bins"
             ],
             "type": {
               "vec": {
                 "defined": {
-                  "name": "BinLiquidityDistribution"
+                  "name": "binLiquidityDistribution"
                 }
               }
             }
@@ -5151,47 +5157,47 @@
       }
     },
     {
-      "name": "CustomizableParams",
+      "name": "customizableParams",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "active_id",
+            "name": "activeId",
             "docs": [
               "Pool price"
             ],
             "type": "i32"
           },
           {
-            "name": "bin_step",
+            "name": "binStep",
             "docs": [
               "Bin step"
             ],
             "type": "u16"
           },
           {
-            "name": "base_factor",
+            "name": "baseFactor",
             "docs": [
               "Base factor"
             ],
             "type": "u16"
           },
           {
-            "name": "activation_type",
+            "name": "activationType",
             "docs": [
               "Activation type. 0 = Slot, 1 = Time. Check ActivationType enum"
             ],
             "type": "u8"
           },
           {
-            "name": "has_alpha_vault",
+            "name": "hasAlphaVault",
             "docs": [
               "Whether the pool has an alpha vault"
             ],
             "type": "bool"
           },
           {
-            "name": "activation_point",
+            "name": "activationPoint",
             "docs": [
               "Decide when does the pool start trade. None = Now"
             ],
@@ -5200,14 +5206,14 @@
             }
           },
           {
-            "name": "creator_pool_on_off_control",
+            "name": "creatorPoolOnOffControl",
             "docs": [
               "Pool creator have permission to enable/disable pool with restricted program validation. Only applicable for customizable permissionless pool."
             ],
             "type": "bool"
           },
           {
-            "name": "base_fee_power_factor",
+            "name": "baseFeePowerFactor",
             "docs": [
               "Base fee power factor"
             ],
@@ -5229,39 +5235,39 @@
       }
     },
     {
-      "name": "InitPermissionPairIx",
+      "name": "initPermissionPairIx",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "active_id",
+            "name": "activeId",
             "type": "i32"
           },
           {
-            "name": "bin_step",
+            "name": "binStep",
             "type": "u16"
           },
           {
-            "name": "base_factor",
+            "name": "baseFactor",
             "type": "u16"
           },
           {
-            "name": "base_fee_power_factor",
+            "name": "baseFeePowerFactor",
             "type": "u8"
           },
           {
-            "name": "activation_type",
+            "name": "activationType",
             "type": "u8"
           },
           {
-            "name": "protocol_share",
+            "name": "protocolShare",
             "type": "u16"
           }
         ]
       }
     },
     {
-      "name": "AddLiquiditySingleSidePreciseParameter2",
+      "name": "addLiquiditySingleSidePreciseParameter2",
       "type": {
         "kind": "struct",
         "fields": [
@@ -5270,29 +5276,29 @@
             "type": {
               "vec": {
                 "defined": {
-                  "name": "CompressedBinDepositAmount"
+                  "name": "compressedBinDepositAmount"
                 }
               }
             }
           },
           {
-            "name": "decompress_multiplier",
+            "name": "decompressMultiplier",
             "type": "u64"
           },
           {
-            "name": "max_amount",
+            "name": "maxAmount",
             "type": "u64"
           }
         ]
       }
     },
     {
-      "name": "CompressedBinDepositAmount2",
+      "name": "compressedBinDepositAmount2",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "bin_id",
+            "name": "binId",
             "type": "i32"
           },
           {
@@ -5303,12 +5309,12 @@
       }
     },
     {
-      "name": "InitializeLbPair2Params",
+      "name": "initializeLbPair2Params",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "active_id",
+            "name": "activeId",
             "docs": [
               "Pool price"
             ],
@@ -5330,35 +5336,35 @@
       }
     },
     {
-      "name": "BinLiquidityReduction",
+      "name": "binLiquidityReduction",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "bin_id",
+            "name": "binId",
             "type": "i32"
           },
           {
-            "name": "bps_to_remove",
+            "name": "bpsToRemove",
             "type": "u16"
           }
         ]
       }
     },
     {
-      "name": "Bin",
+      "name": "bin",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "amount_x",
+            "name": "amountX",
             "docs": [
               "Amount of token X in the bin. This already excluded protocol fees."
             ],
             "type": "u64"
           },
           {
-            "name": "amount_y",
+            "name": "amountY",
             "docs": [
               "Amount of token Y in the bin. This already excluded protocol fees."
             ],
@@ -5372,14 +5378,14 @@
             "type": "u128"
           },
           {
-            "name": "liquidity_supply",
+            "name": "liquiditySupply",
             "docs": [
               "Liquidities of the bin. This is the same as LP mint supply. q-number"
             ],
             "type": "u128"
           },
           {
-            "name": "reward_per_token_stored",
+            "name": "rewardPerTokenStored",
             "docs": [
               "reward_a_per_token_stored"
             ],
@@ -5391,28 +5397,28 @@
             }
           },
           {
-            "name": "fee_amount_x_per_token_stored",
+            "name": "feeAmountXPerTokenStored",
             "docs": [
               "Swap fee amount of token X per liquidity deposited."
             ],
             "type": "u128"
           },
           {
-            "name": "fee_amount_y_per_token_stored",
+            "name": "feeAmountYPerTokenStored",
             "docs": [
               "Swap fee amount of token Y per liquidity deposited."
             ],
             "type": "u128"
           },
           {
-            "name": "amount_x_in",
+            "name": "amountXIn",
             "docs": [
               "Total token X swap into the bin. Only used for tracking purpose."
             ],
             "type": "u128"
           },
           {
-            "name": "amount_y_in",
+            "name": "amountYIn",
             "docs": [
               "Total token Y swap into he bin. Only used for tracking purpose."
             ],
@@ -5422,23 +5428,23 @@
       }
     },
     {
-      "name": "ProtocolFee",
+      "name": "protocolFee",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "amount_x",
+            "name": "amountX",
             "type": "u64"
           },
           {
-            "name": "amount_y",
+            "name": "amountY",
             "type": "u64"
           }
         ]
       }
     },
     {
-      "name": "RewardInfo",
+      "name": "rewardInfo",
       "docs": [
         "Stores the state relevant for tracking liquidity mining rewards"
       ],
@@ -5467,35 +5473,35 @@
             "type": "pubkey"
           },
           {
-            "name": "reward_duration",
+            "name": "rewardDuration",
             "docs": [
               "TODO check whether we need to store it in pool"
             ],
             "type": "u64"
           },
           {
-            "name": "reward_duration_end",
+            "name": "rewardDurationEnd",
             "docs": [
               "TODO check whether we need to store it in pool"
             ],
             "type": "u64"
           },
           {
-            "name": "reward_rate",
+            "name": "rewardRate",
             "docs": [
               "TODO check whether we need to store it in pool"
             ],
             "type": "u128"
           },
           {
-            "name": "last_update_time",
+            "name": "lastUpdateTime",
             "docs": [
               "The last time reward states were updated."
             ],
             "type": "u64"
           },
           {
-            "name": "cumulative_seconds_with_empty_liquidity_reward",
+            "name": "cumulativeSecondsWithEmptyLiquidityReward",
             "docs": [
               "Accumulated seconds where when farm distribute rewards, but the bin is empty. The reward will be accumulated for next reward time window."
             ],
@@ -5505,26 +5511,26 @@
       }
     },
     {
-      "name": "Observation",
+      "name": "observation",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "cumulative_active_bin_id",
+            "name": "cumulativeActiveBinId",
             "docs": [
               "Cumulative active bin ID"
             ],
             "type": "i128"
           },
           {
-            "name": "created_at",
+            "name": "createdAt",
             "docs": [
               "Observation sample created timestamp"
             ],
             "type": "i64"
           },
           {
-            "name": "last_updated_at",
+            "name": "lastUpdatedAt",
             "docs": [
               "Observation sample last updated timestamp"
             ],
@@ -5534,7 +5540,7 @@
       }
     },
     {
-      "name": "StaticParameters",
+      "name": "staticParameters",
       "docs": [
         "Parameter that set by the protocol"
       ],
@@ -5542,70 +5548,70 @@
         "kind": "struct",
         "fields": [
           {
-            "name": "base_factor",
+            "name": "baseFactor",
             "docs": [
               "Used for base fee calculation. base_fee_rate = base_factor * bin_step * 10 * 10^base_fee_power_factor"
             ],
             "type": "u16"
           },
           {
-            "name": "filter_period",
+            "name": "filterPeriod",
             "docs": [
               "Filter period determine high frequency trading time window."
             ],
             "type": "u16"
           },
           {
-            "name": "decay_period",
+            "name": "decayPeriod",
             "docs": [
               "Decay period determine when the volatile fee start decay / decrease."
             ],
             "type": "u16"
           },
           {
-            "name": "reduction_factor",
+            "name": "reductionFactor",
             "docs": [
               "Reduction factor controls the volatile fee rate decrement rate."
             ],
             "type": "u16"
           },
           {
-            "name": "variable_fee_control",
+            "name": "variableFeeControl",
             "docs": [
               "Used to scale the variable fee component depending on the dynamic of the market"
             ],
             "type": "u32"
           },
           {
-            "name": "max_volatility_accumulator",
+            "name": "maxVolatilityAccumulator",
             "docs": [
               "Maximum number of bin crossed can be accumulated. Used to cap volatile fee rate."
             ],
             "type": "u32"
           },
           {
-            "name": "min_bin_id",
+            "name": "minBinId",
             "docs": [
               "Min bin id supported by the pool based on the configured bin step."
             ],
             "type": "i32"
           },
           {
-            "name": "max_bin_id",
+            "name": "maxBinId",
             "docs": [
               "Max bin id supported by the pool based on the configured bin step."
             ],
             "type": "i32"
           },
           {
-            "name": "protocol_share",
+            "name": "protocolShare",
             "docs": [
               "Portion of swap fees retained by the protocol by controlling protocol_share parameter. protocol_swap_fee = protocol_share * total_swap_fee"
             ],
             "type": "u16"
           },
           {
-            "name": "base_fee_power_factor",
+            "name": "baseFeePowerFactor",
             "docs": [
               "Base fee power factor"
             ],
@@ -5627,7 +5633,7 @@
       }
     },
     {
-      "name": "VariableParameters",
+      "name": "variableParameters",
       "docs": [
         "Parameters that changes based on dynamic of the market"
       ],
@@ -5635,7 +5641,7 @@
         "kind": "struct",
         "fields": [
           {
-            "name": "volatility_accumulator",
+            "name": "volatilityAccumulator",
             "docs": [
               "Volatility accumulator measure the number of bin crossed since reference bin ID. Normally (without filter period taken into consideration), reference bin ID is the active bin of last swap.",
               "It affects the variable fee rate"
@@ -5643,14 +5649,14 @@
             "type": "u32"
           },
           {
-            "name": "volatility_reference",
+            "name": "volatilityReference",
             "docs": [
               "Volatility reference is decayed volatility accumulator. It is always <= volatility_accumulator"
             ],
             "type": "u32"
           },
           {
-            "name": "index_reference",
+            "name": "indexReference",
             "docs": [
               "Active bin id of last swap."
             ],
@@ -5669,7 +5675,7 @@
             }
           },
           {
-            "name": "last_update_timestamp",
+            "name": "lastUpdateTimestamp",
             "docs": [
               "Last timestamp the variable parameters was updated"
             ],
@@ -5691,36 +5697,36 @@
       }
     },
     {
-      "name": "FeeInfo",
+      "name": "feeInfo",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "fee_x_per_token_complete",
+            "name": "feeXPerTokenComplete",
             "type": "u128"
           },
           {
-            "name": "fee_y_per_token_complete",
+            "name": "feeYPerTokenComplete",
             "type": "u128"
           },
           {
-            "name": "fee_x_pending",
+            "name": "feeXPending",
             "type": "u64"
           },
           {
-            "name": "fee_y_pending",
+            "name": "feeYPending",
             "type": "u64"
           }
         ]
       }
     },
     {
-      "name": "UserRewardInfo",
+      "name": "userRewardInfo",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "reward_per_token_completes",
+            "name": "rewardPerTokenCompletes",
             "type": {
               "array": [
                 "u128",
@@ -5729,7 +5735,7 @@
             }
           },
           {
-            "name": "reward_pendings",
+            "name": "rewardPendings",
             "type": {
               "array": [
                 "u64",
@@ -5741,15 +5747,15 @@
       }
     },
     {
-      "name": "RemainingAccountsSlice",
+      "name": "remainingAccountsSlice",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "accounts_type",
+            "name": "accountsType",
             "type": {
               "defined": {
-                "name": "AccountsType"
+                "name": "accountsType"
               }
             }
           },
@@ -5761,7 +5767,7 @@
       }
     },
     {
-      "name": "RemainingAccountsInfo",
+      "name": "remainingAccountsInfo",
       "type": {
         "kind": "struct",
         "fields": [
@@ -5770,7 +5776,7 @@
             "type": {
               "vec": {
                 "defined": {
-                  "name": "RemainingAccountsSlice"
+                  "name": "remainingAccountsSlice"
                 }
               }
             }
@@ -5779,56 +5785,56 @@
       }
     },
     {
-      "name": "StrategyType",
+      "name": "strategyType",
       "type": {
         "kind": "enum",
         "variants": [
           {
-            "name": "SpotOneSide"
+            "name": "spotOneSide"
           },
           {
-            "name": "CurveOneSide"
+            "name": "curveOneSide"
           },
           {
-            "name": "BidAskOneSide"
+            "name": "bidAskOneSide"
           },
           {
-            "name": "SpotBalanced"
+            "name": "spotBalanced"
           },
           {
-            "name": "CurveBalanced"
+            "name": "curveBalanced"
           },
           {
-            "name": "BidAskBalanced"
+            "name": "bidAskBalanced"
           },
           {
-            "name": "SpotImBalanced"
+            "name": "spotImBalanced"
           },
           {
-            "name": "CurveImBalanced"
+            "name": "curveImBalanced"
           },
           {
-            "name": "BidAskImBalanced"
+            "name": "bidAskImBalanced"
           }
         ]
       }
     },
     {
-      "name": "Rounding",
+      "name": "rounding",
       "type": {
         "kind": "enum",
         "variants": [
           {
-            "name": "Up"
+            "name": "up"
           },
           {
-            "name": "Down"
+            "name": "down"
           }
         ]
       }
     },
     {
-      "name": "ActivationType",
+      "name": "activationType",
       "docs": [
         "Type of the activation"
       ],
@@ -5836,16 +5842,16 @@
         "kind": "enum",
         "variants": [
           {
-            "name": "Slot"
+            "name": "slot"
           },
           {
-            "name": "Timestamp"
+            "name": "timestamp"
           }
         ]
       }
     },
     {
-      "name": "LayoutVersion",
+      "name": "layoutVersion",
       "docs": [
         "Layout version"
       ],
@@ -5853,16 +5859,16 @@
         "kind": "enum",
         "variants": [
           {
-            "name": "V0"
+            "name": "v0"
           },
           {
-            "name": "V1"
+            "name": "v1"
           }
         ]
       }
     },
     {
-      "name": "PairType",
+      "name": "pairType",
       "docs": [
         "Type of the Pair. 0 = Permissionless, 1 = Permission, 2 = CustomizablePermissionless. Putting 0 as permissionless for backward compatibility."
       ],
@@ -5870,22 +5876,22 @@
         "kind": "enum",
         "variants": [
           {
-            "name": "Permissionless"
+            "name": "permissionless"
           },
           {
-            "name": "Permission"
+            "name": "permission"
           },
           {
-            "name": "CustomizablePermissionless"
+            "name": "customizablePermissionless"
           },
           {
-            "name": "PermissionlessV2"
+            "name": "permissionlessV2"
           }
         ]
       }
     },
     {
-      "name": "PairStatus",
+      "name": "pairStatus",
       "docs": [
         "Pair status. 0 = Enabled, 1 = Disabled. Putting 0 as enabled for backward compatibility."
       ],
@@ -5893,56 +5899,56 @@
         "kind": "enum",
         "variants": [
           {
-            "name": "Enabled"
+            "name": "enabled"
           },
           {
-            "name": "Disabled"
+            "name": "disabled"
           }
         ]
       }
     },
     {
-      "name": "TokenProgramFlags",
+      "name": "tokenProgramFlags",
       "type": {
         "kind": "enum",
         "variants": [
           {
-            "name": "TokenProgram"
+            "name": "tokenProgram"
           },
           {
-            "name": "TokenProgram2022"
+            "name": "tokenProgram2022"
           }
         ]
       }
     },
     {
-      "name": "AccountsType",
+      "name": "accountsType",
       "type": {
         "kind": "enum",
         "variants": [
           {
-            "name": "TransferHookX"
+            "name": "transferHookX"
           },
           {
-            "name": "TransferHookY"
+            "name": "transferHookY"
           },
           {
-            "name": "TransferHookReward"
+            "name": "transferHookReward"
           }
         ]
       }
     },
     {
-      "name": "BinArrayBitmapExtension",
+      "name": "binArrayBitmapExtension",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "lb_pair",
+            "name": "lbPair",
             "type": "pubkey"
           },
           {
-            "name": "positive_bin_array_bitmap",
+            "name": "positiveBinArrayBitmap",
             "docs": [
               "Packed initialized bin array state for start_bin_index is positive"
             ],
@@ -5959,7 +5965,7 @@
             }
           },
           {
-            "name": "negative_bin_array_bitmap",
+            "name": "negativeBinArrayBitmap",
             "docs": [
               "Packed initialized bin array state for start_bin_index is negative"
             ],
@@ -5979,7 +5985,7 @@
       }
     },
     {
-      "name": "BinArray",
+      "name": "binArray",
       "docs": [
         "An account to contain a range of bin. For example: Bin 100 <-> 200.",
         "For example:",
@@ -6010,7 +6016,7 @@
             }
           },
           {
-            "name": "lb_pair",
+            "name": "lbPair",
             "type": "pubkey"
           },
           {
@@ -6019,7 +6025,7 @@
               "array": [
                 {
                   "defined": {
-                    "name": "Bin"
+                    "name": "bin"
                   }
                 },
                 70
@@ -6030,7 +6036,7 @@
       }
     },
     {
-      "name": "ClaimFeeOperator",
+      "name": "claimFeeOperator",
       "docs": [
         "Parameter that set by the protocol"
       ],
@@ -6060,7 +6066,7 @@
       }
     },
     {
-      "name": "LbPair",
+      "name": "lbPair",
       "type": {
         "kind": "struct",
         "fields": [
@@ -6068,20 +6074,20 @@
             "name": "parameters",
             "type": {
               "defined": {
-                "name": "StaticParameters"
+                "name": "staticParameters"
               }
             }
           },
           {
-            "name": "v_parameters",
+            "name": "vParameters",
             "type": {
               "defined": {
-                "name": "VariableParameters"
+                "name": "variableParameters"
               }
             }
           },
           {
-            "name": "bump_seed",
+            "name": "bumpSeed",
             "type": {
               "array": [
                 "u8",
@@ -6090,7 +6096,7 @@
             }
           },
           {
-            "name": "bin_step_seed",
+            "name": "binStepSeed",
             "docs": [
               "Bin step signer seed"
             ],
@@ -6102,21 +6108,21 @@
             }
           },
           {
-            "name": "pair_type",
+            "name": "pairType",
             "docs": [
               "Type of the pair"
             ],
             "type": "u8"
           },
           {
-            "name": "active_id",
+            "name": "activeId",
             "docs": [
               "Active bin id"
             ],
             "type": "i32"
           },
           {
-            "name": "bin_step",
+            "name": "binStep",
             "docs": [
               "Bin step. Represent the price increment / decrement."
             ],
@@ -6130,14 +6136,14 @@
             "type": "u8"
           },
           {
-            "name": "require_base_factor_seed",
+            "name": "requireBaseFactorSeed",
             "docs": [
               "Require base factor seed"
             ],
             "type": "u8"
           },
           {
-            "name": "base_factor_seed",
+            "name": "baseFactorSeed",
             "docs": [
               "Base factor seed"
             ],
@@ -6149,55 +6155,55 @@
             }
           },
           {
-            "name": "activation_type",
+            "name": "activationType",
             "docs": [
               "Activation type"
             ],
             "type": "u8"
           },
           {
-            "name": "creator_pool_on_off_control",
+            "name": "creatorPoolOnOffControl",
             "docs": [
               "Allow pool creator to enable/disable pool with restricted validation. Only applicable for customizable permissionless pair type."
             ],
             "type": "u8"
           },
           {
-            "name": "token_x_mint",
+            "name": "tokenXMint",
             "docs": [
               "Token X mint"
             ],
             "type": "pubkey"
           },
           {
-            "name": "token_y_mint",
+            "name": "tokenYMint",
             "docs": [
               "Token Y mint"
             ],
             "type": "pubkey"
           },
           {
-            "name": "reserve_x",
+            "name": "reserveX",
             "docs": [
               "LB token X vault"
             ],
             "type": "pubkey"
           },
           {
-            "name": "reserve_y",
+            "name": "reserveY",
             "docs": [
               "LB token Y vault"
             ],
             "type": "pubkey"
           },
           {
-            "name": "protocol_fee",
+            "name": "protocolFee",
             "docs": [
               "Uncollected protocol fee"
             ],
             "type": {
               "defined": {
-                "name": "ProtocolFee"
+                "name": "protocolFee"
               }
             }
           },
@@ -6214,7 +6220,7 @@
             }
           },
           {
-            "name": "reward_infos",
+            "name": "rewardInfos",
             "docs": [
               "Farming reward information"
             ],
@@ -6222,7 +6228,7 @@
               "array": [
                 {
                   "defined": {
-                    "name": "RewardInfo"
+                    "name": "rewardInfo"
                   }
                 },
                 2
@@ -6237,7 +6243,7 @@
             "type": "pubkey"
           },
           {
-            "name": "bin_array_bitmap",
+            "name": "binArrayBitmap",
             "docs": [
               "Packed initialized bin array state"
             ],
@@ -6249,7 +6255,7 @@
             }
           },
           {
-            "name": "last_updated_at",
+            "name": "lastUpdatedAt",
             "docs": [
               "Last time the pool fee parameter was updated"
             ],
@@ -6268,28 +6274,28 @@
             }
           },
           {
-            "name": "pre_activation_swap_address",
+            "name": "preActivationSwapAddress",
             "docs": [
               "Address allowed to swap when the current point is greater than or equal to the pre-activation point. The pre-activation point is calculated as `activation_point - pre_activation_duration`."
             ],
             "type": "pubkey"
           },
           {
-            "name": "base_key",
+            "name": "baseKey",
             "docs": [
               "Base keypair. Only required for permission pair"
             ],
             "type": "pubkey"
           },
           {
-            "name": "activation_point",
+            "name": "activationPoint",
             "docs": [
               "Time point to enable the pair. Only applicable for permission pair."
             ],
             "type": "u64"
           },
           {
-            "name": "pre_activation_duration",
+            "name": "preActivationDuration",
             "docs": [
               "Duration before activation activation_point. Used to calculate pre-activation time point for pre_activation_swap_address"
             ],
@@ -6322,16 +6328,16 @@
             "type": "pubkey"
           },
           {
-            "name": "token_mint_x_program_flag",
+            "name": "tokenMintXProgramFlag",
             "docs": [
-              "token_mint_x_program_flag"
+              "tokenMintXProgramFlag"
             ],
             "type": "u8"
           },
           {
-            "name": "token_mint_y_program_flag",
+            "name": "tokenMintYProgramFlag",
             "docs": [
-              "token_mint_y_program_flag"
+              "tokenMintYProgramFlag"
             ],
             "type": "u8"
           },
@@ -6351,7 +6357,7 @@
       }
     },
     {
-      "name": "Oracle",
+      "name": "oracle",
       "type": {
         "kind": "struct",
         "fields": [
@@ -6363,7 +6369,7 @@
             "type": "u64"
           },
           {
-            "name": "active_size",
+            "name": "activeSize",
             "docs": [
               "Size of active sample. Active sample is initialized observation."
             ],
@@ -6380,12 +6386,12 @@
       }
     },
     {
-      "name": "Position",
+      "name": "position",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "lb_pair",
+            "name": "lbPair",
             "docs": [
               "The LB pair of this position"
             ],
@@ -6399,7 +6405,7 @@
             "type": "pubkey"
           },
           {
-            "name": "liquidity_shares",
+            "name": "liquidityShares",
             "docs": [
               "Liquidity shares of this position in bins (lower_bin_id <-> upper_bin_id). This is the same as LP concept."
             ],
@@ -6411,7 +6417,7 @@
             }
           },
           {
-            "name": "reward_infos",
+            "name": "rewardInfos",
             "docs": [
               "Farming reward information"
             ],
@@ -6419,7 +6425,7 @@
               "array": [
                 {
                   "defined": {
-                    "name": "UserRewardInfo"
+                    "name": "userRewardInfo"
                   }
                 },
                 70
@@ -6427,7 +6433,7 @@
             }
           },
           {
-            "name": "fee_infos",
+            "name": "feeInfos",
             "docs": [
               "Swap fee to claim information"
             ],
@@ -6435,7 +6441,7 @@
               "array": [
                 {
                   "defined": {
-                    "name": "FeeInfo"
+                    "name": "feeInfo"
                   }
                 },
                 70
@@ -6443,42 +6449,42 @@
             }
           },
           {
-            "name": "lower_bin_id",
+            "name": "lowerBinId",
             "docs": [
               "Lower bin ID"
             ],
             "type": "i32"
           },
           {
-            "name": "upper_bin_id",
+            "name": "upperBinId",
             "docs": [
               "Upper bin ID"
             ],
             "type": "i32"
           },
           {
-            "name": "last_updated_at",
+            "name": "lastUpdatedAt",
             "docs": [
               "Last updated timestamp"
             ],
             "type": "i64"
           },
           {
-            "name": "total_claimed_fee_x_amount",
+            "name": "totalClaimedFeeXAmount",
             "docs": [
               "Total claimed token fee X"
             ],
             "type": "u64"
           },
           {
-            "name": "total_claimed_fee_y_amount",
+            "name": "totalClaimedFeeYAmount",
             "docs": [
               "Total claimed token fee Y"
             ],
             "type": "u64"
           },
           {
-            "name": "total_claimed_rewards",
+            "name": "totalClaimedRewards",
             "docs": [
               "Total claimed rewards"
             ],
@@ -6505,12 +6511,12 @@
       }
     },
     {
-      "name": "PositionV2",
+      "name": "positionV2",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "lb_pair",
+            "name": "lbPair",
             "docs": [
               "The LB pair of this position"
             ],
@@ -6524,7 +6530,7 @@
             "type": "pubkey"
           },
           {
-            "name": "liquidity_shares",
+            "name": "liquidityShares",
             "docs": [
               "Liquidity shares of this position in bins (lower_bin_id <-> upper_bin_id). This is the same as LP concept."
             ],
@@ -6536,7 +6542,7 @@
             }
           },
           {
-            "name": "reward_infos",
+            "name": "rewardInfos",
             "docs": [
               "Farming reward information"
             ],
@@ -6544,7 +6550,7 @@
               "array": [
                 {
                   "defined": {
-                    "name": "UserRewardInfo"
+                    "name": "userRewardInfo"
                   }
                 },
                 70
@@ -6552,7 +6558,7 @@
             }
           },
           {
-            "name": "fee_infos",
+            "name": "feeInfos",
             "docs": [
               "Swap fee to claim information"
             ],
@@ -6560,7 +6566,7 @@
               "array": [
                 {
                   "defined": {
-                    "name": "FeeInfo"
+                    "name": "feeInfo"
                   }
                 },
                 70
@@ -6568,42 +6574,42 @@
             }
           },
           {
-            "name": "lower_bin_id",
+            "name": "lowerBinId",
             "docs": [
               "Lower bin ID"
             ],
             "type": "i32"
           },
           {
-            "name": "upper_bin_id",
+            "name": "upperBinId",
             "docs": [
               "Upper bin ID"
             ],
             "type": "i32"
           },
           {
-            "name": "last_updated_at",
+            "name": "lastUpdatedAt",
             "docs": [
               "Last updated timestamp"
             ],
             "type": "i64"
           },
           {
-            "name": "total_claimed_fee_x_amount",
+            "name": "totalClaimedFeeXAmount",
             "docs": [
               "Total claimed token fee X"
             ],
             "type": "u64"
           },
           {
-            "name": "total_claimed_fee_y_amount",
+            "name": "totalClaimedFeeYAmount",
             "docs": [
               "Total claimed token fee Y"
             ],
             "type": "u64"
           },
           {
-            "name": "total_claimed_rewards",
+            "name": "totalClaimedRewards",
             "docs": [
               "Total claimed rewards"
             ],
@@ -6622,7 +6628,7 @@
             "type": "pubkey"
           },
           {
-            "name": "lock_release_point",
+            "name": "lockReleasePoint",
             "docs": [
               "Time point which the locked liquidity can be withdraw"
             ],
@@ -6636,7 +6642,7 @@
             "type": "u8"
           },
           {
-            "name": "fee_owner",
+            "name": "feeOwner",
             "docs": [
               "Address is able to claim fee in this position, only valid for bootstrap_liquidity_position"
             ],
@@ -6658,61 +6664,61 @@
       }
     },
     {
-      "name": "PresetParameter2",
+      "name": "presetParameter2",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "bin_step",
+            "name": "binStep",
             "docs": [
               "Bin step. Represent the price increment / decrement."
             ],
             "type": "u16"
           },
           {
-            "name": "base_factor",
+            "name": "baseFactor",
             "docs": [
               "Used for base fee calculation. base_fee_rate = base_factor * bin_step * 10 * 10^base_fee_power_factor"
             ],
             "type": "u16"
           },
           {
-            "name": "filter_period",
+            "name": "filterPeriod",
             "docs": [
               "Filter period determine high frequency trading time window."
             ],
             "type": "u16"
           },
           {
-            "name": "decay_period",
+            "name": "decayPeriod",
             "docs": [
               "Decay period determine when the volatile fee start decay / decrease."
             ],
             "type": "u16"
           },
           {
-            "name": "variable_fee_control",
+            "name": "variableFeeControl",
             "docs": [
               "Used to scale the variable fee component depending on the dynamic of the market"
             ],
             "type": "u32"
           },
           {
-            "name": "max_volatility_accumulator",
+            "name": "maxVolatilityAccumulator",
             "docs": [
               "Maximum number of bin crossed can be accumulated. Used to cap volatile fee rate."
             ],
             "type": "u32"
           },
           {
-            "name": "reduction_factor",
+            "name": "reductionFactor",
             "docs": [
               "Reduction factor controls the volatile fee rate decrement rate."
             ],
             "type": "u16"
           },
           {
-            "name": "protocol_share",
+            "name": "protocolShare",
             "docs": [
               "Portion of swap fees retained by the protocol by controlling protocol_share parameter. protocol_swap_fee = protocol_share * total_swap_fee"
             ],
@@ -6726,7 +6732,7 @@
             "type": "u16"
           },
           {
-            "name": "base_fee_power_factor",
+            "name": "baseFeePowerFactor",
             "docs": [
               "Base fee power factor"
             ],
@@ -6755,75 +6761,75 @@
       }
     },
     {
-      "name": "PresetParameter",
+      "name": "presetParameter",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "bin_step",
+            "name": "binStep",
             "docs": [
               "Bin step. Represent the price increment / decrement."
             ],
             "type": "u16"
           },
           {
-            "name": "base_factor",
+            "name": "baseFactor",
             "docs": [
               "Used for base fee calculation. base_fee_rate = base_factor * bin_step * 10 * 10^base_fee_power_factor"
             ],
             "type": "u16"
           },
           {
-            "name": "filter_period",
+            "name": "filterPeriod",
             "docs": [
               "Filter period determine high frequency trading time window."
             ],
             "type": "u16"
           },
           {
-            "name": "decay_period",
+            "name": "decayPeriod",
             "docs": [
               "Decay period determine when the volatile fee start decay / decrease."
             ],
             "type": "u16"
           },
           {
-            "name": "reduction_factor",
+            "name": "reductionFactor",
             "docs": [
               "Reduction factor controls the volatile fee rate decrement rate."
             ],
             "type": "u16"
           },
           {
-            "name": "variable_fee_control",
+            "name": "variableFeeControl",
             "docs": [
               "Used to scale the variable fee component depending on the dynamic of the market"
             ],
             "type": "u32"
           },
           {
-            "name": "max_volatility_accumulator",
+            "name": "maxVolatilityAccumulator",
             "docs": [
               "Maximum number of bin crossed can be accumulated. Used to cap volatile fee rate."
             ],
             "type": "u32"
           },
           {
-            "name": "min_bin_id",
+            "name": "minBinId",
             "docs": [
               "Min bin id supported by the pool based on the configured bin step."
             ],
             "type": "i32"
           },
           {
-            "name": "max_bin_id",
+            "name": "maxBinId",
             "docs": [
               "Max bin id supported by the pool based on the configured bin step."
             ],
             "type": "i32"
           },
           {
-            "name": "protocol_share",
+            "name": "protocolShare",
             "docs": [
               "Portion of swap fees retained by the protocol by controlling protocol_share parameter. protocol_swap_fee = protocol_share * total_swap_fee"
             ],
@@ -6833,7 +6839,7 @@
       }
     },
     {
-      "name": "TokenBadge",
+      "name": "tokenBadge",
       "docs": [
         "Parameter that set by the protocol"
       ],
@@ -6841,7 +6847,7 @@
         "kind": "struct",
         "fields": [
           {
-            "name": "token_mint",
+            "name": "tokenMint",
             "docs": [
               "token mint"
             ],
@@ -6863,7 +6869,7 @@
       }
     },
     {
-      "name": "CompositionFee",
+      "name": "compositionFee",
       "type": {
         "kind": "struct",
         "fields": [
@@ -6872,35 +6878,35 @@
             "type": "pubkey"
           },
           {
-            "name": "bin_id",
+            "name": "binId",
             "type": "i16"
           },
           {
-            "name": "token_x_fee_amount",
+            "name": "tokenXFeeAmount",
             "type": "u64"
           },
           {
-            "name": "token_y_fee_amount",
+            "name": "tokenYFeeAmount",
             "type": "u64"
           },
           {
-            "name": "protocol_token_x_fee_amount",
+            "name": "protocolTokenXFeeAmount",
             "type": "u64"
           },
           {
-            "name": "protocol_token_y_fee_amount",
+            "name": "protocolTokenYFeeAmount",
             "type": "u64"
           }
         ]
       }
     },
     {
-      "name": "AddLiquidity",
+      "name": "addLiquidity",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "lb_pair",
+            "name": "lbPair",
             "type": "pubkey"
           },
           {
@@ -6921,19 +6927,19 @@
             }
           },
           {
-            "name": "active_bin_id",
+            "name": "activeBinId",
             "type": "i32"
           }
         ]
       }
     },
     {
-      "name": "RemoveLiquidity",
+      "name": "removeLiquidity",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "lb_pair",
+            "name": "lbPair",
             "type": "pubkey"
           },
           {
@@ -6954,19 +6960,19 @@
             }
           },
           {
-            "name": "active_bin_id",
+            "name": "activeBinId",
             "type": "i32"
           }
         ]
       }
     },
     {
-      "name": "Swap",
+      "name": "swap",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "lb_pair",
+            "name": "lbPair",
             "type": "pubkey"
           },
           {
@@ -6974,23 +6980,23 @@
             "type": "pubkey"
           },
           {
-            "name": "start_bin_id",
+            "name": "startBinId",
             "type": "i32"
           },
           {
-            "name": "end_bin_id",
+            "name": "endBinId",
             "type": "i32"
           },
           {
-            "name": "amount_in",
+            "name": "amountIn",
             "type": "u64"
           },
           {
-            "name": "amount_out",
+            "name": "amountOut",
             "type": "u64"
           },
           {
-            "name": "swap_for_y",
+            "name": "swapForY",
             "type": "bool"
           },
           {
@@ -6998,27 +7004,27 @@
             "type": "u64"
           },
           {
-            "name": "protocol_fee",
+            "name": "protocolFee",
             "type": "u64"
           },
           {
-            "name": "fee_bps",
+            "name": "feeBps",
             "type": "u128"
           },
           {
-            "name": "host_fee",
+            "name": "hostFee",
             "type": "u64"
           }
         ]
       }
     },
     {
-      "name": "ClaimReward",
+      "name": "claimReward",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "lb_pair",
+            "name": "lbPair",
             "type": "pubkey"
           },
           {
@@ -7030,23 +7036,23 @@
             "type": "pubkey"
           },
           {
-            "name": "reward_index",
+            "name": "rewardIndex",
             "type": "u64"
           },
           {
-            "name": "total_reward",
+            "name": "totalReward",
             "type": "u64"
           }
         ]
       }
     },
     {
-      "name": "FundReward",
+      "name": "fundReward",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "lb_pair",
+            "name": "lbPair",
             "type": "pubkey"
           },
           {
@@ -7054,7 +7060,7 @@
             "type": "pubkey"
           },
           {
-            "name": "reward_index",
+            "name": "rewardIndex",
             "type": "u64"
           },
           {
@@ -7065,16 +7071,16 @@
       }
     },
     {
-      "name": "InitializeReward",
+      "name": "initializeReward",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "lb_pair",
+            "name": "lbPair",
             "type": "pubkey"
           },
           {
-            "name": "reward_mint",
+            "name": "rewardMint",
             "type": "pubkey"
           },
           {
@@ -7082,66 +7088,66 @@
             "type": "pubkey"
           },
           {
-            "name": "reward_index",
+            "name": "rewardIndex",
             "type": "u64"
           },
           {
-            "name": "reward_duration",
+            "name": "rewardDuration",
             "type": "u64"
           }
         ]
       }
     },
     {
-      "name": "UpdateRewardDuration",
+      "name": "updateRewardDuration",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "lb_pair",
+            "name": "lbPair",
             "type": "pubkey"
           },
           {
-            "name": "reward_index",
+            "name": "rewardIndex",
             "type": "u64"
           },
           {
-            "name": "old_reward_duration",
+            "name": "oldRewardDuration",
             "type": "u64"
           },
           {
-            "name": "new_reward_duration",
+            "name": "newRewardDuration",
             "type": "u64"
           }
         ]
       }
     },
     {
-      "name": "UpdateRewardFunder",
+      "name": "updateRewardFunder",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "lb_pair",
+            "name": "lbPair",
             "type": "pubkey"
           },
           {
-            "name": "reward_index",
+            "name": "rewardIndex",
             "type": "u64"
           },
           {
-            "name": "old_funder",
+            "name": "oldFunder",
             "type": "pubkey"
           },
           {
-            "name": "new_funder",
+            "name": "newFunder",
             "type": "pubkey"
           }
         ]
       }
     },
     {
-      "name": "PositionClose",
+      "name": "positionClose",
       "type": {
         "kind": "struct",
         "fields": [
@@ -7157,12 +7163,12 @@
       }
     },
     {
-      "name": "ClaimFee",
+      "name": "claimFee",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "lb_pair",
+            "name": "lbPair",
             "type": "pubkey"
           },
           {
@@ -7174,47 +7180,47 @@
             "type": "pubkey"
           },
           {
-            "name": "fee_x",
+            "name": "feeX",
             "type": "u64"
           },
           {
-            "name": "fee_y",
+            "name": "feeY",
             "type": "u64"
           }
         ]
       }
     },
     {
-      "name": "LbPairCreate",
+      "name": "lbPairCreate",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "lb_pair",
+            "name": "lbPair",
             "type": "pubkey"
           },
           {
-            "name": "bin_step",
+            "name": "binStep",
             "type": "u16"
           },
           {
-            "name": "token_x",
+            "name": "tokenX",
             "type": "pubkey"
           },
           {
-            "name": "token_y",
+            "name": "tokenY",
             "type": "pubkey"
           }
         ]
       }
     },
     {
-      "name": "PositionCreate",
+      "name": "positionCreate",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "lb_pair",
+            "name": "lbPair",
             "type": "pubkey"
           },
           {
@@ -7229,12 +7235,12 @@
       }
     },
     {
-      "name": "IncreasePositionLength",
+      "name": "increasePositionLength",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "lb_pair",
+            "name": "lbPair",
             "type": "pubkey"
           },
           {
@@ -7246,7 +7252,7 @@
             "type": "pubkey"
           },
           {
-            "name": "length_to_add",
+            "name": "lengthToAdd",
             "type": "u16"
           },
           {
@@ -7257,12 +7263,12 @@
       }
     },
     {
-      "name": "DecreasePositionLength",
+      "name": "decreasePositionLength",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "lb_pair",
+            "name": "lbPair",
             "type": "pubkey"
           },
           {
@@ -7274,7 +7280,7 @@
             "type": "pubkey"
           },
           {
-            "name": "length_to_remove",
+            "name": "lengthToRemove",
             "type": "u16"
           },
           {
@@ -7285,59 +7291,59 @@
       }
     },
     {
-      "name": "FeeParameterUpdate",
+      "name": "feeParameterUpdate",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "lb_pair",
+            "name": "lbPair",
             "type": "pubkey"
           },
           {
-            "name": "protocol_share",
+            "name": "protocolShare",
             "type": "u16"
           },
           {
-            "name": "base_factor",
+            "name": "baseFactor",
             "type": "u16"
           }
         ]
       }
     },
     {
-      "name": "DynamicFeeParameterUpdate",
+      "name": "dynamicFeeParameterUpdate",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "lb_pair",
+            "name": "lbPair",
             "type": "pubkey"
           },
           {
-            "name": "filter_period",
+            "name": "filterPeriod",
             "type": "u16"
           },
           {
-            "name": "decay_period",
+            "name": "decayPeriod",
             "type": "u16"
           },
           {
-            "name": "reduction_factor",
+            "name": "reductionFactor",
             "type": "u16"
           },
           {
-            "name": "variable_fee_control",
+            "name": "variableFeeControl",
             "type": "u32"
           },
           {
-            "name": "max_volatility_accumulator",
+            "name": "maxVolatilityAccumulator",
             "type": "u32"
           }
         ]
       }
     },
     {
-      "name": "IncreaseObservation",
+      "name": "increaseObservation",
       "type": {
         "kind": "struct",
         "fields": [
@@ -7346,23 +7352,23 @@
             "type": "pubkey"
           },
           {
-            "name": "new_observation_length",
+            "name": "newObservationLength",
             "type": "u64"
           }
         ]
       }
     },
     {
-      "name": "WithdrawIneligibleReward",
+      "name": "withdrawIneligibleReward",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "lb_pair",
+            "name": "lbPair",
             "type": "pubkey"
           },
           {
-            "name": "reward_mint",
+            "name": "rewardMint",
             "type": "pubkey"
           },
           {
@@ -7373,7 +7379,7 @@
       }
     },
     {
-      "name": "UpdatePositionOperator",
+      "name": "updatePositionOperator",
       "type": {
         "kind": "struct",
         "fields": [
@@ -7382,18 +7388,18 @@
             "type": "pubkey"
           },
           {
-            "name": "old_operator",
+            "name": "oldOperator",
             "type": "pubkey"
           },
           {
-            "name": "new_operator",
+            "name": "newOperator",
             "type": "pubkey"
           }
         ]
       }
     },
     {
-      "name": "UpdatePositionLockReleasePoint",
+      "name": "updatePositionLockReleasePoint",
       "type": {
         "kind": "struct",
         "fields": [
@@ -7402,15 +7408,15 @@
             "type": "pubkey"
           },
           {
-            "name": "current_point",
+            "name": "currentPoint",
             "type": "u64"
           },
           {
-            "name": "new_lock_release_point",
+            "name": "newLockReleasePoint",
             "type": "u64"
           },
           {
-            "name": "old_lock_release_point",
+            "name": "oldLockReleasePoint",
             "type": "u64"
           },
           {
@@ -7421,20 +7427,20 @@
       }
     },
     {
-      "name": "GoToABin",
+      "name": "goToABin",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "lb_pair",
+            "name": "lbPair",
             "type": "pubkey"
           },
           {
-            "name": "from_bin_id",
+            "name": "fromBinId",
             "type": "i32"
           },
           {
-            "name": "to_bin_id",
+            "name": "toBinId",
             "type": "i32"
           }
         ]
@@ -7443,12 +7449,12 @@
   ],
   "constants": [
     {
-      "name": "BASIS_POINT_MAX",
+      "name": "basisPointMax",
       "type": "i32",
       "value": "10000"
     },
     {
-      "name": "MAX_BIN_PER_ARRAY",
+      "name": "maxBinPerArray",
       "type": {
         "defined": {
           "name": "usize"
@@ -7457,7 +7463,7 @@
       "value": "70"
     },
     {
-      "name": "MAX_BIN_PER_POSITION",
+      "name": "maxBinPerPosition",
       "type": {
         "defined": {
           "name": "usize"
@@ -7466,7 +7472,7 @@
       "value": "70"
     },
     {
-      "name": "MAX_RESIZE_LENGTH",
+      "name": "maxResizeLength",
       "type": {
         "defined": {
           "name": "usize"
@@ -7475,7 +7481,7 @@
       "value": "70"
     },
     {
-      "name": "POSITION_MAX_LENGTH",
+      "name": "positionMaxLength",
       "type": {
         "defined": {
           "name": "usize"
@@ -7484,37 +7490,37 @@
       "value": "1400"
     },
     {
-      "name": "MIN_BIN_ID",
+      "name": "minBinId",
       "type": "i32",
       "value": "- 443636"
     },
     {
-      "name": "MAX_BIN_ID",
+      "name": "maxBinId",
       "type": "i32",
       "value": "443636"
     },
     {
-      "name": "MAX_FEE_RATE",
+      "name": "maxFeeRate",
       "type": "u64",
-      "value": "100_000_000"
+      "value": "100000000"
     },
     {
-      "name": "FEE_PRECISION",
+      "name": "feePrecision",
       "type": "u64",
-      "value": "1_000_000_000"
+      "value": "1000000000"
     },
     {
-      "name": "MAX_PROTOCOL_SHARE",
+      "name": "maxProtocolShare",
       "type": "u16",
-      "value": "2_500"
+      "value": "2500"
     },
     {
-      "name": "HOST_FEE_BPS",
+      "name": "hostFeeBps",
       "type": "u16",
-      "value": "2_000"
+      "value": "2000"
     },
     {
-      "name": "NUM_REWARDS",
+      "name": "numRewards",
       "type": {
         "defined": {
           "name": "usize"
@@ -7523,17 +7529,17 @@
       "value": "2"
     },
     {
-      "name": "MIN_REWARD_DURATION",
+      "name": "minRewardDuration",
       "type": "u64",
       "value": "1"
     },
     {
-      "name": "MAX_REWARD_DURATION",
+      "name": "maxRewardDuration",
       "type": "u64",
       "value": "31536000"
     },
     {
-      "name": "EXTENSION_BINARRAY_BITMAP_SIZE",
+      "name": "extensionBinarrayBitmapSize",
       "type": {
         "defined": {
           "name": "usize"
@@ -7542,12 +7548,12 @@
       "value": "12"
     },
     {
-      "name": "BIN_ARRAY_BITMAP_SIZE",
+      "name": "binArrayBitmapSize",
       "type": "i32",
       "value": "512"
     },
     {
-      "name": "MAX_REWARD_BIN_SPLIT",
+      "name": "maxRewardBinSplit",
       "type": {
         "defined": {
           "name": "usize"
@@ -7556,69 +7562,69 @@
       "value": "15"
     },
     {
-      "name": "ILM_PROTOCOL_SHARE",
+      "name": "ilmProtocolShare",
       "type": "u16",
       "value": "2000"
     },
     {
-      "name": "PROTOCOL_SHARE",
+      "name": "protocolShare",
       "type": "u16",
       "value": "500"
     },
     {
-      "name": "MAX_BIN_STEP",
+      "name": "maxBinStep",
       "type": "u16",
       "value": "400"
     },
     {
-      "name": "MAX_BASE_FEE",
+      "name": "maxBaseFee",
       "type": "u128",
-      "value": "100_000_000"
+      "value": "100000000"
     },
     {
-      "name": "MIN_BASE_FEE",
+      "name": "minBaseFee",
       "type": "u128",
-      "value": "100_000"
+      "value": "100000"
     },
     {
-      "name": "MINIMUM_LIQUIDITY",
+      "name": "minimumLiquidity",
       "type": "u128",
-      "value": "1_000_000"
+      "value": "1000000"
     },
     {
-      "name": "BIN_ARRAY",
+      "name": "binArray",
       "type": "bytes",
       "value": "[98, 105, 110, 95, 97, 114, 114, 97, 121]"
     },
     {
-      "name": "ORACLE",
+      "name": "oracle",
       "type": "bytes",
       "value": "[111, 114, 97, 99, 108, 101]"
     },
     {
-      "name": "BIN_ARRAY_BITMAP_SEED",
+      "name": "binArrayBitmapSeed",
       "type": "bytes",
       "value": "[98, 105, 116, 109, 97, 112]"
     },
     {
-      "name": "PRESET_PARAMETER",
+      "name": "presetParameter",
       "type": "bytes",
       "value": "[112, 114, 101, 115, 101, 116, 95, 112, 97, 114, 97, 109, 101, 116, 101, 114]"
     },
     {
-      "name": "PRESET_PARAMETER2",
+      "name": "presetParameter2",
       "type": "bytes",
       "value": "[112, 114, 101, 115, 101, 116, 95, 112, 97, 114, 97, 109, 101, 116, 101, 114, 50]"
     },
     {
-      "name": "POSITION",
+      "name": "position",
       "type": "bytes",
       "value": "[112, 111, 115, 105, 116, 105, 111, 110]"
     },
     {
-      "name": "CLAIM_PROTOCOL_FEE_OPERATOR",
+      "name": "claimProtocolFeeOperator",
       "type": "bytes",
       "value": "[99, 102, 95, 111, 112, 101, 114, 97, 116, 111, 114]"
     }
   ]
-}
+};

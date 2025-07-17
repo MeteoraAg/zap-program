@@ -1,8 +1,12 @@
-use anchor_lang::prelude::*;
-use anchor_spl::token_interface::{Mint, TokenAccount, TokenInterface};
+use anchor_lang::{
+    prelude::*,
+    solana_program::{instruction::Instruction, program::invoke_signed},
+    InstructionData,
+};
+use anchor_spl::token_interface::TokenAccount;
 use damm_v2::types::SwapParameters;
 
-use crate::{const_pda, constants::amm_program_id, error::ZapError, DammV2SwapAccounts};
+use crate::{const_pda, constants::amm_program_id, error::ZapError};
 
 #[derive(Debug, Clone, Copy)]
 pub enum AmmProgram {
@@ -18,6 +22,13 @@ impl AmmProgram {
             _ => Err(error!(ZapError::UnsupportedAmmProgram)),
         }
     }
+}
+
+#[derive(AnchorSerialize, AnchorDeserialize)]
+pub struct ZapOutParameters {
+    pub minimum_amount_out: u64,
+    pub padding_0: [u64; 16],
+    pub remaining_accounts_info: Option<dlmm::types::RemainingAccountsInfo>,
 }
 
 #[event_cpi]
@@ -37,96 +48,89 @@ pub struct ZapOutCtx<'info> {
 }
 
 impl<'info> ZapOutCtx<'info> {
-    fn handle_zap_out_damm_v2(
-        &self,
-        remaining_accounts: &'info [AccountInfo<'info>],
-        data: Vec<u8>,
-    ) -> Result<()> {
-        let signer_seeds = zap_authority_seeds!(const_pda::zap_authority::BUMP);
-
-        let parsed_remaining_accounts: DammV2SwapAccounts =
-            DammV2SwapAccounts::parse_remaining_accounts(remaining_accounts)?;
-
-        // validate damm v2 accounts
-        parsed_remaining_accounts.validate()?;
-
-        damm_v2::cpi::swap(
-            CpiContext::new_with_signer(
-                self.amm_program.to_account_info(),
-                damm_v2::cpi::accounts::Swap {
-                    pool_authority: parsed_remaining_accounts.pool_authority.to_account_info(),
-                    pool: parsed_remaining_accounts.pool.to_account_info(),
-                    input_token_account: self.token_ledger_account.to_account_info(),
-                    output_token_account: parsed_remaining_accounts
-                        .output_token_account
-                        .to_account_info(),
-                    token_a_vault: parsed_remaining_accounts.token_a_vault.to_account_info(),
-                    token_b_vault: parsed_remaining_accounts.token_b_vault.to_account_info(),
-                    token_a_mint: parsed_remaining_accounts.token_a_mint.to_account_info(),
-                    token_b_mint: parsed_remaining_accounts.token_b_mint.to_account_info(),
-                    payer: self.zap_authority.to_account_info(),
-                    token_a_program: parsed_remaining_accounts.token_a_program.to_account_info(),
-                    token_b_program: parsed_remaining_accounts.token_b_program.to_account_info(),
-                    referral_token_account: None,
-                    event_authority: parsed_remaining_accounts.event_authority.to_account_info(),
-                    program: self.amm_program.to_account_info(),
-                },
-                &[&signer_seeds[..]],
-            ),
-            SwapParameters {
+    fn get_damm_v2_instruction_data(&self, minimum_amount_out: u64) -> Result<Vec<u8>> {
+        let data = damm_v2::client::args::Swap {
+            params: SwapParameters {
                 amount_in: self.token_ledger_account.amount,
-                minimum_amount_out: 0, // TODO: parse minimum_amount_out from data
+                minimum_amount_out,
             },
-        )?;
+        }
+        .data();
 
-        Ok(())
+        Ok(data)
     }
 
-    fn handle_zap_out_dlmm(&self) -> Result<()> {
-        let signer_seeds = zap_authority_seeds!(const_pda::zap_authority::BUMP);
-        // dlmm::cpi::swap2(
-        //     CpiContext::new_with_signer(
-        //         self.amm_program.to_account_info(),
-        //         dlmm::cpi::accounts::Swap2 {
-        //             lb_pair,
-        //             bin_array_bitmap_extension,
-        //             reserve_x,
-        //             reserve_y,
-        //             user_token_in,
-        //             user_token_out,
-        //             token_x_mint,
-        //             token_y_mint,
-        //             oracle,
-        //             host_fee_in,
-        //             user: self.zap_authority.to_account_info(),
-        //             token_x_program,
-        //             token_y_program,
-        //             memo_program,
-        //             event_authority,
-        //             program: self.amm_program.to_account_info(),
-        //         },
-        //         &[&signer_seeds[..]],
-        //     ),
-        //     amount_in,
-        //     min_amount_out,
-        //     remaining_accounts_info,
-        // )?;
-        Ok(())
+    fn get_dlmm_instruction_data(
+        &self,
+        minimum_amount_out: u64,
+        remaining_accounts_info: dlmm::types::RemainingAccountsInfo,
+    ) -> Result<Vec<u8>> {
+        let data = dlmm::client::args::Swap2 {
+            amount_in: self.token_ledger_account.amount,
+            min_amount_out: minimum_amount_out,
+            remaining_accounts_info,
+        }
+        .data();
+
+        Ok(data)
     }
 }
 
 pub fn handle_zap_out<'c: 'info, 'info>(
     ctx: Context<'_, '_, 'c, 'info, ZapOutCtx<'info>>,
-    data: Vec<u8>,
+    params: ZapOutParameters,
 ) -> Result<()> {
+    let ZapOutParameters {
+        minimum_amount_out,
+        remaining_accounts_info,
+        ..
+    } = params;
     let amm_program: AmmProgram = AmmProgram::from_pubkey(&ctx.accounts.amm_program.key())?;
 
-    match amm_program {
+    let accounts: Vec<AccountMeta> = ctx
+        .remaining_accounts
+        .iter()
+        .map(|acc| {
+            let is_signer = acc.key == &ctx.accounts.zap_authority.key();
+            AccountMeta {
+                pubkey: *acc.key,
+                is_signer: is_signer,
+                is_writable: acc.is_writable,
+            }
+        })
+        .collect();
+
+    let account_infos: Vec<AccountInfo> = ctx
+        .remaining_accounts
+        .iter()
+        .map(|acc| AccountInfo { ..acc.clone() })
+        .collect();
+
+    let data = match amm_program {
         AmmProgram::DammV2 => ctx
             .accounts
-            .handle_zap_out_damm_v2(ctx.remaining_accounts, data)?,
-        AmmProgram::Dlmm => ctx.accounts.handle_zap_out_dlmm()?,
-    }
+            .get_damm_v2_instruction_data(minimum_amount_out)?,
+        AmmProgram::Dlmm => {
+            if let Some(remaining_accounts_info) = remaining_accounts_info {
+                ctx.accounts
+                    .get_dlmm_instruction_data(minimum_amount_out, remaining_accounts_info)?
+            } else {
+                return Err(ZapError::MissingDlmmRemainingAccountInfo.into());
+            }
+        }
+    };
+
+    let signers_seeds = zap_authority_seeds!();
+
+    invoke_signed(
+        &Instruction {
+            program_id: ctx.accounts.amm_program.key(),
+            accounts,
+            data,
+        },
+        &account_infos,
+        &[&signers_seeds[..]],
+    )?;
 
     Ok(())
 }

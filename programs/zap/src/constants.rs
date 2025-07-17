@@ -6,7 +6,6 @@ pub const NUM_DAMM_V2_REMAINING_ACCOUNTS: usize = 10;
 pub mod amm_program_id {
     use anchor_lang::{prelude::Pubkey, solana_program::pubkey};
 
-    #[cfg(not(feature = "local"))]
     pub const DAMM_V2: Pubkey = pubkey!("cpamdpZCGKUy5JxQXB4dcpGPiikHawvSWAd6mEn1sGG");
 
     #[cfg(not(feature = "local"))]
