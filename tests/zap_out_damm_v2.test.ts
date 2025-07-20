@@ -24,8 +24,7 @@ import {
   removeLiquidity,
 } from "./common/damm_v2";
 import {
-  getAssociatedTokenAddressSync,
-  TOKEN_2022_PROGRAM_ID,
+  getAssociatedTokenAddressSync
 } from "@solana/spl-token";
 
 describe("Zap out damm V2", () => {

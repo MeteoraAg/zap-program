@@ -11,7 +11,11 @@ pub mod const_pda;
 pub mod constants;
 pub mod utils;
 pub use utils::*;
+pub mod parameters;
+pub use parameters::*;
 pub mod error;
+pub mod math;
+pub use math::*;
 
 declare_id!("GQc29JqD7njZadikaVgzt5A2hkuLUYCDPX9EjYYi8Y3y");
 
@@ -25,8 +29,8 @@ pub mod zap {
 
     pub fn zap_out<'c: 'info, 'info>(
         ctx: Context<'_, '_, 'c, 'info, ZapOutCtx<'info>>,
-        params: ZapOutParameters,
+        data: Vec<u8>,
     ) -> Result<()> {
-        instructions::handle_zap_out(ctx, params)
+        instructions::handle_zap_out(ctx, data)
     }
 }

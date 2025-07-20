@@ -4,9 +4,7 @@ import {
   ExtraAccountMeta,
   getExtraAccountMetaAddress,
   getExtraAccountMetas,
-  getMint,
   getTransferHook,
-  MintLayout,
   TOKEN_2022_PROGRAM_ID,
   TOKEN_PROGRAM_ID,
   TokenTransferHookAccountDataNotFound,
@@ -17,7 +15,6 @@ import {
   unpackMint,
 } from "@solana/spl-token";
 import {
-  AccountInfo,
   AccountMeta,
   PUBLIC_KEY_LENGTH,
   PublicKey,

@@ -5,12 +5,21 @@ use anchor_lang::prelude::*;
 #[error_code]
 #[derive(PartialEq)]
 pub enum ZapError {
-    #[msg("Amount is zero")]
-    AmountIsZero,
+    #[msg("Math operation overflow")]
+    MathOverflow,
 
-    #[msg("Unsupported program")]
-    UnsupportedAmmProgram,
+    #[msg("Invalid amm program id")]
+    InvalidAmmProgramId,
 
     #[msg("Missing dlmm remaining accounts info parameter")]
     MissingDlmmRemainingAccountInfo,
+
+    #[msg("Invalid action type")]
+    InvalidActionType,
+
+    #[msg("Invalid data length")]
+    InvalidDataLength,
+
+    #[msg("Type cast error")]
+    TypeCastFailed,
 }
