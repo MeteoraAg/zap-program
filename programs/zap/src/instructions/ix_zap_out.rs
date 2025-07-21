@@ -1,20 +1,14 @@
 use anchor_lang::{
     prelude::*,
     solana_program::{instruction::Instruction, program::invoke_signed},
-    InstructionData,
 };
 use anchor_spl::token_interface::TokenAccount;
-use damm_v2::types::SwapParameters;
 use num_enum::{IntoPrimitive, TryFromPrimitive};
 
 use crate::{
     const_pda,
-    constants::{
-        amm_program_id::{DAMM_V2, DLMM},
-        ACTION_TYPE_INDEX, PAYLOAD_DATA_START_INDEX,
-    },
+    constants::amm_program_id::{DAMM_V2, DLMM},
     error::ZapError,
-    SwapDammV2Params, SwapDlmmParams,
 };
 
 #[repr(u8)]
@@ -49,12 +43,12 @@ pub struct ZapOutCtx<'info> {
 }
 
 impl<'info> ZapOutCtx<'info> {
-    fn get_instruction_data(&self, data: Vec<u8>) -> Result<Vec<u8>> {
-        let action_type = ActionType::try_from(data[ACTION_TYPE_INDEX])
-            .map_err(|_| ZapError::InvalidActionType)?;
-        let payload = &data[PAYLOAD_DATA_START_INDEX..];
-
-        let parsed_data = match action_type {
+    fn get_instruction_data(
+        &self,
+        action_type: ActionType,
+        payload_data: &[u8],
+    ) -> Result<Vec<u8>> {
+        let instruction_discriminator = match action_type {
             ActionType::SwapDammV2 => {
                 // validate amm program id
                 require_keys_eq!(
@@ -63,41 +57,29 @@ impl<'info> ZapOutCtx<'info> {
                     ZapError::InvalidAmmProgramId
                 );
 
-                // decode payload data for swap damm v2 params
-                let SwapDammV2Params { minimum_amount_out } = SwapDammV2Params::unpack(payload)?;
-
-                damm_v2::client::args::Swap {
-                    params: SwapParameters {
-                        amount_in: self.token_ledger_account.amount,
-                        minimum_amount_out: minimum_amount_out,
-                    },
-                }
-                .data()
+                damm_v2::client::args::Swap::DISCRIMINATOR
             }
             ActionType::SwapDlmm => {
                 // validate amm program id
                 require_keys_eq!(self.amm_program.key(), DLMM, ZapError::InvalidAmmProgramId);
-                // decode payload data for swap dlmm params
-                let SwapDlmmParams {
-                    minimum_amount_out,
-                    remaining_accounts_info,
-                } = SwapDlmmParams::unpack(payload)?;
 
-                dlmm::client::args::Swap2 {
-                    amount_in: self.token_ledger_account.amount,
-                    min_amount_out: minimum_amount_out,
-                    remaining_accounts_info,
-                }
-                .data()
+                dlmm::client::args::Swap2::DISCRIMINATOR
             }
         };
-        Ok(parsed_data)
+
+        let mut data = Vec::with_capacity(256);
+        data.extend_from_slice(instruction_discriminator);
+        data.extend_from_slice(&self.token_ledger_account.amount.to_le_bytes());
+        data.extend_from_slice(payload_data);
+
+        Ok(data)
     }
 }
 
 pub fn handle_zap_out<'c: 'info, 'info>(
     ctx: Context<'_, '_, 'c, 'info, ZapOutCtx<'info>>,
-    data: Vec<u8>,
+    action_type: u8,
+    payload_data: Vec<u8>,
 ) -> Result<()> {
     let accounts: Vec<AccountMeta> = ctx
         .remaining_accounts
@@ -118,7 +100,10 @@ pub fn handle_zap_out<'c: 'info, 'info>(
         .map(|acc| AccountInfo { ..acc.clone() })
         .collect();
 
-    let data = ctx.accounts.get_instruction_data(data)?;
+    let action_type = ActionType::try_from(action_type).map_err(|_| ZapError::TypeCastFailed)?;
+    let data = ctx
+        .accounts
+        .get_instruction_data(action_type, &payload_data)?;
     let signers_seeds = zap_authority_seeds!();
 
     invoke_signed(

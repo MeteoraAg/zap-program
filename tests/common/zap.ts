@@ -96,11 +96,10 @@ export async function zapOutDammv2(
     inputTokenAccount,
     outputTokenAccount
   );
-  const actionType = Buffer.from([0]);
-  const dammv2Data = new BN(10).toArrayLike(Buffer, "le", 8);
-  const data = Buffer.concat([actionType, dammv2Data]);
+  const actionType = 0;
+  const payloadData = new BN(10).toArrayLike(Buffer, "le", 8);
   return await zapProgram.methods
-    .zapOut(data)
+    .zapOut(actionType, payloadData)
     .accountsPartial({
       zapAuthority: deriveZapAuthorityAddress(),
       tokenLedgerAccount: inputTokenAccount,
@@ -128,35 +127,30 @@ export async function zapOutDlmm(
     tokenXProgram,
     tokenYProgram
   );
-  const dataBytesArray = [];
-  const actionType = Buffer.from([1]);
+  const actionType = 1;
   const minimumAmountOutData = new BN(10).toArrayLike(Buffer, "le", 8);
-  dataBytesArray.push(...[actionType, minimumAmountOutData]);
 
-  if (remainingAccountsInfo.slices.length > 0) {
-    const sliceCount = Buffer.alloc(4);
-    sliceCount.writeUInt32LE(remainingAccountsInfo.slices.length, 0);
+  const sliceCount = Buffer.alloc(4);
+  sliceCount.writeUInt32LE(remainingAccountsInfo.slices.length, 0);
 
-    // Serialize each slice (accounts_type: u8, length: u8)
-    const slicesData = Buffer.concat(
-      remainingAccountsInfo.slices.map((slice) => {
-        const sliceBuffer = Buffer.alloc(2);
-        sliceBuffer.writeUInt8(
-          convertAccountTypeToNumber(slice.accountsType),
-          0
-        );
-        sliceBuffer.writeUInt8(slice.length, 1);
-        return sliceBuffer;
-      })
-    );
+  // Serialize each slice (accounts_type: u8, length: u8)
+  const slicesData = Buffer.concat(
+    remainingAccountsInfo.slices.map((slice) => {
+      const sliceBuffer = Buffer.alloc(2);
+      sliceBuffer.writeUInt8(convertAccountTypeToNumber(slice.accountsType), 0);
+      sliceBuffer.writeUInt8(slice.length, 1);
+      return sliceBuffer;
+    })
+  );
 
-    dataBytesArray.push(...[sliceCount, slicesData]);
-  }
-
-  const data = Buffer.concat(dataBytesArray);
+  const payloadData = Buffer.concat([
+    minimumAmountOutData,
+    sliceCount,
+    slicesData,
+  ]);
 
   return await zapProgram.methods
-    .zapOut(data)
+    .zapOut(actionType, payloadData)
     .accountsPartial({
       zapAuthority: deriveZapAuthorityAddress(),
       tokenLedgerAccount: inputTokenAccount,

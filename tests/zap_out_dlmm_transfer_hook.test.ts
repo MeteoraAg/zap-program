@@ -38,7 +38,7 @@ import {
   TRANSFER_HOOK_COUNTER_PROGRAM_ID,
 } from "./common/transferHook";
 
-describe.only("Zap out dlmm with transfer hook", () => {
+describe("Zap out dlmm with transfer hook", () => {
   let svm: LiteSVM;
   let user: Keypair;
   let tokenAMint: PublicKey;
