@@ -67,7 +67,11 @@ impl<'info> ZapOutCtx<'info> {
             }
         };
 
-        let mut data = Vec::with_capacity(256);
+        let data_size = instruction_discriminator.len()
+            + self.token_ledger_account.amount.to_le_bytes().len()
+            + payload_data.len();
+
+        let mut data = Vec::with_capacity(data_size);
         data.extend_from_slice(instruction_discriminator);
         data.extend_from_slice(&self.token_ledger_account.amount.to_le_bytes());
         data.extend_from_slice(payload_data);
