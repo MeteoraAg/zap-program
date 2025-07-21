@@ -14,7 +14,6 @@ use crate::{
         ACTION_TYPE_INDEX, PAYLOAD_DATA_START_INDEX,
     },
     error::ZapError,
-    parameters::ZapOutParametersDecoder,
     SwapDammV2Params, SwapDlmmParams,
 };
 
@@ -34,7 +33,6 @@ pub enum ActionType {
     SwapDlmm,
 }
 
-#[event_cpi]
 #[derive(Accounts)]
 pub struct ZapOutCtx<'info> {
     /// CHECK: zap authority
@@ -54,7 +52,7 @@ impl<'info> ZapOutCtx<'info> {
     fn get_instruction_data(&self, data: Vec<u8>) -> Result<Vec<u8>> {
         let action_type = ActionType::try_from(data[ACTION_TYPE_INDEX])
             .map_err(|_| ZapError::InvalidActionType)?;
-        let payload = data[PAYLOAD_DATA_START_INDEX..].to_vec();
+        let payload = &data[PAYLOAD_DATA_START_INDEX..];
 
         let parsed_data = match action_type {
             ActionType::SwapDammV2 => {
@@ -66,7 +64,7 @@ impl<'info> ZapOutCtx<'info> {
                 );
 
                 // decode payload data for swap damm v2 params
-                let SwapDammV2Params { minimum_amount_out } = SwapDammV2Params::decode(payload)?;
+                let SwapDammV2Params { minimum_amount_out } = SwapDammV2Params::unpack(payload)?;
 
                 damm_v2::client::args::Swap {
                     params: SwapParameters {
@@ -83,7 +81,7 @@ impl<'info> ZapOutCtx<'info> {
                 let SwapDlmmParams {
                     minimum_amount_out,
                     remaining_accounts_info,
-                } = SwapDlmmParams::decode(payload)?;
+                } = SwapDlmmParams::unpack(payload)?;
 
                 dlmm::client::args::Swap2 {
                     amount_in: self.token_ledger_account.amount,
@@ -132,8 +130,6 @@ pub fn handle_zap_out<'c: 'info, 'info>(
         &account_infos,
         &[&signers_seeds[..]],
     )?;
-
-    // TODO emit event
 
     Ok(())
 }

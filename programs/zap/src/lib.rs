@@ -14,8 +14,8 @@ pub use utils::*;
 pub mod parameters;
 pub use parameters::*;
 pub mod error;
-pub mod math;
-pub use math::*;
+
+pub mod tests;
 
 declare_id!("GQc29JqD7njZadikaVgzt5A2hkuLUYCDPX9EjYYi8Y3y");
 

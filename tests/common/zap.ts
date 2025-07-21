@@ -7,7 +7,7 @@ import {
 
 import ZapIDL from "../../target/idl/zap.json";
 import { Zap } from "../../target/types/zap";
-import {  TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import {
   clusterApiUrl,
   Connection,
@@ -16,10 +16,7 @@ import {
   Transaction,
 } from "@solana/web3.js";
 import { DAMM_V2_PROGRAM_ID, getDammV2RemainingAccounts } from "./damm_v2";
-import {
-  DLMM_PROGRAM_ID_LOCAL,
-  getDlmmRemainingAccounts,
-} from "./dlmm";
+import { DLMM_PROGRAM_ID_LOCAL, getDlmmRemainingAccounts } from "./dlmm";
 import { expect } from "chai";
 
 export const ZAP_PROGRAM_ID = new PublicKey(ZapIDL.address);
@@ -131,29 +128,32 @@ export async function zapOutDlmm(
     tokenXProgram,
     tokenYProgram
   );
-
+  const dataBytesArray = [];
   const actionType = Buffer.from([1]);
   const minimumAmountOutData = new BN(10).toArrayLike(Buffer, "le", 8);
+  dataBytesArray.push(...[actionType, minimumAmountOutData]);
 
-  const sliceCount = Buffer.alloc(4);
-  sliceCount.writeUInt32LE(remainingAccountsInfo.slices.length, 0);
+  if (remainingAccountsInfo.slices.length > 0) {
+    const sliceCount = Buffer.alloc(4);
+    sliceCount.writeUInt32LE(remainingAccountsInfo.slices.length, 0);
 
-  // Serialize each slice (accounts_type: u8, length: u8)
-  const slicesData = Buffer.concat(
-    remainingAccountsInfo.slices.map((slice) => {
-      const sliceBuffer = Buffer.alloc(2);
-      sliceBuffer.writeUInt8(convertAccountTypeToNumber(slice.accountsType), 0);
-      sliceBuffer.writeUInt8(slice.length, 1);
-      return sliceBuffer;
-    })
-  );
+    // Serialize each slice (accounts_type: u8, length: u8)
+    const slicesData = Buffer.concat(
+      remainingAccountsInfo.slices.map((slice) => {
+        const sliceBuffer = Buffer.alloc(2);
+        sliceBuffer.writeUInt8(
+          convertAccountTypeToNumber(slice.accountsType),
+          0
+        );
+        sliceBuffer.writeUInt8(slice.length, 1);
+        return sliceBuffer;
+      })
+    );
 
-  const data = Buffer.concat([
-    actionType, // 1 byte
-    minimumAmountOutData, // 8 bytes
-    sliceCount, // 4 bytes anchor prefix
-    slicesData, // 2 bytes per slice
-  ]);
+    dataBytesArray.push(...[sliceCount, slicesData]);
+  }
+
+  const data = Buffer.concat(dataBytesArray);
 
   return await zapProgram.methods
     .zapOut(data)
