@@ -100,7 +100,7 @@ pub fn handle_zap_out<'c: 'info, 'info>(
         .map(|acc| AccountInfo { ..acc.clone() })
         .collect();
 
-    let action_type = ActionType::try_from(action_type).map_err(|_| ZapError::TypeCastFailed)?;
+    let action_type = ActionType::try_from(action_type).map_err(|_| ZapError::InvalidActionType)?;
     let data = ctx
         .accounts
         .get_instruction_data(action_type, &payload_data)?;
