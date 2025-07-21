@@ -25,8 +25,9 @@ pub mod zap {
 
     pub fn zap_out<'c: 'info, 'info>(
         ctx: Context<'_, '_, 'c, 'info, ZapOutCtx<'info>>,
-        params: ZapOutParameters,
+        action_type: u8,
+        payload_data: Vec<u8>,
     ) -> Result<()> {
-        instructions::handle_zap_out(ctx, params)
+        instructions::handle_zap_out(ctx, action_type, payload_data)
     }
 }

@@ -7,9 +7,8 @@ import {
 
 import ZapIDL from "../../target/idl/zap.json";
 import { Zap } from "../../target/types/zap";
-import { TOKEN_2022_PROGRAM_ID, TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import {
-  AccountMeta,
   clusterApiUrl,
   Connection,
   Keypair,
@@ -17,11 +16,7 @@ import {
   Transaction,
 } from "@solana/web3.js";
 import { DAMM_V2_PROGRAM_ID, getDammV2RemainingAccounts } from "./damm_v2";
-import {
-  DLMM_PROGRAM_ID_LOCAL,
-  getBinArraysForSwap,
-  getDlmmRemainingAccounts,
-} from "./dlmm";
+import { DLMM_PROGRAM_ID_LOCAL, getDlmmRemainingAccounts } from "./dlmm";
 import { expect } from "chai";
 
 export const ZAP_PROGRAM_ID = new PublicKey(ZapIDL.address);
@@ -84,7 +79,7 @@ export async function initializeTokenLedger(
   }
   expect(result).instanceOf(TransactionMetadata);
 
-  return tokenLedgerAccountToken
+  return tokenLedgerAccountToken;
 }
 
 export async function zapOutDammv2(
@@ -101,12 +96,10 @@ export async function zapOutDammv2(
     inputTokenAccount,
     outputTokenAccount
   );
+  const actionType = 0;
+  const payloadData = new BN(10).toArrayLike(Buffer, "le", 8);
   return await zapProgram.methods
-    .zapOut({
-      minimumAmountOut: new BN(0),
-      padding0: [],
-      remainingAccountsInfo: null,
-    })
+    .zapOut(actionType, payloadData)
     .accountsPartial({
       zapAuthority: deriveZapAuthorityAddress(),
       tokenLedgerAccount: inputTokenAccount,
@@ -122,7 +115,7 @@ export async function zapOutDlmm(
   inputTokenAccount: PublicKey,
   outputTokenAccount: PublicKey,
   tokenXProgram = TOKEN_PROGRAM_ID,
-  tokenYProgram = TOKEN_PROGRAM_ID,
+  tokenYProgram = TOKEN_PROGRAM_ID
 ): Promise<Transaction> {
   const zapProgram = createZapProgram();
 
@@ -134,13 +127,30 @@ export async function zapOutDlmm(
     tokenXProgram,
     tokenYProgram
   );
+  const actionType = 1;
+  const minimumAmountOutData = new BN(10).toArrayLike(Buffer, "le", 8);
+
+  const sliceCount = Buffer.alloc(4);
+  sliceCount.writeUInt32LE(remainingAccountsInfo.slices.length, 0);
+
+  // Serialize each slice (accounts_type: u8, length: u8)
+  const slicesData = Buffer.concat(
+    remainingAccountsInfo.slices.map((slice) => {
+      const sliceBuffer = Buffer.alloc(2);
+      sliceBuffer.writeUInt8(convertAccountTypeToNumber(slice.accountsType), 0);
+      sliceBuffer.writeUInt8(slice.length, 1);
+      return sliceBuffer;
+    })
+  );
+
+  const payloadData = Buffer.concat([
+    minimumAmountOutData,
+    sliceCount,
+    slicesData,
+  ]);
 
   return await zapProgram.methods
-    .zapOut({
-      minimumAmountOut: new BN(0),
-      padding0: [],
-      remainingAccountsInfo,
-    })
+    .zapOut(actionType, payloadData)
     .accountsPartial({
       zapAuthority: deriveZapAuthorityAddress(),
       tokenLedgerAccount: inputTokenAccount,
@@ -148,4 +158,19 @@ export async function zapOutDlmm(
     })
     .remainingAccounts(remainingAccounts)
     .transaction();
+}
+
+function convertAccountTypeToNumber(accountType: object): number {
+  if (JSON.stringify(accountType) === JSON.stringify({ transferHookX: {} })) {
+    return 0;
+  }
+
+  if (JSON.stringify(accountType) === JSON.stringify({ transferHookY: {} })) {
+    return 1;
+  }
+  if (
+    JSON.stringify(accountType) === JSON.stringify({ transferHookReward: {} })
+  ) {
+    return 2;
+  }
 }

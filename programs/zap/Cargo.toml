@@ -24,5 +24,6 @@ anchor-spl = { workspace = true, features = [] }
 spl-token-2022 = { version = "7.0.0", features = ["no-entrypoint"] }
 bytemuck = { workspace = true, features = ["min_const_generics"] }
 const-crypto = "0.3.0"
+num_enum = "0.7.1"
 damm-v2 = { path = "../../libs/damm-v2" }
 dlmm = { path = "../../libs/dlmm" }

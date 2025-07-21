@@ -1,8 +1,6 @@
 pub const ZAP_AUTHORITY_PREFIX: &[u8] = b"zap_authority";
 pub const TOKEN_LEDGER_PREFIX: &[u8] = b"token_ledger";
 
-pub const NUM_DAMM_V2_REMAINING_ACCOUNTS: usize = 10;
-
 pub mod amm_program_id {
     use anchor_lang::{prelude::Pubkey, solana_program::pubkey};
 

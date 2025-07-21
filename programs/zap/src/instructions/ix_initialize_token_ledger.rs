@@ -10,7 +10,7 @@ pub struct InitializeTokenLedgerCtx<'info> {
     #[account(
         address = const_pda::zap_authority::ID,
     )]
-    pub zap_authority: AccountInfo<'info>,
+    pub zap_authority: UncheckedAccount<'info>,
     /// CHECK: token_ledger_account initialize in program
     #[account(
         mut,
@@ -32,18 +32,22 @@ pub struct InitializeTokenLedgerCtx<'info> {
 }
 
 pub fn handle_initialize_token_ledger(ctx: Context<InitializeTokenLedgerCtx>) -> Result<()> {
-    initialize_token_account(
-        &ctx.accounts.zap_authority.to_account_info(),
-        &ctx.accounts.token_ledger_account.to_account_info(),
-        &ctx.accounts.token_mint.to_account_info(),
-        &ctx.accounts.payer.to_account_info(),
-        &ctx.accounts.token_program.to_account_info(),
-        &ctx.accounts.system_program.to_account_info(),
-        &[
-            TOKEN_LEDGER_PREFIX.as_ref(),
-            ctx.accounts.token_mint.key().as_ref(),
-            &[ctx.bumps.token_ledger_account][..],
-        ],
-    )?;
+    // Initialize if token_ledger_account does not exist.
+    if ctx.accounts.token_ledger_account.data_is_empty() {
+        initialize_token_account(
+            &ctx.accounts.zap_authority.to_account_info(),
+            &ctx.accounts.token_ledger_account.to_account_info(),
+            &ctx.accounts.token_mint.to_account_info(),
+            &ctx.accounts.payer.to_account_info(),
+            &ctx.accounts.token_program.to_account_info(),
+            &ctx.accounts.system_program.to_account_info(),
+            &[
+                TOKEN_LEDGER_PREFIX.as_ref(),
+                ctx.accounts.token_mint.key().as_ref(),
+                &[ctx.bumps.token_ledger_account][..],
+            ],
+        )?;
+    }
+
     Ok(())
 }

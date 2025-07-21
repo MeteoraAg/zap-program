@@ -1,37 +1,32 @@
 use anchor_lang::{
     prelude::*,
     solana_program::{instruction::Instruction, program::invoke_signed},
-    InstructionData,
 };
 use anchor_spl::token_interface::TokenAccount;
-use damm_v2::types::SwapParameters;
+use num_enum::{IntoPrimitive, TryFromPrimitive};
 
-use crate::{const_pda, constants::amm_program_id, error::ZapError};
+use crate::{
+    const_pda,
+    constants::amm_program_id::{DAMM_V2, DLMM},
+    error::ZapError,
+};
 
-#[derive(Debug, Clone, Copy)]
-pub enum AmmProgram {
-    DammV2,
-    Dlmm,
+#[repr(u8)]
+#[derive(
+    Clone,
+    Copy,
+    Debug,
+    PartialEq,
+    IntoPrimitive,
+    TryFromPrimitive,
+    AnchorDeserialize,
+    AnchorSerialize,
+)]
+pub enum ActionType {
+    SwapDammV2,
+    SwapDlmm,
 }
 
-impl AmmProgram {
-    pub fn from_pubkey(pubkey: &Pubkey) -> Result<AmmProgram> {
-        match *pubkey {
-            amm_program_id::DAMM_V2 => Ok(AmmProgram::DammV2),
-            amm_program_id::DLMM => Ok(AmmProgram::Dlmm),
-            _ => Err(error!(ZapError::UnsupportedAmmProgram)),
-        }
-    }
-}
-
-#[derive(AnchorSerialize, AnchorDeserialize)]
-pub struct ZapOutParameters {
-    pub minimum_amount_out: u64,
-    pub padding_0: [u64; 16],
-    pub remaining_accounts_info: Option<dlmm::types::RemainingAccountsInfo>,
-}
-
-#[event_cpi]
 #[derive(Accounts)]
 pub struct ZapOutCtx<'info> {
     /// CHECK: zap authority
@@ -48,29 +43,34 @@ pub struct ZapOutCtx<'info> {
 }
 
 impl<'info> ZapOutCtx<'info> {
-    fn get_damm_v2_instruction_data(&self, minimum_amount_out: u64) -> Result<Vec<u8>> {
-        let data = damm_v2::client::args::Swap {
-            params: SwapParameters {
-                amount_in: self.token_ledger_account.amount,
-                minimum_amount_out,
-            },
-        }
-        .data();
-
-        Ok(data)
-    }
-
-    fn get_dlmm_instruction_data(
+    fn get_instruction_data(
         &self,
-        minimum_amount_out: u64,
-        remaining_accounts_info: dlmm::types::RemainingAccountsInfo,
+        action_type: ActionType,
+        payload_data: &[u8],
     ) -> Result<Vec<u8>> {
-        let data = dlmm::client::args::Swap2 {
-            amount_in: self.token_ledger_account.amount,
-            min_amount_out: minimum_amount_out,
-            remaining_accounts_info,
-        }
-        .data();
+        let instruction_discriminator = match action_type {
+            ActionType::SwapDammV2 => {
+                // validate amm program id
+                require_keys_eq!(
+                    self.amm_program.key(),
+                    DAMM_V2,
+                    ZapError::InvalidAmmProgramId
+                );
+
+                damm_v2::client::args::Swap::DISCRIMINATOR
+            }
+            ActionType::SwapDlmm => {
+                // validate amm program id
+                require_keys_eq!(self.amm_program.key(), DLMM, ZapError::InvalidAmmProgramId);
+
+                dlmm::client::args::Swap2::DISCRIMINATOR
+            }
+        };
+
+        let mut data = vec![];
+        data.extend_from_slice(instruction_discriminator);
+        data.extend_from_slice(&self.token_ledger_account.amount.to_le_bytes());
+        data.extend_from_slice(payload_data);
 
         Ok(data)
     }
@@ -78,15 +78,9 @@ impl<'info> ZapOutCtx<'info> {
 
 pub fn handle_zap_out<'c: 'info, 'info>(
     ctx: Context<'_, '_, 'c, 'info, ZapOutCtx<'info>>,
-    params: ZapOutParameters,
+    action_type: u8,
+    payload_data: Vec<u8>,
 ) -> Result<()> {
-    let ZapOutParameters {
-        minimum_amount_out,
-        remaining_accounts_info,
-        ..
-    } = params;
-    let amm_program: AmmProgram = AmmProgram::from_pubkey(&ctx.accounts.amm_program.key())?;
-
     let accounts: Vec<AccountMeta> = ctx
         .remaining_accounts
         .iter()
@@ -106,20 +100,10 @@ pub fn handle_zap_out<'c: 'info, 'info>(
         .map(|acc| AccountInfo { ..acc.clone() })
         .collect();
 
-    let data = match amm_program {
-        AmmProgram::DammV2 => ctx
-            .accounts
-            .get_damm_v2_instruction_data(minimum_amount_out)?,
-        AmmProgram::Dlmm => {
-            if let Some(remaining_accounts_info) = remaining_accounts_info {
-                ctx.accounts
-                    .get_dlmm_instruction_data(minimum_amount_out, remaining_accounts_info)?
-            } else {
-                return Err(ZapError::MissingDlmmRemainingAccountInfo.into());
-            }
-        }
-    };
-
+    let action_type = ActionType::try_from(action_type).map_err(|_| ZapError::InvalidActionType)?;
+    let data = ctx
+        .accounts
+        .get_instruction_data(action_type, &payload_data)?;
     let signers_seeds = zap_authority_seeds!();
 
     invoke_signed(
