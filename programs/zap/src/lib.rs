@@ -13,7 +13,7 @@ pub mod utils;
 pub use utils::*;
 pub mod error;
 
-declare_id!("GQc29JqD7njZadikaVgzt5A2hkuLUYCDPX9EjYYi8Y3y");
+declare_id!("zapvX9M3uf5pvy4wRPAbQgdQsM1xmuiFnkfHKPvwMiz");
 
 #[program]
 pub mod zap {
