@@ -27,3 +27,4 @@ const-crypto = "0.3.0"
 num_enum = "0.7.1"
 damm-v2 = { path = "../../libs/damm-v2" }
 dlmm = { path = "../../libs/dlmm" }
+jup-v6 = { path = "../../libs/jup-v6" }

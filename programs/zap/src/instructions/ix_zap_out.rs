@@ -7,7 +7,10 @@ use num_enum::{IntoPrimitive, TryFromPrimitive};
 
 use crate::{
     const_pda,
-    constants::amm_program_id::{DAMM_V2, DLMM},
+    constants::{
+        amm_program_id::{DAMM_V2, DLMM, JUP_V6},
+        AMOUNT_IN_REVERSE_OFFSET,
+    },
     error::ZapError,
 };
 
@@ -25,6 +28,7 @@ use crate::{
 pub enum ActionType {
     SwapDammV2,
     SwapDlmm,
+    SwapJupiter,
 }
 
 #[derive(Accounts)]
@@ -48,7 +52,9 @@ impl<'info> ZapOutCtx<'info> {
         action_type: ActionType,
         payload_data: &[u8],
     ) -> Result<Vec<u8>> {
-        let instruction_discriminator = match action_type {
+        let mut data = vec![];
+        let amount_in = self.token_ledger_account.amount.to_le_bytes();
+        match action_type {
             ActionType::SwapDammV2 => {
                 // validate amm program id
                 require_keys_eq!(
@@ -57,20 +63,39 @@ impl<'info> ZapOutCtx<'info> {
                     ZapError::InvalidAmmProgramId
                 );
 
-                damm_v2::client::args::Swap::DISCRIMINATOR
+                let discriminator = damm_v2::client::args::Swap::DISCRIMINATOR;
+                data.extend_from_slice(discriminator);
+                data.extend_from_slice(&amount_in);
+                data.extend_from_slice(payload_data);
             }
             ActionType::SwapDlmm => {
                 // validate amm program id
                 require_keys_eq!(self.amm_program.key(), DLMM, ZapError::InvalidAmmProgramId);
 
-                dlmm::client::args::Swap2::DISCRIMINATOR
+                let discriminator = dlmm::client::args::Swap2::DISCRIMINATOR;
+                data.extend_from_slice(discriminator);
+                data.extend_from_slice(&amount_in);
+                data.extend_from_slice(payload_data);
+            }
+            ActionType::SwapJupiter => {
+                // validate amm program id
+                require_keys_eq!(
+                    self.amm_program.key(),
+                    JUP_V6,
+                    ZapError::InvalidAmmProgramId
+                );
+
+                let discriminator = jup_v6::client::args::Route::DISCRIMINATOR;
+                data.extend_from_slice(discriminator);
+
+                // Update amount data in payload_data to amount_in value
+                let start_index = payload_data.len() - AMOUNT_IN_REVERSE_OFFSET;
+                let end_index = start_index + 8; // 8 bytes for amount_in
+                data.extend_from_slice(&payload_data[..start_index]);
+                data.extend_from_slice(&amount_in);
+                data.extend_from_slice(&payload_data[end_index..]);
             }
         };
-
-        let mut data = vec![];
-        data.extend_from_slice(instruction_discriminator);
-        data.extend_from_slice(&self.token_ledger_account.amount.to_le_bytes());
-        data.extend_from_slice(payload_data);
 
         Ok(data)
     }
