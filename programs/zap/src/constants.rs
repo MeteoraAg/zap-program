@@ -3,7 +3,7 @@ pub const TOKEN_LEDGER_PREFIX: &[u8] = b"token_ledger";
 
 // Offset for amount_in in reverse order of jupiter Route instruction data:
 // amount_in(u64) + quoted_out_amount(64) + slippage_bps(u16) + platform_fee_bps(u8) = 19 bytes
-pub const AMOUNT_IN_REVERSE_OFFSET: usize = 19;
+pub const AMOUNT_IN_JUP_V6_REVERSE_OFFSET: usize = 19;
 
 pub mod amm_program_id {
     use anchor_lang::{prelude::Pubkey, solana_program::pubkey};

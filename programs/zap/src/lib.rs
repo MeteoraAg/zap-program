@@ -12,6 +12,8 @@ pub mod constants;
 pub mod utils;
 pub use utils::*;
 pub mod error;
+pub mod math;
+pub use math::*;
 
 declare_id!("zapvX9M3uf5pvy4wRPAbQgdQsM1xmuiFnkfHKPvwMiz");
 

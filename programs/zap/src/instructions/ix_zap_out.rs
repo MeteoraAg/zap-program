@@ -9,9 +9,10 @@ use crate::{
     const_pda,
     constants::{
         amm_program_id::{DAMM_V2, DLMM, JUP_V6},
-        AMOUNT_IN_REVERSE_OFFSET,
+        AMOUNT_IN_JUP_V6_REVERSE_OFFSET,
     },
     error::ZapError,
+    safe_math::SafeMath,
 };
 
 #[repr(u8)]
@@ -28,7 +29,7 @@ use crate::{
 pub enum ActionType {
     SwapDammV2,
     SwapDlmm,
-    SwapJupiter,
+    SwapJupiterV6,
 }
 
 #[derive(Accounts)]
@@ -47,14 +48,28 @@ pub struct ZapOutCtx<'info> {
 }
 
 impl<'info> ZapOutCtx<'info> {
+    fn build_payload_data(
+        &self,
+        payload_data: &[u8],
+        discriminator: &[u8],
+        start_index: usize,
+        end_index: usize,
+    ) -> Vec<u8> {
+        let mut data = vec![];
+        let amount_in = self.token_ledger_account.amount.to_le_bytes();
+        data.extend_from_slice(&discriminator);
+        data.extend_from_slice(&payload_data[..start_index]);
+        data.extend_from_slice(&amount_in);
+        data.extend_from_slice(&payload_data[end_index..]);
+
+        data
+    }
     fn get_instruction_data(
         &self,
         action_type: ActionType,
         payload_data: &[u8],
     ) -> Result<Vec<u8>> {
-        let mut data = vec![];
-        let amount_in = self.token_ledger_account.amount.to_le_bytes();
-        match action_type {
+        let data = match action_type {
             ActionType::SwapDammV2 => {
                 // validate amm program id
                 require_keys_eq!(
@@ -64,20 +79,16 @@ impl<'info> ZapOutCtx<'info> {
                 );
 
                 let discriminator = damm_v2::client::args::Swap::DISCRIMINATOR;
-                data.extend_from_slice(discriminator);
-                data.extend_from_slice(&amount_in);
-                data.extend_from_slice(payload_data);
+                self.build_payload_data(payload_data, discriminator, 0, 0)
             }
             ActionType::SwapDlmm => {
                 // validate amm program id
                 require_keys_eq!(self.amm_program.key(), DLMM, ZapError::InvalidAmmProgramId);
 
                 let discriminator = dlmm::client::args::Swap2::DISCRIMINATOR;
-                data.extend_from_slice(discriminator);
-                data.extend_from_slice(&amount_in);
-                data.extend_from_slice(payload_data);
+                self.build_payload_data(payload_data, discriminator, 0, 0)
             }
-            ActionType::SwapJupiter => {
+            ActionType::SwapJupiterV6 => {
                 // validate amm program id
                 require_keys_eq!(
                     self.amm_program.key(),
@@ -85,15 +96,18 @@ impl<'info> ZapOutCtx<'info> {
                     ZapError::InvalidAmmProgramId
                 );
 
-                let discriminator = jup_v6::client::args::Route::DISCRIMINATOR;
-                data.extend_from_slice(discriminator);
+                require!(
+                    payload_data.len() > AMOUNT_IN_JUP_V6_REVERSE_OFFSET,
+                    ZapError::InvalidDataLen
+                );
 
+                let discriminator = jup_v6::client::args::Route::DISCRIMINATOR;
                 // Update amount data in payload_data to amount_in value
-                let start_index = payload_data.len() - AMOUNT_IN_REVERSE_OFFSET;
-                let end_index = start_index + 8; // 8 bytes for amount_in
-                data.extend_from_slice(&payload_data[..start_index]);
-                data.extend_from_slice(&amount_in);
-                data.extend_from_slice(&payload_data[end_index..]);
+                let start_index = payload_data
+                    .len()
+                    .safe_sub(AMOUNT_IN_JUP_V6_REVERSE_OFFSET)?;
+                let end_index = start_index.safe_add(8)?; // 8 bytes for amount_in
+                self.build_payload_data(payload_data, discriminator, start_index, end_index)
             }
         };
 
