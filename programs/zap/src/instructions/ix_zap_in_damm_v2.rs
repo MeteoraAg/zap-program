@@ -144,7 +144,22 @@ impl<'info> ZapInDammV2Ctx<'info> {
     }
 
     ///
-    /// Sort the accounts by the trade direction
+    /// Sort the accounts by the trade direction.
+    ///
+    /// # Arguments
+    ///
+    /// * `trade_direction` - The trade direction.
+    ///
+    /// # Returns
+    ///
+    /// * `token_in_account`
+    /// * `token_out_account`
+    /// * `token_in_mint`
+    /// * `token_out_mint`
+    /// * `token_in_vault`
+    /// * `token_out_vault`
+    /// * `token_in_program`
+    /// * `token_out_program`
     ///
     pub fn sort_accounts(
         &self,
@@ -184,9 +199,16 @@ impl<'info> ZapInDammV2Ctx<'info> {
     }
 
     ///
-    /// Simulate an atomic swap on DAMM V2
-    /// The returned token amounts are fee-included
-    /// If local_pool is None, the function will borrow one from the context
+    /// Simulate an swap on DAMM V2.
+    ///
+    /// # Arguments
+    ///
+    /// * `amount_in` - The input amount.
+    /// * `local_pool` - The pool state. If `local_pool` is `None`, the function will borrow one from the current context.
+    ///
+    /// # Returns
+    ///
+    /// The token amounts with fees included
     ///
     pub fn simulate_swap(
         &self,
@@ -233,7 +255,17 @@ impl<'info> ZapInDammV2Ctx<'info> {
     }
 
     ///
-    /// Invoke the swap on DAMM V2
+    /// Invoke the swap on DAMM V2.
+    ///
+    /// # Arguments
+    ///
+    /// * `amount_in` - The input amount.
+    /// * `minimum_amount_out` - The minimum output amount.
+    /// * `trade_direction` - The trade direction.
+    ///
+    /// # Returns
+    ///
+    /// `ProgramResult`
     ///
     pub fn swap(
         &self,
@@ -274,8 +306,16 @@ impl<'info> ZapInDammV2Ctx<'info> {
     }
 
     ///
-    /// Simulate add liquidity
-    /// The returned token amounts are fee-included
+    /// Simulate an add_liquidity on DAMM V2.
+    ///
+    /// # Arguments
+    ///
+    /// * `liquidity_delta` - The liquidity delta.
+    /// * `local_pool` - The pool state. If `local_pool` is `None`, the function will borrow one from the current context.
+    ///
+    /// # Returns
+    ///
+    /// The required amounts of token A & B
     ///
     pub fn simulate_add_liquidity(
         &self,
@@ -304,7 +344,17 @@ impl<'info> ZapInDammV2Ctx<'info> {
     }
 
     ///
-    /// Invoke the add_liqudity on DAMM V2
+    /// Invoke the add_liqudity on DAMM V2.
+    ///
+    /// # Arguments
+    ///
+    /// * `liquidity_delta` - The liquidity delta.
+    /// * `token_a_amount_threshold` - The maximum input amount of token A.
+    /// * `token_b_amount_threshold` - The maximum input amount of token B.
+    ///
+    /// # Returns
+    ///
+    /// `ProgramResult`
     ///
     pub fn add_liqudity(
         &self,
@@ -345,8 +395,16 @@ impl<'info> ZapInDammV2Ctx<'info> {
     }
 
     ///
-    /// Derive the liquidity delta based on the amount of token A
-    /// If local_pool is None, the function will borrow one from the context
+    /// Derive the liquidity delta based on the amount of token A.
+    ///
+    /// # Arguments
+    ///
+    /// * `a` - The desired amount of token A.
+    /// * `local_pool` - The pool state. If `local_pool` is `None`, the function will borrow one from the current context.
+    ///
+    /// # Returns
+    ///
+    /// The liquidity delta
     ///
     pub fn derive_liquidity_delta_based_on_a(
         &self,
@@ -373,8 +431,16 @@ impl<'info> ZapInDammV2Ctx<'info> {
     }
 
     ///
-    /// Derive the liquidity delta based on the amount of token B
-    /// If local_pool is None, the function will borrow one from the context
+    /// Derive the liquidity delta based on the amount of token B.
+    ///
+    /// # Arguments
+    ///
+    /// * `b` - The desired amount of token B.
+    /// * `local_pool` - The pool state. If `local_pool` is `None`, the function will borrow one from the current context.
+    ///
+    /// # Returns
+    ///
+    /// The liquidity delta
     ///
     pub fn derive_liquidity_delta_based_on_b(
         &self,
