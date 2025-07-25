@@ -16,4 +16,10 @@ pub enum ZapError {
 
     #[msg("Type cast error")]
     TypeCastFailed,
+
+    #[msg("Amount is zero")]
+    AmountIsZero,
+
+    #[msg("Cannot converge to optimal value")]
+    CannotConvergeToOptimalValue,
 }

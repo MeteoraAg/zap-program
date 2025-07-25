@@ -31,7 +31,10 @@ pub mod zap {
         instructions::handle_zap_out(ctx, action_type, payload_data)
     }
 
-    pub fn zap_in(ctx: Context<ZapInDammV2Ctx>, a: u64) -> Result<(u128, u64, u64)> {
-        instructions::handle_zap_on_a_in_damm_v2(ctx, a)
+    pub fn zap_in(
+        ctx: Context<ZapInDammV2Ctx>,
+        params: ZapInDammV2Parameters,
+    ) -> Result<Vec<ZapInDammV2Result>> {
+        instructions::handle_zap_in_damm_v2(ctx, params)
     }
 }

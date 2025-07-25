@@ -16,7 +16,7 @@ import {
 } from "./common";
 import { TOKEN_PROGRAM_ID } from "@coral-xyz/anchor/dist/cjs/utils/token";
 import { deserialize } from "borsh";
-import fc from "fast-check";
+import fc, { bigInt } from "fast-check";
 import { expect } from "chai";
 
 import ZapIDL from "../target/idl/zap.json";
@@ -38,10 +38,18 @@ import {
 } from "./common/pda";
 
 const ZapInReturnSchema = {
-  struct: {
-    liquidity_delta: "u128",
-    token_a_swapped_amount: "u64",
-    token_b_returned_amount: "u64",
+  array: {
+    type: {
+      struct: {
+        liquidity_delta: "u128",
+        token_a_amount: "u64",
+        token_b_amount: "u64",
+        token_a_remaining_amount: "u64",
+        token_b_remaining_amount: "u64",
+        token_returned_amount: "u64",
+        token_swapped_amount: "u64",
+      },
+    },
   },
 };
 
@@ -82,37 +90,42 @@ describe("Zap in damm V2", () => {
 
   const testcases = fc.sample(
     fc.record({
-      amount: fc.bigInt({
-        min: BigInt(2),
+      a: fc.bigInt({
+        min: BigInt(0),
         max: BigInt(999999000) * BigInt(10 ** TOKEN_DECIMALS),
       }),
-      verbose: fc.constant(true),
+      b: fc.bigInt({
+        min: BigInt(0),
+        max: BigInt(999999000) * BigInt(10 ** TOKEN_DECIMALS),
+      }),
+      verbose: fc.constant(false), // Visible logs
     }),
-    1 // Number of testcases
+    1000 // Number of testcases
   );
 
-  testcases.forEach(({ amount, verbose }, i) => {
-    it(`zap in #${i + 1}`, async () => {
+  testcases.forEach(({ a, b, verbose }, i) => {
+    it(`zap-in #${i + 1}`, async () => {
       const pool = await createDammV2Pool(svm, admin, tokenAMint, tokenBMint);
       const position = await createPositionAndAddLiquidity(svm, user, pool);
 
       const dammV2Program = createDammV2Program();
       const poolState = getDammV2Pool(svm, pool);
       const positionState = getDammV2Position(svm, position);
-      var { amount: A } = AccountLayout.decode(
+      const { amount: prevA } = AccountLayout.decode(
         svm.getAccount(
           getAssociatedTokenAddressSync(tokenAMint, user.publicKey)
         ).data
       );
-      var { amount: B } = AccountLayout.decode(
+      const { amount: prevB } = AccountLayout.decode(
         svm.getAccount(
           getAssociatedTokenAddressSync(tokenBMint, user.publicKey)
         ).data
       );
-      if (verbose) console.log("before", { amount, A, B });
+      if (verbose) console.log("Zapped-in amounts:", { a, b });
+      if (verbose) console.log("Balances before the zap-in:", { prevA, prevB });
 
       const zapIn = await zapProgram.methods
-        .zapIn(new BN(amount))
+        .zapIn({ a: new BN(a), b: new BN(b) })
         .accountsPartial({
           poolAuthority: deriveDammV2PoolAuthority(),
           pool,
@@ -136,10 +149,7 @@ describe("Zap in damm V2", () => {
           tokenAProgram: TOKEN_PROGRAM_ID,
           tokenBProgram: TOKEN_PROGRAM_ID,
           dammV2Program: dammV2Program.programId,
-          referralTokenAccount: getAssociatedTokenAddressSync(
-            tokenBMint,
-            admin.publicKey
-          ),
+          referralTokenAccount: null,
         })
         .transaction();
       let tx = new Transaction();
@@ -151,22 +161,51 @@ describe("Zap in damm V2", () => {
       const result = svm.sendTransaction(tx);
       const meta =
         result instanceof TransactionMetadata ? result : result.meta();
+      const logs = meta.logs();
 
-      var { amount: A } = AccountLayout.decode(
+      const { amount: nextA } = AccountLayout.decode(
         svm.getAccount(
           getAssociatedTokenAddressSync(tokenAMint, user.publicKey)
         ).data
       );
-      var { amount: B } = AccountLayout.decode(
+      const { amount: nextB } = AccountLayout.decode(
         svm.getAccount(
           getAssociatedTokenAddressSync(tokenBMint, user.publicKey)
         ).data
       );
-      if (verbose) console.log("after", { A, B });
-      if (verbose) console.log(meta.logs());
-      if (verbose)
-        console.log(deserialize(ZapInReturnSchema, meta.returnData().data()));
-      expect(true);
+      if (verbose) console.log("Balances after the zap-in:", { nextA, nextB });
+      if (verbose) console.log(logs);
+
+      let data = meta.returnData().data();
+      let stream = logs.join("\n");
+      if (!data.length) {
+        expect(stream).contain("Error Code: AmountIsZero");
+      } else {
+        let results = deserialize(ZapInReturnSchema, data) as Array<{
+          liquidity_delta: bigint;
+          token_a_amount: bigint;
+          token_b_amount: bigint;
+          token_a_remaining_amount: bigint;
+          token_b_remaining_amount: bigint;
+          token_returned_amount: bigint;
+          token_swapped_amount: bigint;
+        }>;
+        if (verbose) console.log("Result:", results);
+        const { token_a_remaining_amount, token_b_remaining_amount } =
+          results[results.length - 1];
+        expect(
+          results.reduce(
+            (a, { token_a_amount }) => a + token_a_amount,
+            nextA - token_a_remaining_amount
+          )
+        ).eq(prevA);
+        expect(
+          results.reduce(
+            (b, { token_b_amount }) => b + token_b_amount,
+            nextB - token_b_remaining_amount
+          )
+        ).eq(prevB);
+      }
     });
   });
 });
