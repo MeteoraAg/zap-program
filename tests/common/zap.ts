@@ -18,6 +18,7 @@ import {
 import { DAMM_V2_PROGRAM_ID, getDammV2RemainingAccounts } from "./damm_v2";
 import { DLMM_PROGRAM_ID_LOCAL, getDlmmRemainingAccounts } from "./dlmm";
 import { expect } from "chai";
+import { getJupRemainingAccounts, JUP_V6_PROGRAM_ID, RoutePlanStep } from "./jup";
 
 export const ZAP_PROGRAM_ID = new PublicKey(ZapIDL.address);
 
@@ -155,6 +156,66 @@ export async function zapOutDlmm(
       zapAuthority: deriveZapAuthorityAddress(),
       tokenLedgerAccount: inputTokenAccount,
       ammProgram: DLMM_PROGRAM_ID_LOCAL,
+    })
+    .remainingAccounts(remainingAccounts)
+    .transaction();
+}
+
+export async function zapOutJupV6(
+  svm: LiteSVM,
+  pool: PublicKey,
+  inputTokenAccount: PublicKey,
+  outputTokenAccount: PublicKey,
+  outputMint: PublicKey
+): Promise<Transaction> {
+  const zapProgram = createZapProgram();
+  
+  const remainingAccounts = getJupRemainingAccounts(
+    svm,
+    pool,
+    inputTokenAccount,
+    outputTokenAccount,
+    outputMint
+  );
+  const actionType = 2;
+  // const routeStepPlan = [
+  //   {
+  //     swap: {
+  //       MeteoraDammV2: {}, // index 77 in enum
+  //     },
+  //     percent: 100,
+  //     inputIndex: 0,
+  //     outputIndex: 1,
+  //   },
+  // ];
+  const routeStepPlanCount = Buffer.alloc(4);
+  routeStepPlanCount.writeUInt32LE(1, 0); // route plan has 1 item. In Anchor, vector need 4 bytes index.
+  const routeStepPlanBuffer = Buffer.alloc(4);
+  routeStepPlanBuffer.writeUint8(77, 0); //  MeteoraDammV2:{} // index 77 in enum
+  routeStepPlanBuffer.writeUint8(100, 1); // percent
+  routeStepPlanBuffer.writeUint8(0, 2); //
+  routeStepPlanBuffer.writeUint8(1, 3); //
+
+  const inAmount = new BN(0).toArrayLike(Buffer, "le", 8);
+  const quotedOutAmount = new BN(0).toArrayLike(Buffer, "le", 8);
+  const slippageBps = new BN(9900).toArrayLike(Buffer, "le", 2);
+  const platFormFee = Buffer.from([0]);
+
+  const payloadData = Buffer.concat([
+    routeStepPlanCount,
+    routeStepPlanBuffer,
+    inAmount,
+    quotedOutAmount,
+    slippageBps,
+    platFormFee,
+  ]);
+
+  return await zapProgram.methods
+    .zapOut(actionType, payloadData)
+    .accountsPartial({
+      zapAuthority: deriveZapAuthorityAddress(),
+      tokenLedgerAccount: inputTokenAccount,
+      ammProgram: JUP_V6_PROGRAM_ID,
     })
     .remainingAccounts(remainingAccounts)
     .transaction();

@@ -809,6 +809,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "jup-v6"
+version = "0.0.1"
+dependencies = [
+ "anchor-lang",
+]
+
+[[package]]
 name = "keccak"
 version = "0.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2944,6 +2951,7 @@ dependencies = [
  "const-crypto",
  "damm-v2",
  "dlmm",
+ "jup-v6",
  "num_enum",
  "spl-token-2022 7.0.0",
 ]

@@ -13,4 +13,10 @@ pub enum ZapError {
 
     #[msg("Type cast error")]
     TypeCastFailed,
+
+    #[msg("Invalid data length")]
+    InvalidDataLen,
+
+    #[msg("Math operation overflow")]
+    MathOverflow,
 }

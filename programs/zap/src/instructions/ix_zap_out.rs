@@ -7,8 +7,12 @@ use num_enum::{IntoPrimitive, TryFromPrimitive};
 
 use crate::{
     const_pda,
-    constants::amm_program_id::{DAMM_V2, DLMM},
+    constants::{
+        amm_program_id::{DAMM_V2, DLMM, JUP_V6},
+        AMOUNT_IN_JUP_V6_REVERSE_OFFSET,
+    },
     error::ZapError,
+    safe_math::SafeMath,
 };
 
 #[repr(u8)]
@@ -25,6 +29,7 @@ use crate::{
 pub enum ActionType {
     SwapDammV2,
     SwapDlmm,
+    SwapJupiterV6,
 }
 
 #[derive(Accounts)]
@@ -42,13 +47,24 @@ pub struct ZapOutCtx<'info> {
     pub amm_program: UncheckedAccount<'info>,
 }
 
+fn modify_payload_data(
+    payload_data: &mut Vec<u8>,
+    discriminator: &[u8],
+    amount_in: u64,
+    index: usize,
+) {
+    payload_data.splice(0..0, discriminator.iter().cloned());
+    payload_data.splice(index..index, amount_in.to_le_bytes().iter().cloned());
+}
+
 impl<'info> ZapOutCtx<'info> {
-    fn get_instruction_data(
+    fn validate_and_modify_instruction_data(
         &self,
         action_type: ActionType,
-        payload_data: &[u8],
-    ) -> Result<Vec<u8>> {
-        let instruction_discriminator = match action_type {
+        payload_data: &mut Vec<u8>,
+    ) -> Result<()> {
+        let amount_in = self.token_ledger_account.amount;
+        match action_type {
             ActionType::SwapDammV2 => {
                 // validate amm program id
                 require_keys_eq!(
@@ -57,29 +73,41 @@ impl<'info> ZapOutCtx<'info> {
                     ZapError::InvalidAmmProgramId
                 );
 
-                damm_v2::client::args::Swap::DISCRIMINATOR
+                let discriminator = damm_v2::client::args::Swap::DISCRIMINATOR;
+                modify_payload_data(payload_data, discriminator, amount_in, discriminator.len());
             }
             ActionType::SwapDlmm => {
                 // validate amm program id
                 require_keys_eq!(self.amm_program.key(), DLMM, ZapError::InvalidAmmProgramId);
 
-                dlmm::client::args::Swap2::DISCRIMINATOR
+                let discriminator = dlmm::client::args::Swap2::DISCRIMINATOR;
+                modify_payload_data(payload_data, discriminator, amount_in, discriminator.len());
+            }
+            ActionType::SwapJupiterV6 => {
+                // validate amm program id
+                require_keys_eq!(
+                    self.amm_program.key(),
+                    JUP_V6,
+                    ZapError::InvalidAmmProgramId
+                );
+
+                let discriminator = jup_v6::client::args::Route::DISCRIMINATOR;
+                // Update amount data in payload_data to amount_in value
+                let index = payload_data
+                    .len()
+                    .safe_sub(AMOUNT_IN_JUP_V6_REVERSE_OFFSET)?
+                    .safe_add(discriminator.len())?;
+                modify_payload_data(payload_data, discriminator, amount_in, index);
             }
         };
-
-        let mut data = vec![];
-        data.extend_from_slice(instruction_discriminator);
-        data.extend_from_slice(&self.token_ledger_account.amount.to_le_bytes());
-        data.extend_from_slice(payload_data);
-
-        Ok(data)
+        Ok(())
     }
 }
 
 pub fn handle_zap_out<'c: 'info, 'info>(
     ctx: Context<'_, '_, 'c, 'info, ZapOutCtx<'info>>,
     action_type: u8,
-    payload_data: Vec<u8>,
+    payload_data: &[u8],
 ) -> Result<()> {
     let accounts: Vec<AccountMeta> = ctx
         .remaining_accounts
@@ -101,16 +129,16 @@ pub fn handle_zap_out<'c: 'info, 'info>(
         .collect();
 
     let action_type = ActionType::try_from(action_type).map_err(|_| ZapError::InvalidActionType)?;
-    let data = ctx
-        .accounts
-        .get_instruction_data(action_type, &payload_data)?;
+    let mut payload_data = payload_data.to_vec();
+    ctx.accounts
+        .validate_and_modify_instruction_data(action_type, &mut payload_data)?;
     let signers_seeds = zap_authority_seeds!();
 
     invoke_signed(
         &Instruction {
             program_id: ctx.accounts.amm_program.key(),
             accounts,
-            data,
+            data: payload_data,
         },
         &account_infos,
         &[&signers_seeds[..]],

@@ -12,6 +12,8 @@ pub mod constants;
 pub mod utils;
 pub use utils::*;
 pub mod error;
+pub mod math;
+pub use math::*;
 
 declare_id!("zapvX9M3uf5pvy4wRPAbQgdQsM1xmuiFnkfHKPvwMiz");
 
@@ -28,6 +30,6 @@ pub mod zap {
         action_type: u8,
         payload_data: Vec<u8>,
     ) -> Result<()> {
-        instructions::handle_zap_out(ctx, action_type, payload_data)
+        instructions::handle_zap_out(ctx, action_type, &payload_data)
     }
 }
