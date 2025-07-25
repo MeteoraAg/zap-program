@@ -1,6 +1,6 @@
 use anchor_lang::{
     prelude::*,
-    solana_program::{instruction::Instruction, program::invoke},
+    solana_program::{entrypoint::ProgramResult, instruction::Instruction, program::invoke},
 };
 use anchor_spl::token_interface::{Mint, TokenAccount, TokenInterface};
 use damm_v2::types::{AddLiquidityParameters, SwapParameters};
@@ -143,10 +143,15 @@ impl<'info> ZapInDammV2Ctx<'info> {
         Ok(data)
     }
 
+    ///
+    /// Sort the accounts by the trade direction
+    ///
     pub fn sort_accounts(
         &self,
         trade_direction: TradeDirection,
     ) -> (
+        &Box<InterfaceAccount<'info, TokenAccount>>,
+        &Box<InterfaceAccount<'info, TokenAccount>>,
         &Box<InterfaceAccount<'info, Mint>>,
         &Box<InterfaceAccount<'info, Mint>>,
         &Box<InterfaceAccount<'info, TokenAccount>>,
@@ -156,6 +161,8 @@ impl<'info> ZapInDammV2Ctx<'info> {
     ) {
         match trade_direction {
             TradeDirection::AtoB => (
+                &self.token_a_account,
+                &self.token_b_account,
                 &self.token_a_mint,
                 &self.token_b_mint,
                 &self.token_a_vault,
@@ -164,6 +171,8 @@ impl<'info> ZapInDammV2Ctx<'info> {
                 &self.token_b_program,
             ),
             TradeDirection::BtoA => (
+                &self.token_b_account,
+                &self.token_a_account,
                 &self.token_b_mint,
                 &self.token_a_mint,
                 &self.token_b_vault,
@@ -176,15 +185,19 @@ impl<'info> ZapInDammV2Ctx<'info> {
 
     ///
     /// Simulate an atomic swap on DAMM V2
+    /// The returned token amounts are fee-included
+    /// If local_pool is None, the function will borrow one from the context
     ///
     pub fn simulate_swap(
         &self,
-        pool: &mut Pool,
         amount_in: u64,
         trade_direction: TradeDirection,
+        local_pool: Option<&mut Pool>,
     ) -> Result<u64> {
+        let mut borrowed_pool = self.pool.load()?.clone();
+        let pool = local_pool.unwrap_or(&mut borrowed_pool);
         // Parse accounts
-        let (token_in_mint, token_out_mint, ..) = self.sort_accounts(trade_direction);
+        let (_, _, token_in_mint, token_out_mint, ..) = self.sort_accounts(trade_direction);
         // Transfer-in fee (Token Extension)
         let TransferFeeExcludedAmount {
             amount: transfer_fee_excluded_amount_in,
@@ -216,8 +229,175 @@ impl<'info> ZapInDammV2Ctx<'info> {
             amount: transfer_fee_excluded_amount_out,
             ..
         } = calculate_transfer_fee_excluded_amount(&token_out_mint, swap_result.output_amount)?;
-        // TODO: how to avoid slippage rate?
         Ok(transfer_fee_excluded_amount_out)
+    }
+
+    ///
+    /// Invoke the swap on DAMM V2
+    ///
+    pub fn swap(
+        &self,
+        amount_in: u64,
+        minimum_amount_out: u64,
+        trade_direction: TradeDirection,
+    ) -> ProgramResult {
+        let (input_token_account, output_token_account, ..) = self.sort_accounts(trade_direction);
+        let swap_ctx = CpiContext::new(
+            self.damm_v2_program.to_account_info(),
+            SwapCtx {
+                pool_authority: self.pool_authority.clone(),
+                pool: self.pool.clone(),
+                input_token_account: input_token_account.clone(),
+                output_token_account: output_token_account.clone(),
+                token_a_vault: self.token_a_vault.clone(),
+                token_b_vault: self.token_b_vault.clone(),
+                token_a_mint: self.token_a_mint.clone(),
+                token_b_mint: self.token_b_mint.clone(),
+                payer: self.owner.clone(),
+                token_a_program: self.token_a_program.clone(),
+                token_b_program: self.token_b_program.clone(),
+                referral_token_account: self.referral_token_account.clone(),
+                event_authority: self.damm_v2_event_authority.to_account_info(),
+                program: self.damm_v2_program.to_account_info(),
+            },
+        );
+        let swap_ix = Instruction {
+            program_id: self.damm_v2_program.key(),
+            accounts: swap_ctx.to_account_metas(None),
+            data: self.get_swap_ix_data(SwapParameters {
+                amount_in,
+                minimum_amount_out,
+            })?,
+        };
+
+        invoke(&swap_ix, &swap_ctx.to_account_infos())
+    }
+
+    ///
+    /// Simulate add liquidity
+    /// The returned token amounts are fee-included
+    ///
+    pub fn simulate_add_liquidity(
+        &self,
+        liquidity_delta: u128,
+        local_pool: Option<&Pool>,
+    ) -> Result<(u64, u64)> {
+        let borrowed_pool = self.pool.load()?.clone();
+        let pool = local_pool.unwrap_or(&borrowed_pool);
+
+        let ModifyLiquidityResult {
+            token_a_amount,
+            token_b_amount,
+        } = pool.get_amounts_for_modify_liquidity(liquidity_delta, Rounding::Up)?;
+        let TransferFeeIncludedAmount {
+            amount: transfer_fee_included_token_a_amount,
+            ..
+        } = calculate_transfer_fee_included_amount(&self.token_a_mint, token_a_amount)?;
+        let TransferFeeIncludedAmount {
+            amount: transfer_fee_included_token_b_amount,
+            ..
+        } = calculate_transfer_fee_included_amount(&self.token_b_mint, token_b_amount)?;
+        Ok((
+            transfer_fee_included_token_a_amount,
+            transfer_fee_included_token_b_amount,
+        ))
+    }
+
+    ///
+    /// Invoke the add_liqudity on DAMM V2
+    ///
+    pub fn add_liqudity(
+        &self,
+        liquidity_delta: u128,
+        token_a_amount_threshold: u64,
+        token_b_amount_threshold: u64,
+    ) -> ProgramResult {
+        let add_liquidity_ctx = CpiContext::new(
+            self.damm_v2_program.to_account_info(),
+            AddLiquidityCtx {
+                pool: self.pool.clone(),
+                position: self.position.clone(),
+                token_a_account: self.token_a_account.clone(),
+                token_b_account: self.token_b_account.clone(),
+                token_a_vault: self.token_a_vault.clone(),
+                token_b_vault: self.token_b_vault.clone(),
+                token_a_mint: self.token_a_mint.clone(),
+                token_b_mint: self.token_b_mint.clone(),
+                position_nft_account: self.position_nft_account.clone(),
+                owner: self.owner.clone(),
+                token_a_program: self.token_a_program.clone(),
+                token_b_program: self.token_b_program.clone(),
+                event_authority: self.damm_v2_event_authority.to_account_info(),
+                program: self.damm_v2_program.to_account_info(),
+            },
+        );
+        let add_liquidity_ix = Instruction {
+            program_id: self.damm_v2_program.key(),
+            accounts: add_liquidity_ctx.to_account_metas(None),
+            data: self.get_add_liquidity_ix_data(AddLiquidityParameters {
+                liquidity_delta,
+                token_a_amount_threshold,
+                token_b_amount_threshold,
+            })?,
+        };
+
+        invoke(&add_liquidity_ix, &add_liquidity_ctx.to_account_infos())
+    }
+
+    ///
+    /// Derive the liquidity delta based on the amount of token A
+    /// If local_pool is None, the function will borrow one from the context
+    ///
+    pub fn derive_liquidity_delta_based_on_a(
+        &self,
+        a: u64,
+        local_pool: Option<&Pool>,
+    ) -> Result<u128> {
+        let borrowed_pool = self.pool.load()?.clone();
+        let pool = local_pool.unwrap_or(&borrowed_pool);
+        let TransferFeeExcludedAmount {
+            amount: transfer_fee_excluded_token_a_amount,
+            ..
+        } = calculate_transfer_fee_excluded_amount(&self.token_a_mint, a)?;
+        let liquidity_delta: u128 = mul_div_u256(
+            U256::from(transfer_fee_excluded_token_a_amount),
+            U256::from(pool.sqrt_price).safe_mul(U256::from(pool.sqrt_max_price))?,
+            U256::from(pool.sqrt_max_price - pool.sqrt_price),
+            Rounding::Down,
+        )
+        .ok_or(ZapError::MathOverflow)?
+        .try_into()
+        .map_err(|_| ZapError::MathOverflow)?;
+
+        Ok(liquidity_delta)
+    }
+
+    ///
+    /// Derive the liquidity delta based on the amount of token B
+    /// If local_pool is None, the function will borrow one from the context
+    ///
+    pub fn derive_liquidity_delta_based_on_b(
+        &self,
+        b: u64,
+        local_pool: Option<&Pool>,
+    ) -> Result<u128> {
+        let borrowed_pool = self.pool.load()?.clone();
+        let pool = local_pool.unwrap_or(&borrowed_pool);
+        let TransferFeeExcludedAmount {
+            amount: transfer_fee_excluded_token_b_amount,
+            ..
+        } = calculate_transfer_fee_excluded_amount(&self.token_b_mint, b)?;
+        let liquidity_delta: u128 = mul_div_u256(
+            U256::from(transfer_fee_excluded_token_b_amount),
+            U256::from(1).safe_shl(RESOLUTION as usize * 2)?,
+            U256::from(pool.sqrt_price - pool.sqrt_min_price),
+            Rounding::Down,
+        )
+        .ok_or(ZapError::MathOverflow)?
+        .try_into()
+        .map_err(|_| ZapError::MathOverflow)?;
+
+        Ok(liquidity_delta)
     }
 }
 
@@ -243,94 +423,19 @@ pub fn handle_zap_in_damm_v2(
     }
 
     let mut result: Vec<ZapInDammV2Result> = vec![];
-    let liquidity_delta_based_on_a: u128 = {
-        let pool = ctx.accounts.pool.load()?;
-        // A
-        let TransferFeeExcludedAmount {
-            amount: transfer_fee_excluded_token_a_amount,
-            ..
-        } = calculate_transfer_fee_excluded_amount(&ctx.accounts.token_a_mint, a)?;
-        mul_div_u256(
-            U256::from(transfer_fee_excluded_token_a_amount),
-            U256::from(pool.sqrt_price).safe_mul(U256::from(pool.sqrt_max_price))?,
-            U256::from(pool.sqrt_max_price - pool.sqrt_price),
-            Rounding::Down,
-        )
-        .ok_or(ZapError::MathOverflow)?
-        .try_into()
-        .map_err(|_| ZapError::MathOverflow)?
-    };
-    // B
-    let liquidity_delta_based_on_b: u128 = {
-        let pool = ctx.accounts.pool.load()?;
-        let TransferFeeExcludedAmount {
-            amount: transfer_fee_excluded_token_b_amount,
-            ..
-        } = calculate_transfer_fee_excluded_amount(&ctx.accounts.token_b_mint, b)?;
-        mul_div_u256(
-            U256::from(transfer_fee_excluded_token_b_amount),
-            U256::from(1).safe_shl(RESOLUTION as usize * 2)?,
-            U256::from(pool.sqrt_price - pool.sqrt_min_price),
-            Rounding::Down,
-        )
-        .ok_or(ZapError::MathOverflow)?
-        .try_into()
-        .map_err(|_| ZapError::MathOverflow)?
-    };
+    let liquidity_delta_based_on_a = ctx.accounts.derive_liquidity_delta_based_on_a(a, None)?;
+    let liquidity_delta_based_on_b = ctx.accounts.derive_liquidity_delta_based_on_b(b, None)?;
     // liqidity delta (the cut-off)
     let liquidity_delta = liquidity_delta_based_on_a.min(liquidity_delta_based_on_b);
     require!(liquidity_delta > 0, ZapError::AmountIsZero);
     // Add liqidity
-    let add_liquidity_ctx = CpiContext::new(
-        ctx.accounts.damm_v2_program.to_account_info(),
-        AddLiquidityCtx {
-            pool: ctx.accounts.pool.clone(),
-            position: ctx.accounts.position.clone(),
-            token_a_account: ctx.accounts.token_a_account.clone(),
-            token_b_account: ctx.accounts.token_b_account.clone(),
-            token_a_vault: ctx.accounts.token_a_vault.clone(),
-            token_b_vault: ctx.accounts.token_b_vault.clone(),
-            token_a_mint: ctx.accounts.token_a_mint.clone(),
-            token_b_mint: ctx.accounts.token_b_mint.clone(),
-            position_nft_account: ctx.accounts.position_nft_account.clone(),
-            owner: ctx.accounts.owner.clone(),
-            token_a_program: ctx.accounts.token_a_program.clone(),
-            token_b_program: ctx.accounts.token_b_program.clone(),
-            event_authority: ctx.accounts.damm_v2_event_authority.to_account_info(),
-            program: ctx.accounts.damm_v2_program.to_account_info(),
-        },
-    );
-    let (token_a_amount_threshold, token_b_amount_threshold) = {
-        let pool = ctx.accounts.pool.load()?;
-        let ModifyLiquidityResult {
-            token_a_amount,
-            token_b_amount,
-        } = pool.get_amounts_for_modify_liquidity(liquidity_delta, Rounding::Up)?;
-        let TransferFeeIncludedAmount {
-            amount: transfer_fee_included_token_a_amount,
-            ..
-        } = calculate_transfer_fee_included_amount(&ctx.accounts.token_a_mint, token_a_amount)?;
-        let TransferFeeIncludedAmount {
-            amount: transfer_fee_included_token_b_amount,
-            ..
-        } = calculate_transfer_fee_included_amount(&ctx.accounts.token_b_mint, token_b_amount)?;
-        (
-            transfer_fee_included_token_a_amount,
-            transfer_fee_included_token_b_amount,
-        )
-    };
-    let add_liquidity_ix = Instruction {
-        program_id: ctx.accounts.damm_v2_program.key(),
-        accounts: add_liquidity_ctx.to_account_metas(None),
-        data: ctx
-            .accounts
-            .get_add_liquidity_ix_data(AddLiquidityParameters {
-                liquidity_delta,
-                token_a_amount_threshold,
-                token_b_amount_threshold,
-            })?,
-    };
-    invoke(&add_liquidity_ix, &add_liquidity_ctx.to_account_infos())?;
+    let (token_a_amount_threshold, token_b_amount_threshold) =
+        ctx.accounts.simulate_add_liquidity(liquidity_delta, None)?;
+    ctx.accounts.add_liqudity(
+        liquidity_delta,
+        token_a_amount_threshold,
+        token_b_amount_threshold,
+    )?;
     // Remaining
     let token_a_remaining_amount = a.safe_sub(token_a_amount_threshold)?;
     let token_b_remaining_amount = b.safe_sub(token_b_amount_threshold)?;
@@ -386,23 +491,15 @@ pub fn handle_zap_on_a_in_damm_v2(
             confused_flag -= 1;
         }
         // Assume the number of swapped tokens
-        token_b_returned_amount =
-            ctx.accounts
-                .simulate_swap(&mut pool, token_a_amount.safe_sub(a)?, trade_direction)?;
+        token_b_returned_amount = ctx.accounts.simulate_swap(
+            token_a_amount.safe_sub(a)?,
+            trade_direction,
+            Some(&mut pool),
+        )?;
         // Assume liquidity delta
-        let TransferFeeExcludedAmount {
-            amount: transfer_fee_excluded_token_a_amount,
-            ..
-        } = calculate_transfer_fee_excluded_amount(&ctx.accounts.token_a_mint, a)?;
-        liquidity_delta = mul_div_u256(
-            U256::from(transfer_fee_excluded_token_a_amount),
-            U256::from(pool.sqrt_price).safe_mul(U256::from(pool.sqrt_max_price))?,
-            U256::from(pool.sqrt_max_price - pool.sqrt_price),
-            Rounding::Down,
-        )
-        .ok_or(ZapError::MathOverflow)?
-        .try_into()
-        .map_err(|_| ZapError::MathOverflow)?;
+        liquidity_delta = ctx
+            .accounts
+            .derive_liquidity_delta_based_on_a(a, Some(&pool))?;
         // Compute the token amounts based on the assumed liquidity delta
         let ModifyLiquidityResult { token_b_amount, .. } =
             pool.get_amounts_for_modify_liquidity(liquidity_delta, Rounding::Up)?;
@@ -441,86 +538,20 @@ pub fn handle_zap_on_a_in_damm_v2(
 
     // Swap
     let token_a_swapped_amount = token_a_amount.safe_sub(a)?;
-    let swap_ctx = CpiContext::new(
-        ctx.accounts.damm_v2_program.to_account_info(),
-        SwapCtx {
-            pool_authority: ctx.accounts.pool_authority.clone(),
-            pool: ctx.accounts.pool.clone(),
-            input_token_account: ctx.accounts.token_a_account.clone(),
-            output_token_account: ctx.accounts.token_b_account.clone(),
-            token_a_vault: ctx.accounts.token_a_vault.clone(),
-            token_b_vault: ctx.accounts.token_b_vault.clone(),
-            token_a_mint: ctx.accounts.token_a_mint.clone(),
-            token_b_mint: ctx.accounts.token_b_mint.clone(),
-            payer: ctx.accounts.owner.clone(),
-            token_a_program: ctx.accounts.token_a_program.clone(),
-            token_b_program: ctx.accounts.token_b_program.clone(),
-            referral_token_account: ctx.accounts.referral_token_account.clone(),
-            event_authority: ctx.accounts.damm_v2_event_authority.to_account_info(),
-            program: ctx.accounts.damm_v2_program.to_account_info(),
-        },
-    );
-    let swap_ix = Instruction {
-        program_id: ctx.accounts.damm_v2_program.key(),
-        accounts: swap_ctx.to_account_metas(None),
-        data: ctx.accounts.get_swap_ix_data(SwapParameters {
-            amount_in: token_a_swapped_amount,
-            minimum_amount_out: token_b_returned_amount,
-        })?,
-    };
-    invoke(&swap_ix, &swap_ctx.to_account_infos())?;
+    ctx.accounts.swap(
+        token_a_swapped_amount,
+        token_b_returned_amount,
+        trade_direction,
+    )?;
 
     // Add liqidity
-    let add_liquidity_ctx = CpiContext::new(
-        ctx.accounts.damm_v2_program.to_account_info(),
-        AddLiquidityCtx {
-            pool: ctx.accounts.pool.clone(),
-            position: ctx.accounts.position.clone(),
-            token_a_account: ctx.accounts.token_a_account.clone(),
-            token_b_account: ctx.accounts.token_b_account.clone(),
-            token_a_vault: ctx.accounts.token_a_vault.clone(),
-            token_b_vault: ctx.accounts.token_b_vault.clone(),
-            token_a_mint: ctx.accounts.token_a_mint.clone(),
-            token_b_mint: ctx.accounts.token_b_mint.clone(),
-            position_nft_account: ctx.accounts.position_nft_account.clone(),
-            owner: ctx.accounts.owner.clone(),
-            token_a_program: ctx.accounts.token_a_program.clone(),
-            token_b_program: ctx.accounts.token_b_program.clone(),
-            event_authority: ctx.accounts.damm_v2_event_authority.to_account_info(),
-            program: ctx.accounts.damm_v2_program.to_account_info(),
-        },
-    );
-    let (token_a_amount_threshold, token_b_amount_threshold) = {
-        let pool = ctx.accounts.pool.load()?;
-        let ModifyLiquidityResult {
-            token_a_amount,
-            token_b_amount,
-        } = pool.get_amounts_for_modify_liquidity(liquidity_delta, Rounding::Up)?;
-        let TransferFeeIncludedAmount {
-            amount: transfer_fee_included_token_a_amount,
-            ..
-        } = calculate_transfer_fee_included_amount(&ctx.accounts.token_a_mint, token_a_amount)?;
-        let TransferFeeIncludedAmount {
-            amount: transfer_fee_included_token_b_amount,
-            ..
-        } = calculate_transfer_fee_included_amount(&ctx.accounts.token_b_mint, token_b_amount)?;
-        (
-            transfer_fee_included_token_a_amount,
-            transfer_fee_included_token_b_amount,
-        )
-    };
-    let add_liquidity_ix = Instruction {
-        program_id: ctx.accounts.damm_v2_program.key(),
-        accounts: add_liquidity_ctx.to_account_metas(None),
-        data: ctx
-            .accounts
-            .get_add_liquidity_ix_data(AddLiquidityParameters {
-                liquidity_delta,
-                token_a_amount_threshold,
-                token_b_amount_threshold,
-            })?,
-    };
-    invoke(&add_liquidity_ix, &add_liquidity_ctx.to_account_infos())?;
+    let (token_a_amount_threshold, token_b_amount_threshold) =
+        ctx.accounts.simulate_add_liquidity(liquidity_delta, None)?;
+    ctx.accounts.add_liqudity(
+        liquidity_delta,
+        token_a_amount_threshold,
+        token_b_amount_threshold,
+    )?;
 
     Ok(ZapInDammV2Result {
         liquidity_delta,
@@ -560,23 +591,15 @@ pub fn handle_zap_on_b_in_damm_v2(
             confused_flag -= 1;
         }
         // Assume the number of swapped tokens
-        token_a_returned_amount =
-            ctx.accounts
-                .simulate_swap(&mut pool, token_b_amount.safe_sub(b)?, trade_direction)?;
+        token_a_returned_amount = ctx.accounts.simulate_swap(
+            token_b_amount.safe_sub(b)?,
+            trade_direction,
+            Some(&mut pool),
+        )?;
         // Assume liquidity delta
-        let TransferFeeExcludedAmount {
-            amount: transfer_fee_excluded_token_b_amount,
-            ..
-        } = calculate_transfer_fee_excluded_amount(&ctx.accounts.token_b_mint, b)?;
-        liquidity_delta = mul_div_u256(
-            U256::from(transfer_fee_excluded_token_b_amount),
-            U256::from(1).safe_shl(RESOLUTION as usize * 2)?,
-            U256::from(pool.sqrt_price - pool.sqrt_min_price),
-            Rounding::Down,
-        )
-        .ok_or(ZapError::MathOverflow)?
-        .try_into()
-        .map_err(|_| ZapError::MathOverflow)?;
+        liquidity_delta = ctx
+            .accounts
+            .derive_liquidity_delta_based_on_b(b, Some(&pool))?;
         // Compute the token amounts based on the assumed liquidity delta
         let ModifyLiquidityResult { token_a_amount, .. } =
             pool.get_amounts_for_modify_liquidity(liquidity_delta, Rounding::Up)?;
@@ -615,86 +638,20 @@ pub fn handle_zap_on_b_in_damm_v2(
 
     // Swap
     let token_b_swapped_amount = token_b_amount.safe_sub(b)?;
-    let swap_ctx = CpiContext::new(
-        ctx.accounts.damm_v2_program.to_account_info(),
-        SwapCtx {
-            pool_authority: ctx.accounts.pool_authority.clone(),
-            pool: ctx.accounts.pool.clone(),
-            input_token_account: ctx.accounts.token_b_account.clone(),
-            output_token_account: ctx.accounts.token_a_account.clone(),
-            token_a_vault: ctx.accounts.token_a_vault.clone(),
-            token_b_vault: ctx.accounts.token_b_vault.clone(),
-            token_a_mint: ctx.accounts.token_a_mint.clone(),
-            token_b_mint: ctx.accounts.token_b_mint.clone(),
-            payer: ctx.accounts.owner.clone(),
-            token_a_program: ctx.accounts.token_a_program.clone(),
-            token_b_program: ctx.accounts.token_b_program.clone(),
-            referral_token_account: ctx.accounts.referral_token_account.clone(),
-            event_authority: ctx.accounts.damm_v2_event_authority.to_account_info(),
-            program: ctx.accounts.damm_v2_program.to_account_info(),
-        },
-    );
-    let swap_ix = Instruction {
-        program_id: ctx.accounts.damm_v2_program.key(),
-        accounts: swap_ctx.to_account_metas(None),
-        data: ctx.accounts.get_swap_ix_data(SwapParameters {
-            amount_in: token_b_swapped_amount,
-            minimum_amount_out: token_a_returned_amount,
-        })?,
-    };
-    invoke(&swap_ix, &swap_ctx.to_account_infos())?;
+    ctx.accounts.swap(
+        token_b_swapped_amount,
+        token_a_returned_amount,
+        trade_direction,
+    )?;
 
     // Add liqidity
-    let add_liquidity_ctx = CpiContext::new(
-        ctx.accounts.damm_v2_program.to_account_info(),
-        AddLiquidityCtx {
-            pool: ctx.accounts.pool.clone(),
-            position: ctx.accounts.position.clone(),
-            token_a_account: ctx.accounts.token_a_account.clone(),
-            token_b_account: ctx.accounts.token_b_account.clone(),
-            token_a_vault: ctx.accounts.token_a_vault.clone(),
-            token_b_vault: ctx.accounts.token_b_vault.clone(),
-            token_a_mint: ctx.accounts.token_a_mint.clone(),
-            token_b_mint: ctx.accounts.token_b_mint.clone(),
-            position_nft_account: ctx.accounts.position_nft_account.clone(),
-            owner: ctx.accounts.owner.clone(),
-            token_a_program: ctx.accounts.token_a_program.clone(),
-            token_b_program: ctx.accounts.token_b_program.clone(),
-            event_authority: ctx.accounts.damm_v2_event_authority.to_account_info(),
-            program: ctx.accounts.damm_v2_program.to_account_info(),
-        },
-    );
-    let (token_a_amount_threshold, token_b_amount_threshold) = {
-        let pool = ctx.accounts.pool.load()?;
-        let ModifyLiquidityResult {
-            token_a_amount,
-            token_b_amount,
-        } = pool.get_amounts_for_modify_liquidity(liquidity_delta, Rounding::Up)?;
-        let TransferFeeIncludedAmount {
-            amount: transfer_fee_included_token_a_amount,
-            ..
-        } = calculate_transfer_fee_included_amount(&ctx.accounts.token_a_mint, token_a_amount)?;
-        let TransferFeeIncludedAmount {
-            amount: transfer_fee_included_token_b_amount,
-            ..
-        } = calculate_transfer_fee_included_amount(&ctx.accounts.token_b_mint, token_b_amount)?;
-        (
-            transfer_fee_included_token_a_amount,
-            transfer_fee_included_token_b_amount,
-        )
-    };
-    let add_liquidity_ix = Instruction {
-        program_id: ctx.accounts.damm_v2_program.key(),
-        accounts: add_liquidity_ctx.to_account_metas(None),
-        data: ctx
-            .accounts
-            .get_add_liquidity_ix_data(AddLiquidityParameters {
-                liquidity_delta,
-                token_a_amount_threshold,
-                token_b_amount_threshold,
-            })?,
-    };
-    invoke(&add_liquidity_ix, &add_liquidity_ctx.to_account_infos())?;
+    let (token_a_amount_threshold, token_b_amount_threshold) =
+        ctx.accounts.simulate_add_liquidity(liquidity_delta, None)?;
+    ctx.accounts.add_liqudity(
+        liquidity_delta,
+        token_a_amount_threshold,
+        token_b_amount_threshold,
+    )?;
 
     Ok(ZapInDammV2Result {
         liquidity_delta,

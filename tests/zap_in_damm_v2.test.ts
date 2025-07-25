@@ -16,7 +16,7 @@ import {
 } from "./common";
 import { TOKEN_PROGRAM_ID } from "@coral-xyz/anchor/dist/cjs/utils/token";
 import { deserialize } from "borsh";
-import fc, { bigInt } from "fast-check";
+import fc from "fast-check";
 import { expect } from "chai";
 
 import ZapIDL from "../target/idl/zap.json";
@@ -111,6 +111,8 @@ describe("Zap in damm V2", () => {
       const dammV2Program = createDammV2Program();
       const poolState = getDammV2Pool(svm, pool);
       const positionState = getDammV2Position(svm, position);
+
+      // Read previous balances
       const { amount: prevA } = AccountLayout.decode(
         svm.getAccount(
           getAssociatedTokenAddressSync(tokenAMint, user.publicKey)
@@ -124,6 +126,7 @@ describe("Zap in damm V2", () => {
       if (verbose) console.log("Zapped-in amounts:", { a, b });
       if (verbose) console.log("Balances before the zap-in:", { prevA, prevB });
 
+      // Zap in
       const zapIn = await zapProgram.methods
         .zapIn({ a: new BN(a), b: new BN(b) })
         .accountsPartial({
@@ -163,6 +166,7 @@ describe("Zap in damm V2", () => {
         result instanceof TransactionMetadata ? result : result.meta();
       const logs = meta.logs();
 
+      // Read next balances
       const { amount: nextA } = AccountLayout.decode(
         svm.getAccount(
           getAssociatedTokenAddressSync(tokenAMint, user.publicKey)
@@ -176,6 +180,7 @@ describe("Zap in damm V2", () => {
       if (verbose) console.log("Balances after the zap-in:", { nextA, nextB });
       if (verbose) console.log(logs);
 
+      // Validate results
       let data = meta.returnData().data();
       let stream = logs.join("\n");
       if (!data.length) {
