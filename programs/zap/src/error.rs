@@ -5,9 +5,6 @@ use anchor_lang::prelude::*;
 #[error_code]
 #[derive(PartialEq)]
 pub enum ZapError {
-    #[msg("Math operation overflow")]
-    MathOverflow,
-
     #[msg("Invalid amm program id")]
     InvalidAmmProgramId,
 
@@ -22,4 +19,10 @@ pub enum ZapError {
 
     #[msg("Math operation overflow")]
     MathOverflow,
+
+    #[msg("Amount is zero")]
+    AmountIsZero,
+
+    #[msg("Cannot converge to optimal value")]
+    CannotConvergeToOptimalValue,
 }
