@@ -47,29 +47,24 @@ pub struct ZapOutCtx<'info> {
     pub amm_program: UncheckedAccount<'info>,
 }
 
-impl<'info> ZapOutCtx<'info> {
-    fn build_payload_data(
-        &self,
-        payload_data: &[u8],
-        discriminator: &[u8],
-        start_index: usize,
-        end_index: usize,
-    ) -> Vec<u8> {
-        let mut data = vec![];
-        let amount_in = self.token_ledger_account.amount.to_le_bytes();
-        data.extend_from_slice(&discriminator);
-        data.extend_from_slice(&payload_data[..start_index]);
-        data.extend_from_slice(&amount_in);
-        data.extend_from_slice(&payload_data[end_index..]);
+fn modify_payload_data(
+    payload_data: &mut Vec<u8>,
+    discriminator: &[u8],
+    amount_in: u64,
+    index: usize,
+) {
+    payload_data.splice(0..0, discriminator.iter().cloned());
+    payload_data.splice(index..index, amount_in.to_le_bytes().iter().cloned());
+}
 
-        data
-    }
-    fn get_instruction_data(
+impl<'info> ZapOutCtx<'info> {
+    fn validate_and_modify_instruction_data(
         &self,
         action_type: ActionType,
-        payload_data: &[u8],
-    ) -> Result<Vec<u8>> {
-        let data = match action_type {
+        payload_data: &mut Vec<u8>,
+    ) -> Result<()> {
+        let amount_in = self.token_ledger_account.amount;
+        match action_type {
             ActionType::SwapDammV2 => {
                 // validate amm program id
                 require_keys_eq!(
@@ -79,14 +74,14 @@ impl<'info> ZapOutCtx<'info> {
                 );
 
                 let discriminator = damm_v2::client::args::Swap::DISCRIMINATOR;
-                self.build_payload_data(payload_data, discriminator, 0, 0)
+                modify_payload_data(payload_data, discriminator, amount_in, discriminator.len());
             }
             ActionType::SwapDlmm => {
                 // validate amm program id
                 require_keys_eq!(self.amm_program.key(), DLMM, ZapError::InvalidAmmProgramId);
 
                 let discriminator = dlmm::client::args::Swap2::DISCRIMINATOR;
-                self.build_payload_data(payload_data, discriminator, 0, 0)
+                modify_payload_data(payload_data, discriminator, amount_in, discriminator.len());
             }
             ActionType::SwapJupiterV6 => {
                 // validate amm program id
@@ -96,29 +91,23 @@ impl<'info> ZapOutCtx<'info> {
                     ZapError::InvalidAmmProgramId
                 );
 
-                require!(
-                    payload_data.len() > AMOUNT_IN_JUP_V6_REVERSE_OFFSET,
-                    ZapError::InvalidDataLen
-                );
-
                 let discriminator = jup_v6::client::args::Route::DISCRIMINATOR;
                 // Update amount data in payload_data to amount_in value
-                let start_index = payload_data
+                let index = payload_data
                     .len()
-                    .safe_sub(AMOUNT_IN_JUP_V6_REVERSE_OFFSET)?;
-                let end_index = start_index.safe_add(8)?; // 8 bytes for amount_in
-                self.build_payload_data(payload_data, discriminator, start_index, end_index)
+                    .safe_sub(AMOUNT_IN_JUP_V6_REVERSE_OFFSET)?
+                    .safe_add(discriminator.len())?;
+                modify_payload_data(payload_data, discriminator, amount_in, index);
             }
         };
-
-        Ok(data)
+        Ok(())
     }
 }
 
 pub fn handle_zap_out<'c: 'info, 'info>(
     ctx: Context<'_, '_, 'c, 'info, ZapOutCtx<'info>>,
     action_type: u8,
-    payload_data: Vec<u8>,
+    payload_data: &[u8],
 ) -> Result<()> {
     let accounts: Vec<AccountMeta> = ctx
         .remaining_accounts
@@ -140,16 +129,16 @@ pub fn handle_zap_out<'c: 'info, 'info>(
         .collect();
 
     let action_type = ActionType::try_from(action_type).map_err(|_| ZapError::InvalidActionType)?;
-    let data = ctx
-        .accounts
-        .get_instruction_data(action_type, &payload_data)?;
+    let mut payload_data = payload_data.to_vec();
+    ctx.accounts
+        .validate_and_modify_instruction_data(action_type, &mut payload_data)?;
     let signers_seeds = zap_authority_seeds!();
 
     invoke_signed(
         &Instruction {
             program_id: ctx.accounts.amm_program.key(),
             accounts,
-            data,
+            data: payload_data,
         },
         &account_infos,
         &[&signers_seeds[..]],

@@ -30,6 +30,6 @@ pub mod zap {
         action_type: u8,
         payload_data: Vec<u8>,
     ) -> Result<()> {
-        instructions::handle_zap_out(ctx, action_type, payload_data)
+        instructions::handle_zap_out(ctx, action_type, &payload_data)
     }
 }
