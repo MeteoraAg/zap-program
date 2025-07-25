@@ -1,22 +1,18 @@
-use anchor_lang::{
-    prelude::*,
-    solana_program::{entrypoint::ProgramResult, instruction::Instruction, program::invoke},
-};
-use anchor_spl::token_interface::{Mint, TokenAccount, TokenInterface};
+use anchor_lang::prelude::*;
+use anchor_spl::token_interface::Mint;
 use damm_v2::types::{AddLiquidityParameters, SwapParameters};
 use damm_v2_program::{
     activation_handler::ActivationHandler,
-    constants::seeds::POOL_AUTHORITY_PREFIX,
     curve::RESOLUTION,
     params::swap::TradeDirection,
     safe_math::SafeMath,
-    state::{fee::FeeMode, ModifyLiquidityResult, Pool, Position},
+    state::{fee::FeeMode, ModifyLiquidityResult, Pool},
     token::{
         calculate_transfer_fee_excluded_amount, calculate_transfer_fee_included_amount,
         TransferFeeExcludedAmount, TransferFeeIncludedAmount,
     },
     u128x128_math::{mul_div_u256, Rounding},
-    AddLiquidityCtx, PoolError, SwapCtx,
+    PoolError,
 };
 use num::ToPrimitive;
 use ruint::aliases::U256;
@@ -40,92 +36,48 @@ pub struct ZapInDammV2Result {
     pub token_returned_amount: u64,
 }
 
-#[event_cpi]
 #[derive(Accounts)]
 pub struct ZapInDammV2Ctx<'info> {
     /// CHECK: Pool authority
-    #[account(
-        seeds = [POOL_AUTHORITY_PREFIX.as_ref()],
-        bump,
-        seeds::program = damm_v2_program
-    )]
     pub pool_authority: UncheckedAccount<'info>,
-
-    /// Pool
-    #[account(
-        mut,
-        has_one = token_a_vault,
-        has_one = token_b_vault,
-        has_one = token_a_mint,
-        has_one = token_b_mint
-    )]
+    /// CHECK: Pool
+    #[account(mut)]
     pub pool: AccountLoader<'info, Pool>,
-
-    #[account(mut, has_one = pool)]
-    pub position: AccountLoader<'info, Position>,
-
-    /// The user token a account
+    /// CHECK: Pool authority
     #[account(mut)]
-    pub token_a_account: Box<InterfaceAccount<'info, TokenAccount>>,
-
-    /// The user token b account
+    pub position: UncheckedAccount<'info>,
+    /// CHECK: The user token a account
     #[account(mut)]
-    pub token_b_account: Box<InterfaceAccount<'info, TokenAccount>>,
-
-    /// The vault token account for input token
-    #[account(
-        mut,
-        token::token_program = token_a_program,
-        token::mint = token_a_mint
-    )]
-    pub token_a_vault: Box<InterfaceAccount<'info, TokenAccount>>,
-
-    /// The vault token account for output token
-    #[account(
-        mut,
-        token::token_program = token_b_program,
-        token::mint = token_b_mint
-    )]
-    pub token_b_vault: Box<InterfaceAccount<'info, TokenAccount>>,
-
+    pub token_a_account: UncheckedAccount<'info>,
+    /// CHECK: The user token b account
+    #[account(mut)]
+    pub token_b_account: UncheckedAccount<'info>,
+    /// CHECK: The vault token account for token a
+    #[account(mut)]
+    pub token_a_vault: UncheckedAccount<'info>,
+    /// CHECK: The vault token account for token b
+    #[account(mut)]
+    pub token_b_vault: UncheckedAccount<'info>,
     /// The mint of token a
     pub token_a_mint: Box<InterfaceAccount<'info, Mint>>,
-
     /// The mint of token b
     pub token_b_mint: Box<InterfaceAccount<'info, Mint>>,
-
-    /// The token account for nft
-    #[account(
-        constraint = position_nft_account.mint == position.load()?.nft_mint,
-        constraint = position_nft_account.amount == 1,
-        token::authority = owner
-    )]
-    pub position_nft_account: Box<InterfaceAccount<'info, TokenAccount>>,
-
+    /// CHECK: The token account for nft
+    pub position_nft_account: UncheckedAccount<'info>,
     /// Owner of position
     pub owner: Signer<'info>,
-
-    /// Token a program
-    pub token_a_program: Interface<'info, TokenInterface>,
-
-    /// Token b program
-    pub token_b_program: Interface<'info, TokenInterface>,
-
+    /// CHECK: Token a program
+    pub token_a_program: UncheckedAccount<'info>,
+    /// CHECK: Token b program
+    pub token_b_program: UncheckedAccount<'info>,
     /// CHECK: DAMM V2 event authority
-    #[account(
-        seeds = [b"__event_authority"],
-        bump,
-        seeds::program = damm_v2_program,
-    )]
-    pub damm_v2_event_authority: AccountInfo<'info>,
-
+    pub damm_v2_event_authority: UncheckedAccount<'info>,
     /// CHECK: DAMM V2 program
     #[account(address = DAMM_V2 @ ZapError::InvalidAmmProgramId)]
-    pub damm_v2_program: UncheckedAccount<'info>,
-
-    /// Referral token account
+    pub damm_v2_program: AccountInfo<'info>,
+    /// CHECK: Referral token account
     #[account(mut)]
-    pub referral_token_account: Option<Box<InterfaceAccount<'info, TokenAccount>>>,
+    pub referral_token_account: Option<UncheckedAccount<'info>>,
 }
 
 impl<'info> ZapInDammV2Ctx<'info> {
@@ -141,61 +93,6 @@ impl<'info> ZapInDammV2Ctx<'info> {
         data.extend_from_slice(damm_v2::client::args::AddLiquidity::DISCRIMINATOR);
         data.extend_from_slice(&params.try_to_vec()?);
         Ok(data)
-    }
-
-    ///
-    /// Sort the accounts by the trade direction.
-    ///
-    /// # Arguments
-    ///
-    /// * `trade_direction` - The trade direction.
-    ///
-    /// # Returns
-    ///
-    /// * `token_in_account`
-    /// * `token_out_account`
-    /// * `token_in_mint`
-    /// * `token_out_mint`
-    /// * `token_in_vault`
-    /// * `token_out_vault`
-    /// * `token_in_program`
-    /// * `token_out_program`
-    ///
-    pub fn sort_accounts(
-        &self,
-        trade_direction: TradeDirection,
-    ) -> (
-        &Box<InterfaceAccount<'info, TokenAccount>>,
-        &Box<InterfaceAccount<'info, TokenAccount>>,
-        &Box<InterfaceAccount<'info, Mint>>,
-        &Box<InterfaceAccount<'info, Mint>>,
-        &Box<InterfaceAccount<'info, TokenAccount>>,
-        &Box<InterfaceAccount<'info, TokenAccount>>,
-        &Interface<'info, TokenInterface>,
-        &Interface<'info, TokenInterface>,
-    ) {
-        match trade_direction {
-            TradeDirection::AtoB => (
-                &self.token_a_account,
-                &self.token_b_account,
-                &self.token_a_mint,
-                &self.token_b_mint,
-                &self.token_a_vault,
-                &self.token_b_vault,
-                &self.token_a_program,
-                &self.token_b_program,
-            ),
-            TradeDirection::BtoA => (
-                &self.token_b_account,
-                &self.token_a_account,
-                &self.token_b_mint,
-                &self.token_a_mint,
-                &self.token_b_vault,
-                &self.token_a_vault,
-                &self.token_b_program,
-                &self.token_a_program,
-            ),
-        }
     }
 
     ///
@@ -219,12 +116,16 @@ impl<'info> ZapInDammV2Ctx<'info> {
         let mut borrowed_pool = self.pool.load()?.clone();
         let pool = local_pool.unwrap_or(&mut borrowed_pool);
         // Parse accounts
-        let (_, _, token_in_mint, token_out_mint, ..) = self.sort_accounts(trade_direction);
+        let (token_in_mint, token_out_mint) = if trade_direction == TradeDirection::AtoB {
+            (&self.token_a_mint, &self.token_b_mint)
+        } else {
+            (&self.token_a_mint, &self.token_b_mint)
+        };
         // Transfer-in fee (Token Extension)
         let TransferFeeExcludedAmount {
             amount: transfer_fee_excluded_amount_in,
             ..
-        } = calculate_transfer_fee_excluded_amount(&token_in_mint, amount_in)?;
+        } = calculate_transfer_fee_excluded_amount(token_in_mint, amount_in)?;
         require!(transfer_fee_excluded_amount_in > 0, PoolError::AmountIsZero);
         // Swap fee
         let has_referral = self.referral_token_account.is_some();
@@ -250,7 +151,7 @@ impl<'info> ZapInDammV2Ctx<'info> {
         let TransferFeeExcludedAmount {
             amount: transfer_fee_excluded_amount_out,
             ..
-        } = calculate_transfer_fee_excluded_amount(&token_out_mint, swap_result.output_amount)?;
+        } = calculate_transfer_fee_excluded_amount(token_out_mint, swap_result.output_amount)?;
         Ok(transfer_fee_excluded_amount_out)
     }
 
@@ -263,46 +164,45 @@ impl<'info> ZapInDammV2Ctx<'info> {
     /// * `minimum_amount_out` - The minimum output amount.
     /// * `trade_direction` - The trade direction.
     ///
-    /// # Returns
-    ///
-    /// `ProgramResult`
-    ///
     pub fn swap(
         &self,
         amount_in: u64,
         minimum_amount_out: u64,
         trade_direction: TradeDirection,
-    ) -> ProgramResult {
-        let (input_token_account, output_token_account, ..) = self.sort_accounts(trade_direction);
-        let swap_ctx = CpiContext::new(
-            self.damm_v2_program.to_account_info(),
-            SwapCtx {
-                pool_authority: self.pool_authority.clone(),
-                pool: self.pool.clone(),
-                input_token_account: input_token_account.clone(),
-                output_token_account: output_token_account.clone(),
-                token_a_vault: self.token_a_vault.clone(),
-                token_b_vault: self.token_b_vault.clone(),
-                token_a_mint: self.token_a_mint.clone(),
-                token_b_mint: self.token_b_mint.clone(),
-                payer: self.owner.clone(),
-                token_a_program: self.token_a_program.clone(),
-                token_b_program: self.token_b_program.clone(),
-                referral_token_account: self.referral_token_account.clone(),
-                event_authority: self.damm_v2_event_authority.to_account_info(),
-                program: self.damm_v2_program.to_account_info(),
-            },
-        );
-        let swap_ix = Instruction {
-            program_id: self.damm_v2_program.key(),
-            accounts: swap_ctx.to_account_metas(None),
-            data: self.get_swap_ix_data(SwapParameters {
+    ) -> Result<()> {
+        let (token_in_account, token_out_account) = if trade_direction == TradeDirection::AtoB {
+            (&self.token_a_account, &self.token_b_account)
+        } else {
+            (&self.token_b_account, &self.token_a_account)
+        };
+        damm_v2::cpi::swap(
+            CpiContext::new(
+                self.damm_v2_program.to_account_info(),
+                damm_v2::cpi::accounts::Swap {
+                    pool_authority: self.pool_authority.to_account_info(),
+                    pool: self.pool.to_account_info(),
+                    input_token_account: token_in_account.to_account_info(),
+                    output_token_account: token_out_account.to_account_info(),
+                    token_a_vault: self.token_a_vault.to_account_info(),
+                    token_b_vault: self.token_b_vault.to_account_info(),
+                    token_a_mint: self.token_a_mint.to_account_info(),
+                    token_b_mint: self.token_b_mint.to_account_info(),
+                    payer: self.owner.to_account_info(),
+                    token_a_program: self.token_a_program.to_account_info(),
+                    token_b_program: self.token_b_program.to_account_info(),
+                    referral_token_account: self
+                        .referral_token_account
+                        .as_ref()
+                        .map(|acc| acc.to_account_info()),
+                    event_authority: self.damm_v2_event_authority.to_account_info(),
+                    program: self.damm_v2_program.to_account_info(),
+                },
+            ),
+            SwapParameters {
                 amount_in,
                 minimum_amount_out,
-            })?,
-        };
-
-        invoke(&swap_ix, &swap_ctx.to_account_infos())
+            },
+        )
     }
 
     ///
@@ -352,46 +252,38 @@ impl<'info> ZapInDammV2Ctx<'info> {
     /// * `token_a_amount_threshold` - The maximum input amount of token A.
     /// * `token_b_amount_threshold` - The maximum input amount of token B.
     ///
-    /// # Returns
-    ///
-    /// `ProgramResult`
-    ///
     pub fn add_liqudity(
         &self,
         liquidity_delta: u128,
         token_a_amount_threshold: u64,
         token_b_amount_threshold: u64,
-    ) -> ProgramResult {
-        let add_liquidity_ctx = CpiContext::new(
-            self.damm_v2_program.to_account_info(),
-            AddLiquidityCtx {
-                pool: self.pool.clone(),
-                position: self.position.clone(),
-                token_a_account: self.token_a_account.clone(),
-                token_b_account: self.token_b_account.clone(),
-                token_a_vault: self.token_a_vault.clone(),
-                token_b_vault: self.token_b_vault.clone(),
-                token_a_mint: self.token_a_mint.clone(),
-                token_b_mint: self.token_b_mint.clone(),
-                position_nft_account: self.position_nft_account.clone(),
-                owner: self.owner.clone(),
-                token_a_program: self.token_a_program.clone(),
-                token_b_program: self.token_b_program.clone(),
-                event_authority: self.damm_v2_event_authority.to_account_info(),
-                program: self.damm_v2_program.to_account_info(),
-            },
-        );
-        let add_liquidity_ix = Instruction {
-            program_id: self.damm_v2_program.key(),
-            accounts: add_liquidity_ctx.to_account_metas(None),
-            data: self.get_add_liquidity_ix_data(AddLiquidityParameters {
+    ) -> Result<()> {
+        damm_v2::cpi::add_liquidity(
+            CpiContext::new(
+                self.damm_v2_program.to_account_info(),
+                damm_v2::cpi::accounts::AddLiquidity {
+                    pool: self.pool.to_account_info(),
+                    position: self.position.to_account_info(),
+                    token_a_account: self.token_a_account.to_account_info(),
+                    token_b_account: self.token_b_account.to_account_info(),
+                    token_a_vault: self.token_a_vault.to_account_info(),
+                    token_b_vault: self.token_b_vault.to_account_info(),
+                    token_a_mint: self.token_a_mint.to_account_info(),
+                    token_b_mint: self.token_b_mint.to_account_info(),
+                    position_nft_account: self.position_nft_account.to_account_info(),
+                    owner: self.owner.to_account_info(),
+                    token_a_program: self.token_a_program.to_account_info(),
+                    token_b_program: self.token_b_program.to_account_info(),
+                    event_authority: self.damm_v2_event_authority.to_account_info(),
+                    program: self.damm_v2_program.to_account_info(),
+                },
+            ),
+            AddLiquidityParameters {
                 liquidity_delta,
                 token_a_amount_threshold,
                 token_b_amount_threshold,
-            })?,
-        };
-
-        invoke(&add_liquidity_ix, &add_liquidity_ctx.to_account_infos())
+            },
+        )
     }
 
     ///

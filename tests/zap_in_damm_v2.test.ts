@@ -151,6 +151,10 @@ describe("Zap in damm V2", () => {
           owner: user.publicKey,
           tokenAProgram: TOKEN_PROGRAM_ID,
           tokenBProgram: TOKEN_PROGRAM_ID,
+          dammV2EventAuthority: PublicKey.findProgramAddressSync(
+            [Buffer.from("__event_authority")],
+            dammV2Program.programId
+          )[0],
           dammV2Program: dammV2Program.programId,
           referralTokenAccount: null,
         })
