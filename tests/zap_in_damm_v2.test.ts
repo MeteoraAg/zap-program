@@ -41,7 +41,7 @@ const ZapInReturnSchema = {
   struct: {
     liquidity_delta: "u128",
     token_a_swapped_amount: "u64",
-    returned_b_amount: "u64",
+    token_b_returned_amount: "u64",
   },
 };
 
@@ -88,7 +88,7 @@ describe("Zap in damm V2", () => {
       }),
       verbose: fc.constant(true),
     }),
-    1
+    1 // Number of testcases
   );
 
   testcases.forEach(({ amount, verbose }, i) => {
