@@ -81,20 +81,6 @@ pub struct ZapInDammV2Ctx<'info> {
 }
 
 impl<'info> ZapInDammV2Ctx<'info> {
-    pub fn get_swap_ix_data(&self, params: SwapParameters) -> Result<Vec<u8>> {
-        let mut data = vec![];
-        data.extend_from_slice(damm_v2::client::args::Swap::DISCRIMINATOR);
-        data.extend_from_slice(&params.try_to_vec()?);
-        Ok(data)
-    }
-
-    pub fn get_add_liquidity_ix_data(&self, params: AddLiquidityParameters) -> Result<Vec<u8>> {
-        let mut data = vec![];
-        data.extend_from_slice(damm_v2::client::args::AddLiquidity::DISCRIMINATOR);
-        data.extend_from_slice(&params.try_to_vec()?);
-        Ok(data)
-    }
-
     ///
     /// Simulate an swap on DAMM V2.
     ///
