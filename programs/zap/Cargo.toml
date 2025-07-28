@@ -33,3 +33,7 @@ damm-v2-program = { git = "https://github.com/MeteoraAg/damm-v2.git", branch = "
   "no-entrypoint",
 ] }
 jup-v6 = { path = "../../libs/jup-v6" }
+
+[dev-dependencies]
+integer-sqrt = "0.1.5"
+proptest = "1.7.0"
