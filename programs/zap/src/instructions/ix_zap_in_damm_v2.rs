@@ -1,4 +1,4 @@
-use anchor_lang::{prelude::*, solana_program::log::sol_log_compute_units};
+use anchor_lang::prelude::*;
 use anchor_spl::token_interface::Mint;
 use damm_v2::types::{AddLiquidityParameters, SwapParameters};
 use damm_v2_program::{
@@ -439,18 +439,25 @@ pub fn handle_zap_on_a_in_damm_v2(
             calculate_transfer_fee_included_amount(&ctx.accounts.token_a_mint, token_a_amount)?;
         // Converge the mid point of liquidity delta
         if a_ > a {
+            // If a' > a, min_a = a, max_a = a'
+            min_a = min_a.max(a);
+            max_a = max_a.min(a_);
+            a = (min_a as u128)
+                .safe_add(max_a as u128)?
+                .safe_add(1)?
+                .safe_div(2)?
+                .try_into()?; // Adding 1 to round up
+        } else if a_ < a {
             if confused_flag <= 0 {
                 break;
             }
-            // If a' > a, min_a = a, max_a = a'
-            min_a = a;
-            max_a = a_;
-            a = min_a.safe_add(max_a)?.safe_add(1)?.safe_div(2)?; // Adding 1 to round up
-        } else if a_ < a {
             // If a' < a, min_a = a', max_a = a
-            min_a = a_;
-            max_a = a;
-            a = min_a.safe_add(max_a)?.safe_div(2)?;
+            min_a = min_a.max(a_);
+            max_a = max_a.min(a);
+            a = (min_a as u128)
+                .safe_add(max_a as u128)?
+                .safe_div(2)?
+                .try_into()?;
         } else {
             // If a' = a, stop
             break;
@@ -469,14 +476,10 @@ pub fn handle_zap_on_a_in_damm_v2(
     }
 
     // Swap
-    sol_log_compute_units();
-    let token_a_swapped_amount = amount_in.safe_sub(a)?;
-    ctx.accounts
-        .swap(token_a_swapped_amount, b, trade_direction)?;
-    sol_log_compute_units();
+    let delta_a = amount_in.safe_sub(a)?;
+    ctx.accounts.swap(delta_a, b, trade_direction)?;
 
     // Add liqidity
-    sol_log_compute_units();
     let (token_a_amount_threshold, token_b_amount_threshold) =
         ctx.accounts.simulate_add_liquidity(liquidity_delta, None)?;
     ctx.accounts.add_liqudity(
@@ -484,7 +487,6 @@ pub fn handle_zap_on_a_in_damm_v2(
         token_a_amount_threshold,
         token_b_amount_threshold,
     )?;
-    sol_log_compute_units();
 
     Ok(ZapInDammV2Result {
         liquidity_delta,
@@ -492,7 +494,7 @@ pub fn handle_zap_on_a_in_damm_v2(
         token_b_amount: 0,
         token_a_remaining_amount: a.safe_sub(token_a_amount_threshold)?,
         token_b_remaining_amount: b.safe_sub(token_b_amount_threshold)?,
-        token_swapped_amount: token_a_swapped_amount,
+        token_swapped_amount: delta_a,
         token_returned_amount: b,
     })
 }
@@ -532,25 +534,32 @@ pub fn handle_zap_on_b_in_damm_v2(
         // Assume liquidity delta
         liquidity_delta = ctx
             .accounts
-            .derive_liquidity_delta_based_on_b_included_fees(b, Some(&pool))?;
+            .derive_liquidity_delta_based_on_a_included_fees(a, Some(&pool))?;
         // Compute the token amounts based on the assumed liquidity delta
         let (_, token_b_amount) = derive_inputs_based_on_liquidity_delta(liquidity_delta, &pool)?;
         let TransferFeeIncludedAmount { amount: b_, .. } =
             calculate_transfer_fee_included_amount(&ctx.accounts.token_b_mint, token_b_amount)?;
         // Converge the mid point of liquidity delta
         if b_ > b {
+            // If b' > b, min_a = a, max_a = a'
+            min_b = min_b.max(b);
+            max_b = max_b.min(b_);
+            b = (min_b as u128)
+                .safe_add(max_b as u128)?
+                .safe_add(1)?
+                .safe_div(2)?
+                .try_into()?; // Adding 1 to round up
+        } else if b_ < b {
             if confused_flag <= 0 {
                 break;
             }
-            // If b' > b, min_a = a, max_a = a'
-            min_b = b;
-            max_b = b_;
-            b = min_b.safe_add(max_b)?.safe_add(1)?.safe_div(2)?; // Adding 1 to round up
-        } else if b_ < b {
             // If b' < b, min_b = b', max_b = b
-            min_b = b_;
-            max_b = b;
-            b = min_b.safe_add(max_b)?.safe_div(2)?;
+            min_b = min_b.max(b_);
+            max_b = max_b.min(b);
+            b = (min_b as u128)
+                .safe_add(max_b as u128)?
+                .safe_div(2)?
+                .try_into()?;
         } else {
             // If b' = b, stop
             break;

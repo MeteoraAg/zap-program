@@ -6,6 +6,10 @@ import {
   Transaction,
   ComputeBudgetProgram,
 } from "@solana/web3.js";
+import {
+  AccountLayout,
+  getAssociatedTokenAddressSync,
+} from "@solana/spl-token";
 import { BN } from "@coral-xyz/anchor";
 import {
   createZapProgram,
@@ -27,15 +31,12 @@ import {
   createPositionAndAddLiquidity,
 } from "./common/damm_v2";
 import {
-  AccountLayout,
-  getAssociatedTokenAddressSync,
-} from "@solana/spl-token";
-import {
   deriveDammV2PoolAuthority,
   deriveDammV2PositionNftAccount,
   getDammV2Pool,
   getDammV2Position,
 } from "./common/pda";
+import { CuBenchmark } from "./common/benchmark";
 
 const ZapInReturnSchema = {
   array: {
@@ -54,6 +55,7 @@ const ZapInReturnSchema = {
 };
 
 describe("Zap in damm V2", () => {
+  const cuBenchmark = new CuBenchmark();
   let zapProgram: ZapProgram;
   let svm: LiteSVM;
   let user: Keypair;
@@ -98,9 +100,9 @@ describe("Zap in damm V2", () => {
         min: BigInt(0),
         max: BigInt(999999000) * BigInt(10 ** TOKEN_DECIMALS),
       }),
-      verbose: fc.constant(true), // Visible logs
+      verbose: fc.constant(false), // Visible logs
     }),
-    100 // Number of testcases
+    1000 // Number of testcases
   );
 
   testcases.forEach(({ a, b, verbose }, i) => {
@@ -184,6 +186,9 @@ describe("Zap in damm V2", () => {
       if (verbose) console.log("Balances after the zap-in:", { nextA, nextB });
       if (verbose) console.log(logs);
 
+      // Avg CU
+      cuBenchmark.add(logs);
+
       // Validate results
       let data = meta.returnData().data();
       let stream = logs.join("\n");
@@ -216,5 +221,9 @@ describe("Zap in damm V2", () => {
         ).eq(prevB);
       }
     });
+  });
+
+  it("report CU usage", () => {
+    cuBenchmark.report();
   });
 });

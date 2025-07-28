@@ -1,0 +1,44 @@
+import { BN } from "@coral-xyz/anchor";
+
+export class CuBenchmark {
+  public numberOfTestcases = new BN(0);
+  public totalCU = new BN(0);
+  private worstCase: BN;
+  private bestCase: BN;
+
+  constructor(
+    public readonly regex = /consumed (\d+) of (\d+) compute units/
+  ) {}
+
+  add = (logs: string[]) => {
+    for (let i = logs.length - 1; i--; i >= 0) {
+      const match = logs[i].match(this.regex);
+      if (!match) continue;
+      this.numberOfTestcases = this.numberOfTestcases.add(new BN(1));
+      const cu = new BN(match[1]);
+      this.totalCU = this.totalCU.add(cu);
+      this.bestCase = !this.bestCase ? cu : BN.min(this.bestCase, cu);
+      this.worstCase = !this.worstCase ? cu : BN.max(this.worstCase, cu);
+      break;
+    }
+  };
+
+  avg = () => {
+    return this.totalCU.div(this.numberOfTestcases);
+  };
+
+  worst = () => {
+    return this.worstCase;
+  };
+
+  best = () => {
+    return this.bestCase;
+  };
+
+  report = () => {
+    console.log(`Over ${this.numberOfTestcases.toString()}:`);
+    console.log(`\r Avg. CU: ${this.avg().toString()}`);
+    console.log(`\r Best CU: ${this.best().toString()}`);
+    console.log(`\r Worst CU: ${this.worst().toString()}`);
+  };
+}
