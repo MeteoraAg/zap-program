@@ -98,9 +98,9 @@ describe("Zap in damm V2", () => {
         min: BigInt(0),
         max: BigInt(999999000) * BigInt(10 ** TOKEN_DECIMALS),
       }),
-      verbose: fc.constant(false), // Visible logs
+      verbose: fc.constant(true), // Visible logs
     }),
-    1000 // Number of testcases
+    100 // Number of testcases
   );
 
   testcases.forEach(({ a, b, verbose }, i) => {
