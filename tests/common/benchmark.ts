@@ -55,6 +55,6 @@ export class CuBenchmark {
     console.log(`\r Best CU: ${this.best().toString()}`);
     console.log(`\r Worst CU: ${this.worst().toString()}`);
     console.log(`\r CU Distribution:`);
-    console.log(`\r ${babar(this.distribution)}`);
+    console.log(`${babar(this.distribution)}`);
   };
 }

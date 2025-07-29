@@ -94,11 +94,11 @@ describe("Zap in damm V2", () => {
     fc.record({
       a: fc.bigInt({
         min: BigInt(0),
-        max: BigInt(999999000) * BigInt(10 ** TOKEN_DECIMALS),
+        max: BigInt(999_999_000) * BigInt(10 ** TOKEN_DECIMALS),
       }),
       b: fc.bigInt({
         min: BigInt(0),
-        max: BigInt(999999000) * BigInt(10 ** TOKEN_DECIMALS),
+        max: BigInt(999_999_000) * BigInt(10 ** TOKEN_DECIMALS),
       }),
       verbose: fc.constant(false), // Visible logs
     }),
