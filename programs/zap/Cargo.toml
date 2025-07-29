@@ -32,7 +32,7 @@ dlmm = { path = "../../libs/dlmm" }
 damm-v2-program = { git = "https://github.com/MeteoraAg/damm-v2.git", branch = "main", package = "cp-amm", features = [
   "no-entrypoint",
 ] }
+integer-sqrt = "0.1.5"
 
 [dev-dependencies]
-integer-sqrt = "0.1.5"
 proptest = "1.7.0"

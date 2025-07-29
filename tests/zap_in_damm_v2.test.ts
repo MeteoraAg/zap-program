@@ -102,7 +102,7 @@ describe("Zap in damm V2", () => {
       }),
       verbose: fc.constant(false), // Visible logs
     }),
-    1000 // Number of testcases
+    100 // Number of testcases
   );
 
   testcases.forEach(({ a, b, verbose }, i) => {

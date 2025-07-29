@@ -11,6 +11,7 @@ export class CuBenchmark {
   ) {}
 
   add = (logs: string[]) => {
+    if (!logs[logs.length - 1].endsWith("success")) return;
     for (let i = logs.length - 1; i--; i >= 0) {
       const match = logs[i].match(this.regex);
       if (!match) continue;
@@ -36,7 +37,9 @@ export class CuBenchmark {
   };
 
   report = () => {
-    console.log(`Over ${this.numberOfTestcases.toString()}:`);
+    console.log(
+      `Over ${this.numberOfTestcases.toString()} successful testcases:`
+    );
     console.log(`\r Avg. CU: ${this.avg().toString()}`);
     console.log(`\r Best CU: ${this.best().toString()}`);
     console.log(`\r Worst CU: ${this.worst().toString()}`);

@@ -14,6 +14,7 @@ use damm_v2_program::{
     u128x128_math::{mul_div_u256, Rounding},
     PoolError,
 };
+use integer_sqrt::IntegerSquareRoot;
 use num::ToPrimitive;
 use ruint::aliases::U256;
 
@@ -400,9 +401,16 @@ pub fn handle_zap_in_damm_v2(
 ///
 /// Handle zap-in on the side of token A only. We will execute a binary search on `a` to find the solutions for `liquidity_delta`.
 ///
-/// `amount_in = a + Δa`
+/// # Formula
 ///
-/// `ΔL = a * √P * √P_max / (√P_max - √P)`
+/// - `amount_in = a + Δa`
+/// - `ΔL = a * √P * √P_max / (√P_max - √P)`
+///
+/// # Estimatedly optimal mid-point
+///
+/// - `A = L / √P`
+/// - `gamma = √(A / (A + amount_in))`
+/// - `a = amount_in / (1 + gamma)`
 ///
 pub fn handle_zap_on_a_in_damm_v2(
     ctx: Context<ZapInDammV2Ctx>,
@@ -413,18 +421,35 @@ pub fn handle_zap_on_a_in_damm_v2(
 
     let mut min_a: u64 = 0;
     let mut max_a: u64 = amount_in;
-
-    let mut a = min_a.safe_add(max_a)?.safe_div(2)?;
     let mut liquidity_delta: u128;
     let mut b: u64;
-    let mut confused_flag: i8 = 2;
+
+    let mut a: u64 = {
+        let pool = ctx.accounts.pool.load()?;
+        let liquidity_of_token_a = pool.liquidity.safe_div(pool.sqrt_price)?;
+        let gamma: u128 = u128::try_from(
+            mul_div_u256(
+                U256::from(liquidity_of_token_a),
+                U256::from(1).safe_shl(RESOLUTION as usize * 2)?,
+                U256::from(liquidity_of_token_a.safe_add(amount_in.into())?),
+                Rounding::Down,
+            )
+            .ok_or(ZapError::MathOverflow)?,
+        )
+        .map_err(|_| ZapError::MathOverflow)?
+        .integer_sqrt();
+
+        let precision = 1u128.safe_shl(RESOLUTION.into())?;
+        (amount_in as u128)
+            .safe_mul(precision)?
+            .safe_div(precision.safe_add(gamma)?)?
+            .try_into()
+            .map_err(|_| ZapError::MathOverflow)?
+    };
+
     loop {
         let pool_data = ctx.accounts.pool.load()?;
         let mut pool: Pool = pool_data.clone();
-        // Confused flag is to detect when `a` jumps between max and min with max-min=1 and cannot reach any stop condition
-        if max_a.safe_sub(min_a)? <= 1 {
-            confused_flag -= 1;
-        }
         // Assume the number of swapped tokens
         b = ctx
             .accounts
@@ -437,22 +462,22 @@ pub fn handle_zap_on_a_in_damm_v2(
         let (token_a_amount, _) = derive_inputs_based_on_liquidity_delta(liquidity_delta, &pool)?;
         let TransferFeeIncludedAmount { amount: a_, .. } =
             calculate_transfer_fee_included_amount(&ctx.accounts.token_a_mint, token_a_amount)?;
+        // No more room to search
+        if min_a == max_a {
+            break;
+        }
         // Converge the mid point of liquidity delta
         if a_ > a {
-            // If a' > a, min_a = a, max_a = a'
-            min_a = min_a.max(a);
+            // If a' > a, min_a = a + 1, max_a = a'
+            min_a = min_a.max(a.safe_add(1)?);
             max_a = max_a.min(a_);
             a = (min_a as u128)
                 .safe_add(max_a as u128)?
-                .safe_add(1)?
                 .safe_div(2)?
-                .try_into()?; // Adding 1 to round up
+                .try_into()?;
         } else if a_ < a {
-            if confused_flag <= 0 {
-                break;
-            }
-            // If a' < a, min_a = a', max_a = a
-            min_a = min_a.max(a_);
+            // If a' < a, min_a = a' + 1, max_a = a
+            min_a = min_a.max(a_.safe_add(1)?);
             max_a = max_a.min(a);
             a = (min_a as u128)
                 .safe_add(max_a as u128)?
@@ -502,9 +527,16 @@ pub fn handle_zap_on_a_in_damm_v2(
 ///
 /// Handle zap-in on the side of token B only. We will execute a binary search on `b` to find the solutions for `liquidity_delta`.
 ///
-/// `amount_in = b + Δb`
+/// # Formula
 ///
-/// `ΔL = b / (√P - √P_min)`
+/// - `amount_in = b + Δb`
+/// - `ΔL = b / (√P - √P_min)`
+///
+/// # Estimatedly optimal mid-point
+///
+/// - `B = √P * L`
+/// - `gamma = √(B / (B + amount_in))`
+/// - `b = amount_in / (1 + gamma)`
 ///
 pub fn handle_zap_on_b_in_damm_v2(
     ctx: Context<ZapInDammV2Ctx>,
@@ -515,18 +547,43 @@ pub fn handle_zap_on_b_in_damm_v2(
 
     let mut min_b: u64 = 0;
     let mut max_b: u64 = amount_in;
-
-    let mut b = min_b.safe_add(max_b)?.safe_div(2)?;
     let mut liquidity_delta: u128;
     let mut a: u64;
-    let mut confused_flag: i8 = 2;
+
+    let mut b: u64 = {
+        let pool = ctx.accounts.pool.load()?;
+        let liquidity_of_token_b: u128 = mul_div_u256(
+            U256::from(pool.liquidity),
+            U256::from(pool.sqrt_price),
+            U256::from(1).safe_shl(RESOLUTION as usize * 2)?,
+            Rounding::Down,
+        )
+        .ok_or(ZapError::MathOverflow)?
+        .try_into()
+        .map_err(|_| ZapError::MathOverflow)?;
+        let gamma: u128 = u128::try_from(
+            mul_div_u256(
+                U256::from(liquidity_of_token_b),
+                U256::from(1).safe_shl(RESOLUTION as usize * 2)?,
+                U256::from(liquidity_of_token_b.safe_add(amount_in.into())?),
+                Rounding::Down,
+            )
+            .ok_or(ZapError::MathOverflow)?,
+        )
+        .map_err(|_| ZapError::MathOverflow)?
+        .integer_sqrt();
+
+        let precision = 1u128.safe_shl(RESOLUTION.into())?;
+        (amount_in as u128)
+            .safe_mul(precision)?
+            .safe_div(precision.safe_add(gamma)?)?
+            .try_into()
+            .map_err(|_| ZapError::MathOverflow)?
+    };
+
     loop {
         let pool_data = ctx.accounts.pool.load()?;
         let mut pool: Pool = pool_data.clone();
-        // Confused flag is to detect when `b` jumps between max and min with max-min=1 and cannot reach any stop condition
-        if max_b.safe_sub(min_b)? <= 1 {
-            confused_flag -= 1;
-        }
         // Assume the number of swapped tokens
         a = ctx
             .accounts
@@ -539,22 +596,22 @@ pub fn handle_zap_on_b_in_damm_v2(
         let (_, token_b_amount) = derive_inputs_based_on_liquidity_delta(liquidity_delta, &pool)?;
         let TransferFeeIncludedAmount { amount: b_, .. } =
             calculate_transfer_fee_included_amount(&ctx.accounts.token_b_mint, token_b_amount)?;
+        // No more room to search
+        if min_b == max_b {
+            break;
+        }
         // Converge the mid point of liquidity delta
         if b_ > b {
-            // If b' > b, min_a = a, max_a = a'
-            min_b = min_b.max(b);
+            // If b' > b, min_b = b + 1, max_b = b'
+            min_b = min_b.max(b.safe_add(1)?);
             max_b = max_b.min(b_);
             b = (min_b as u128)
                 .safe_add(max_b as u128)?
-                .safe_add(1)?
                 .safe_div(2)?
-                .try_into()?; // Adding 1 to round up
+                .try_into()?;
         } else if b_ < b {
-            if confused_flag <= 0 {
-                break;
-            }
-            // If b' < b, min_b = b', max_b = b
-            min_b = min_b.max(b_);
+            // If b' < b, min_b = b' + 1, max_b = b
+            min_b = min_b.max(b_.safe_add(1)?);
             max_b = max_b.min(b);
             b = (min_b as u128)
                 .safe_add(max_b as u128)?
