@@ -21,6 +21,9 @@ importers:
         specifier: ^0.2.0
         version: 0.2.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
     devDependencies:
+      '@types/babar':
+        specifier: ^0.2.4
+        version: 0.2.4
       '@types/bn.js':
         specifier: ^5.1.0
         version: 5.2.0
@@ -30,6 +33,9 @@ importers:
       '@types/mocha':
         specifier: ^9.0.0
         version: 9.1.1
+      babar:
+        specifier: ^0.2.3
+        version: 0.2.3
       borsh:
         specifier: ^2.0.0
         version: 2.0.0
@@ -168,6 +174,9 @@ packages:
   '@swc/helpers@0.5.17':
     resolution: {integrity: sha512-5IKx/Y13RsYd+sauPb2x+U/xZikHjolzfuDgTAl/Tdf3Q8rslRvC19NKDLgAJQ6wsqADk10ntlv08nPFw/gO/A==}
 
+  '@types/babar@0.2.4':
+    resolution: {integrity: sha512-CWeZW8TovD8dq3jB6/WA8zWsCkyV1cuV1EBGeUBcl45kyCSheF2IOzo+bF8mjVJvMKWwO8tYjAH0/y/HuHcOSw==}
+
   '@types/bn.js@5.2.0':
     resolution: {integrity: sha512-DLbJ1BPqxvQhIGbeu8VbUC1DiAiahHtAYvA0ZEAa4P31F7IaArc8z3C3BRQdWX4mtLQuABG4yzp76ZrS02Ui1Q==}
 
@@ -230,6 +239,9 @@ packages:
 
   assertion-error@1.1.0:
     resolution: {integrity: sha512-jgsaNduz+ndvGyFt3uSuWqvy4lCnIJiovtouQN5JZHOKCS2QuhEdbcQHFhVksz2N2U9hXJo8odG7ETyWlEeuDw==}
+
+  babar@0.2.3:
+    resolution: {integrity: sha512-1hmYKLj+7m5qHsJ3hosOlO7Z5BYe3E8u9u/W2BEqB4kytysuHYuGe5OIrEr7q4Zyg3y3EytFb4YrPZokYSix8g==}
 
   balanced-match@1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
@@ -322,6 +334,10 @@ packages:
 
   color-name@1.1.4:
     resolution: {integrity: sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==}
+
+  colors@1.4.0:
+    resolution: {integrity: sha512-a+UqTh4kgZg/SlGvfbzDHpgRu7AAQOmmqRHJnxhRZICKFUT91brVhNNt58CMWU9PsBbv3PDCZUHbVxuDiH2mtA==}
+    engines: {node: '>=0.1.90'}
 
   commander@12.1.0:
     resolution: {integrity: sha512-Vw8qHK3bZM9y/P10u3Vib8o/DdkvA2OtPtZvD871QKjy74Wj1WSKFILMPRPSdUSx5RFK1arlJzEtA4PkFgnbuA==}
@@ -1020,6 +1036,8 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
+  '@types/babar@0.2.4': {}
+
   '@types/bn.js@5.2.0':
     dependencies:
       '@types/node': 24.0.14
@@ -1075,6 +1093,10 @@ snapshots:
   arrify@1.0.1: {}
 
   assertion-error@1.1.0: {}
+
+  babar@0.2.3:
+    dependencies:
+      colors: 1.4.0
 
   balanced-match@1.0.2: {}
 
@@ -1181,6 +1203,8 @@ snapshots:
       color-name: 1.1.4
 
   color-name@1.1.4: {}
+
+  colors@1.4.0: {}
 
   commander@12.1.0: {}
 
