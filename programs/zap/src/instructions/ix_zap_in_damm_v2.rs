@@ -334,10 +334,11 @@ impl<'info> ZapInDammV2Ctx<'info> {
 ///
 /// To add liquidity to DAMM V2, the token amounts are calculated as follows:
 ///
-/// `a = ΔL * (1/√P - 1/√P_max)`
-/// `b = ΔL * (√P - √P_min)`
+/// - `a = ΔL * (1/√P - 1/√P_max)`
+/// - `b = ΔL * (√P - √P_min)`
 ///
 /// To maintain generality, we support two distinct cases: adding {a, 0} and adding {0, b}.
+///
 /// For imbalanced additions of the form {a, b}, we sequentially process {a, 0} followed by {0, b}.
 ///
 pub fn handle_zap_in_damm_v2(
