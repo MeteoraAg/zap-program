@@ -176,31 +176,40 @@ describe("Zap in damm V2", () => {
       if (verbose) console.log("Balances before the zap-in:", { prevA, prevB });
 
       // Get reference
-      const simulatedTx = await getZapInTx({
-        a: new BN(a),
-        b: new BN(b),
-        reference: null,
-      });
-      const simulatedResults = svm.simulateTransaction(simulatedTx);
-      let simulatedData = deserialize(
-        ZapInReturnSchema,
-        simulatedResults.meta().returnData().data()
-      ) as Array<{
-        token_a_amount: bigint;
-        token_b_amount: bigint;
-        token_swapped_amount: bigint;
-      }>;
-      const { token_a_amount, token_b_amount, token_swapped_amount } =
-        simulatedData[simulatedData.length - 1];
-      const rerefence = !token_a_amount
-        ? token_b_amount - token_swapped_amount
-        : token_a_amount - token_swapped_amount;
+      let reference = await (async () => {
+        const simulatedTx = await getZapInTx({
+          a: new BN(a),
+          b: new BN(b),
+          reference: null,
+        });
+        const simulatedResults = svm.simulateTransaction(simulatedTx);
+        const simulatedData = simulatedResults.meta().returnData().data();
+
+        if (!simulatedData.length) return null;
+        const res = deserialize(ZapInReturnSchema, simulatedData) as Array<{
+          liquidity_delta: bigint;
+          token_a_amount: bigint;
+          token_b_amount: bigint;
+          token_swapped_amount: bigint;
+        }>;
+        const {
+          liquidity_delta,
+          token_a_amount,
+          token_b_amount,
+          token_swapped_amount,
+        } = res[res.length - 1];
+
+        if (!liquidity_delta) return null;
+        if (!token_a_amount)
+          return new BN(token_b_amount - token_swapped_amount);
+        return new BN(token_a_amount - token_swapped_amount);
+      })();
 
       // Zap-in
       const actualTx = await getZapInTx({
         a: new BN(a),
         b: new BN(b),
-        reference: new BN(rerefence),
+        reference,
       });
       const result = svm.sendTransaction(actualTx);
       const meta =
@@ -221,7 +230,7 @@ describe("Zap in damm V2", () => {
       if (verbose) console.log("Balances after the zap-in:", { nextA, nextB });
       if (verbose) console.log(logs);
 
-      // Avg CU
+      // Avg. CU
       cuBenchmark.add(logs);
 
       // Validate results
@@ -230,7 +239,7 @@ describe("Zap in damm V2", () => {
       if (!data.length) {
         expect(stream).contain("Error Code: AmountIsZero");
       } else {
-        let results = deserialize(ZapInReturnSchema, data) as Array<{
+        let res = deserialize(ZapInReturnSchema, data) as Array<{
           liquidity_delta: bigint;
           token_a_amount: bigint;
           token_b_amount: bigint;
@@ -239,17 +248,17 @@ describe("Zap in damm V2", () => {
           token_returned_amount: bigint;
           token_swapped_amount: bigint;
         }>;
-        if (verbose) console.log("Result:", results);
+        if (verbose) console.log("Result:", res);
         const { token_a_remaining_amount, token_b_remaining_amount } =
-          results[results.length - 1];
+          res[res.length - 1];
         expect(
-          results.reduce(
+          res.reduce(
             (a, { token_a_amount }) => a + token_a_amount,
             nextA - token_a_remaining_amount
           )
         ).eq(prevA);
         expect(
-          results.reduce(
+          res.reduce(
             (b, { token_b_amount }) => b + token_b_amount,
             nextB - token_b_remaining_amount
           )
