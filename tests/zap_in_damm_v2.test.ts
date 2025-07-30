@@ -47,8 +47,8 @@ const ZapInReturnSchema = {
         token_b_amount: "u64",
         token_a_remaining_amount: "u64",
         token_b_remaining_amount: "u64",
-        token_returned_amount: "u64",
         token_swapped_amount: "u64",
+        token_returned_amount: "u64",
       },
     },
   },
@@ -114,6 +114,53 @@ describe("Zap in damm V2", () => {
       const poolState = getDammV2Pool(svm, pool);
       const positionState = getDammV2Position(svm, position);
 
+      // Util to construct a zap-in tx
+      const getZapInTx = async (params: {
+        a: BN;
+        b: BN;
+        reference: BN | null;
+      }) => {
+        let zapIn = await zapProgram.methods
+          .zapIn(params)
+          .accountsPartial({
+            poolAuthority: deriveDammV2PoolAuthority(),
+            pool,
+            position,
+            tokenAAccount: getAssociatedTokenAddressSync(
+              tokenAMint,
+              user.publicKey
+            ),
+            tokenBAccount: getAssociatedTokenAddressSync(
+              tokenBMint,
+              user.publicKey
+            ),
+            tokenAVault: poolState.tokenAVault,
+            tokenBVault: poolState.tokenBVault,
+            tokenAMint,
+            tokenBMint,
+            positionNftAccount: deriveDammV2PositionNftAccount(
+              positionState.nftMint
+            ),
+            owner: user.publicKey,
+            tokenAProgram: TOKEN_PROGRAM_ID,
+            tokenBProgram: TOKEN_PROGRAM_ID,
+            dammV2EventAuthority: PublicKey.findProgramAddressSync(
+              [Buffer.from("__event_authority")],
+              dammV2Program.programId
+            )[0],
+            dammV2Program: dammV2Program.programId,
+            referralTokenAccount: null,
+          })
+          .transaction();
+        let tx = new Transaction();
+        tx.add(
+          ComputeBudgetProgram.setComputeUnitLimit({ units: 14_000_000 })
+        ).add(zapIn);
+        tx.recentBlockhash = svm.latestBlockhash();
+        tx.sign(user);
+        return tx;
+      };
+
       // Read previous balances
       const { amount: prevA } = AccountLayout.decode(
         svm.getAccount(
@@ -128,46 +175,34 @@ describe("Zap in damm V2", () => {
       if (verbose) console.log("Zapped-in amounts:", { a, b });
       if (verbose) console.log("Balances before the zap-in:", { prevA, prevB });
 
-      // Zap in
-      const zapIn = await zapProgram.methods
-        .zapIn({ a: new BN(a), b: new BN(b) })
-        .accountsPartial({
-          poolAuthority: deriveDammV2PoolAuthority(),
-          pool,
-          position,
-          tokenAAccount: getAssociatedTokenAddressSync(
-            tokenAMint,
-            user.publicKey
-          ),
-          tokenBAccount: getAssociatedTokenAddressSync(
-            tokenBMint,
-            user.publicKey
-          ),
-          tokenAVault: poolState.tokenAVault,
-          tokenBVault: poolState.tokenBVault,
-          tokenAMint,
-          tokenBMint,
-          positionNftAccount: deriveDammV2PositionNftAccount(
-            positionState.nftMint
-          ),
-          owner: user.publicKey,
-          tokenAProgram: TOKEN_PROGRAM_ID,
-          tokenBProgram: TOKEN_PROGRAM_ID,
-          dammV2EventAuthority: PublicKey.findProgramAddressSync(
-            [Buffer.from("__event_authority")],
-            dammV2Program.programId
-          )[0],
-          dammV2Program: dammV2Program.programId,
-          referralTokenAccount: null,
-        })
-        .transaction();
-      let tx = new Transaction();
-      tx.add(
-        ComputeBudgetProgram.setComputeUnitLimit({ units: 14_000_000 })
-      ).add(zapIn);
-      tx.recentBlockhash = svm.latestBlockhash();
-      tx.sign(user);
-      const result = svm.sendTransaction(tx);
+      // Get reference
+      const simulatedTx = await getZapInTx({
+        a: new BN(a),
+        b: new BN(b),
+        reference: null,
+      });
+      const simulatedResults = svm.simulateTransaction(simulatedTx);
+      let simulatedData = deserialize(
+        ZapInReturnSchema,
+        simulatedResults.meta().returnData().data()
+      ) as Array<{
+        token_a_amount: bigint;
+        token_b_amount: bigint;
+        token_swapped_amount: bigint;
+      }>;
+      const { token_a_amount, token_b_amount, token_swapped_amount } =
+        simulatedData[simulatedData.length - 1];
+      const rerefence = !token_a_amount
+        ? token_b_amount - token_swapped_amount
+        : token_a_amount - token_swapped_amount;
+
+      // Zap-in
+      const actualTx = await getZapInTx({
+        a: new BN(a),
+        b: new BN(b),
+        reference: new BN(rerefence),
+      });
+      const result = svm.sendTransaction(actualTx);
       const meta =
         result instanceof TransactionMetadata ? result : result.meta();
       const logs = meta.logs();

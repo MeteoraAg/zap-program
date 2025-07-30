@@ -24,6 +24,7 @@ use crate::{constants::amm_program_id::DAMM_V2, error::ZapError};
 pub struct ZapInDammV2Parameters {
     pub a: u64,
     pub b: u64,
+    pub reference: Option<u64>,
 }
 
 #[derive(AnchorSerialize, AnchorDeserialize)]
@@ -343,14 +344,14 @@ impl<'info> ZapInDammV2Ctx<'info> {
 ///
 pub fn handle_zap_in_damm_v2(
     ctx: Context<ZapInDammV2Ctx>,
-    ZapInDammV2Parameters { a, b }: ZapInDammV2Parameters,
+    ZapInDammV2Parameters { a, b, reference }: ZapInDammV2Parameters,
 ) -> Result<Vec<ZapInDammV2Result>> {
     require!(a != 0 || b != 0, ZapError::AmountIsZero);
     if a == 0 {
-        return Ok(vec![handle_zap_on_b_in_damm_v2(ctx, b)?]);
+        return Ok(vec![handle_zap_on_b_in_damm_v2(ctx, b, reference)?]);
     }
     if b == 0 {
-        return Ok(vec![handle_zap_on_a_in_damm_v2(ctx, a)?]);
+        return Ok(vec![handle_zap_on_a_in_damm_v2(ctx, a, reference)?]);
     }
 
     let mut result: Vec<ZapInDammV2Result> = vec![];
@@ -380,18 +381,18 @@ pub fn handle_zap_in_damm_v2(
         token_b_amount: token_b_amount_threshold,
         token_a_remaining_amount,
         token_b_remaining_amount,
-        token_returned_amount: 0,
         token_swapped_amount: 0,
+        token_returned_amount: 0,
     });
 
     if token_a_remaining_amount == 0 && token_b_remaining_amount == 0 {
         return Ok(result);
     } else if token_a_remaining_amount == 0 {
-        let sub = handle_zap_on_b_in_damm_v2(ctx, token_b_remaining_amount)?;
+        let sub = handle_zap_on_b_in_damm_v2(ctx, token_b_remaining_amount, reference)?;
         result.push(sub);
         return Ok(result);
     } else if token_b_remaining_amount == 0 {
-        let sub = handle_zap_on_a_in_damm_v2(ctx, token_a_remaining_amount)?;
+        let sub = handle_zap_on_a_in_damm_v2(ctx, token_a_remaining_amount, reference)?;
         result.push(sub);
         return Ok(result);
     } else {
@@ -401,6 +402,11 @@ pub fn handle_zap_in_damm_v2(
 
 ///
 /// Handle zap-in on the side of token A only. We will execute a binary search on `a` to find the solutions for `liquidity_delta`.
+///
+/// # Arguments
+///
+/// - `amount_in` - The number of token A.
+/// - `reference` - The reference of the initial `a` in the convergence loop.
 ///
 /// # Formula
 ///
@@ -416,6 +422,7 @@ pub fn handle_zap_in_damm_v2(
 pub fn handle_zap_on_a_in_damm_v2(
     ctx: Context<ZapInDammV2Ctx>,
     amount_in: u64,
+    reference: Option<u64>,
 ) -> Result<ZapInDammV2Result> {
     require!(amount_in > 0, ZapError::AmountIsZero);
     let trade_direction = TradeDirection::AtoB;
@@ -426,26 +433,30 @@ pub fn handle_zap_on_a_in_damm_v2(
     let mut b: u64;
 
     let mut a: u64 = {
-        let pool = ctx.accounts.pool.load()?;
-        let liquidity_of_token_a = pool.liquidity.safe_div(pool.sqrt_price)?;
-        let gamma: u128 = u128::try_from(
-            mul_div_u256(
-                U256::from(liquidity_of_token_a),
-                U256::from(1).safe_shl(RESOLUTION as usize * 2)?,
-                U256::from(liquidity_of_token_a.safe_add(amount_in.into())?),
-                Rounding::Down,
+        if let Some(r) = reference {
+            r
+        } else {
+            let pool = ctx.accounts.pool.load()?;
+            let liquidity_of_token_a = pool.liquidity.safe_div(pool.sqrt_price)?;
+            let gamma: u128 = u128::try_from(
+                mul_div_u256(
+                    U256::from(liquidity_of_token_a),
+                    U256::from(1).safe_shl(RESOLUTION as usize * 2)?,
+                    U256::from(liquidity_of_token_a.safe_add(amount_in.into())?),
+                    Rounding::Down,
+                )
+                .ok_or(ZapError::MathOverflow)?,
             )
-            .ok_or(ZapError::MathOverflow)?,
-        )
-        .map_err(|_| ZapError::MathOverflow)?
-        .integer_sqrt();
-
-        let precision = 1u128.safe_shl(RESOLUTION.into())?;
-        (amount_in as u128)
-            .safe_mul(precision)?
-            .safe_div(precision.safe_add(gamma)?)?
-            .try_into()
             .map_err(|_| ZapError::MathOverflow)?
+            .integer_sqrt();
+
+            let precision = 1u128.safe_shl(RESOLUTION.into())?;
+            (amount_in as u128)
+                .safe_mul(precision)?
+                .safe_div(precision.safe_add(gamma)?)?
+                .try_into()
+                .map_err(|_| ZapError::MathOverflow)?
+        }
     };
 
     loop {
@@ -528,6 +539,11 @@ pub fn handle_zap_on_a_in_damm_v2(
 ///
 /// Handle zap-in on the side of token B only. We will execute a binary search on `b` to find the solutions for `liquidity_delta`.
 ///
+/// # Arguments
+///
+/// - `amount_in` - The number of token B.
+/// - `reference` - The reference of the initial `b` in the convergence loop.
+///
 /// # Formula
 ///
 /// - `amount_in = b + Δb`
@@ -542,6 +558,7 @@ pub fn handle_zap_on_a_in_damm_v2(
 pub fn handle_zap_on_b_in_damm_v2(
     ctx: Context<ZapInDammV2Ctx>,
     amount_in: u64,
+    reference: Option<u64>,
 ) -> Result<ZapInDammV2Result> {
     require!(amount_in > 0, ZapError::AmountIsZero);
     let trade_direction = TradeDirection::BtoA;
@@ -552,34 +569,38 @@ pub fn handle_zap_on_b_in_damm_v2(
     let mut a: u64;
 
     let mut b: u64 = {
-        let pool = ctx.accounts.pool.load()?;
-        let liquidity_of_token_b: u128 = mul_div_u256(
-            U256::from(pool.liquidity),
-            U256::from(pool.sqrt_price),
-            U256::from(1).safe_shl(RESOLUTION as usize * 2)?,
-            Rounding::Down,
-        )
-        .ok_or(ZapError::MathOverflow)?
-        .try_into()
-        .map_err(|_| ZapError::MathOverflow)?;
-        let gamma: u128 = u128::try_from(
-            mul_div_u256(
-                U256::from(liquidity_of_token_b),
+        if let Some(r) = reference {
+            r
+        } else {
+            let pool = ctx.accounts.pool.load()?;
+            let liquidity_of_token_b: u128 = mul_div_u256(
+                U256::from(pool.liquidity),
+                U256::from(pool.sqrt_price),
                 U256::from(1).safe_shl(RESOLUTION as usize * 2)?,
-                U256::from(liquidity_of_token_b.safe_add(amount_in.into())?),
                 Rounding::Down,
             )
-            .ok_or(ZapError::MathOverflow)?,
-        )
-        .map_err(|_| ZapError::MathOverflow)?
-        .integer_sqrt();
-
-        let precision = 1u128.safe_shl(RESOLUTION.into())?;
-        (amount_in as u128)
-            .safe_mul(precision)?
-            .safe_div(precision.safe_add(gamma)?)?
+            .ok_or(ZapError::MathOverflow)?
             .try_into()
+            .map_err(|_| ZapError::MathOverflow)?;
+            let gamma: u128 = u128::try_from(
+                mul_div_u256(
+                    U256::from(liquidity_of_token_b),
+                    U256::from(1).safe_shl(RESOLUTION as usize * 2)?,
+                    U256::from(liquidity_of_token_b.safe_add(amount_in.into())?),
+                    Rounding::Down,
+                )
+                .ok_or(ZapError::MathOverflow)?,
+            )
             .map_err(|_| ZapError::MathOverflow)?
+            .integer_sqrt();
+
+            let precision = 1u128.safe_shl(RESOLUTION.into())?;
+            (amount_in as u128)
+                .safe_mul(precision)?
+                .safe_div(precision.safe_add(gamma)?)?
+                .try_into()
+                .map_err(|_| ZapError::MathOverflow)?
+        }
     };
 
     loop {
