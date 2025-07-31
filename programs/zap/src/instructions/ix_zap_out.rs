@@ -140,10 +140,10 @@ pub fn handle_zap_out<'c: 'info, 'info>(
         None
     };
 
-    let transfer_hook_account = &remaining_accounts[..transfer_hook_length];
+    let transfer_hook_accounts = &remaining_accounts[..transfer_hook_length];
 
     require!(
-        transfer_hook_account.len() == transfer_hook_length,
+        transfer_hook_accounts.len() == transfer_hook_length,
         ZapError::MissingRemainingAccountForTransferHook
     );
 
@@ -156,8 +156,8 @@ pub fn handle_zap_out<'c: 'info, 'info>(
         &ctx.accounts.input_token_program,
         ctx.accounts.token_ledger_account.amount,
         &[&signers_seeds[..]],
+        transfer_hook_accounts,
         memo_transfer_context,
-        Some(transfer_hook_account),
     )?;
 
     ctx.accounts.user_token_in_account.reload()?;

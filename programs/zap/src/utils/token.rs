@@ -203,14 +203,15 @@ pub fn transfer_token<'c: 'info, 'info>(
     token_program: &Interface<'info, TokenInterface>,
     amount: u64,
     signers_seeds: &[&[&[u8]]],
+    transfer_hook_accounts: &'c [AccountInfo<'info>],
     memo_transfer_context: Option<MemoTransferContext<'_, 'info>>,
-    transfer_hook_accounts: Option<&'c [AccountInfo<'info>]>,
 ) -> Result<()> {
     let destination_account = receiver_token_account.to_account_info();
 
     if let Some(memo_ctx) = memo_transfer_context {
         if is_transfer_memo_required(&destination_account)? {
-            let ctx = CpiContext::new(memo_ctx.memo_program.to_account_info(), BuildMemo {});
+            let ctx: CpiContext<'_, '_, '_, '_, BuildMemo> =
+                CpiContext::new(memo_ctx.memo_program.to_account_info(), BuildMemo {});
             memo::build_memo(ctx, memo_ctx.memo)?;
         }
     }
@@ -234,9 +235,10 @@ pub fn transfer_token<'c: 'info, 'info>(
     ];
 
     if let Some(hook_program_id) = get_transfer_hook_program_id(token_mint)? {
-        let Some(transfer_hook_accounts) = transfer_hook_accounts else {
-            return Err(ZapError::MissingRemainingAccountForTransferHook.into());
-        };
+        require!(
+            transfer_hook_accounts.len() > 0,
+            ZapError::MissingRemainingAccountForTransferHook
+        );
 
         spl_transfer_hook_interface::onchain::add_extra_accounts_for_execute_cpi(
             &mut instruction,
