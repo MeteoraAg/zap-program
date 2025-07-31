@@ -31,7 +31,6 @@ import {
   U64_MAX,
 } from "./utils";
 import { expect } from "chai";
-import { deriveZapAuthorityAddress } from "./zap";
 import {
   deriveDammV2CustomizablePoolAddress,
   deriveDammV2EventAuthority,
@@ -44,6 +43,8 @@ import {
 } from "./pda";
 
 export const DAMM_V2_PROGRAM_ID = new PublicKey(CpAmmIDL.address);
+
+export const DAMM_V2_SWAP_DISC = [248, 198, 158, 145, 225, 117, 135, 200]
 
 export type Pool = IdlAccounts<CpAmm>["pool"];
 export type Position = IdlAccounts<CpAmm>["position"];
@@ -62,8 +63,9 @@ export function createDammV2Program() {
 export function getDammV2RemainingAccounts(
   svm: LiteSVM,
   pool: PublicKey,
-  inputTokenAccount: PublicKey,
-  outputTokenAccount: PublicKey,
+  user: PublicKey,
+  userInputTokenAccount: PublicKey,
+  userTokenOutAccount: PublicKey,
   tokenAProgram = TOKEN_PROGRAM_ID,
   tokenBProgram = TOKEN_PROGRAM_ID
 ): Array<{
@@ -86,12 +88,12 @@ export function getDammV2RemainingAccounts(
     {
       isSigner: false,
       isWritable: true,
-      pubkey: inputTokenAccount,
+      pubkey: userInputTokenAccount,
     },
     {
       isSigner: false,
       isWritable: true,
-      pubkey: outputTokenAccount,
+      pubkey: userTokenOutAccount,
     },
     {
       isSigner: false,
@@ -114,9 +116,9 @@ export function getDammV2RemainingAccounts(
       pubkey: poolState.tokenBMint,
     },
     {
-      isSigner: false,
+      isSigner: true,
       isWritable: false,
-      pubkey: deriveZapAuthorityAddress(),
+      pubkey: user,
     },
     {
       isSigner: false,

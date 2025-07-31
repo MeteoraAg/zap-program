@@ -6,12 +6,16 @@ import JupIDL from "../../idls/jup_v6.json";
 import { IdlTypes } from "@coral-xyz/anchor";
 import { deriveZapAuthorityAddress } from "./zap";
 import { DAMM_V2_PROGRAM_ID } from "./damm_v2";
-import { deriveDammV2EventAuthority, deriveDammV2PoolAuthority, getDammV2Pool } from "./pda";
+import {
+  deriveDammV2EventAuthority,
+  deriveDammV2PoolAuthority,
+  getDammV2Pool,
+} from "./pda";
 
 export type RoutePlanStep = IdlTypes<Jupiter>["routePlanStep"];
 
 export const JUP_V6_PROGRAM_ID = new PublicKey(JupIDL.address);
-
+export const JUP_ROUTE_DISC = [229, 23, 203, 151, 122, 227, 173, 42];
 export function deriveJupV6EventAuthority() {
   return PublicKey.findProgramAddressSync(
     [Buffer.from("__event_authority")],
@@ -23,8 +27,9 @@ export function deriveJupV6EventAuthority() {
 export function getJupRemainingAccounts(
   svm: LiteSVM,
   pool: PublicKey,
-  inputTokenAccount: PublicKey,
-  outputTokenAccount: PublicKey,
+  user: PublicKey,
+  userTokenInAccount: PublicKey,
+  userTokenOutAccount: PublicKey,
   outputMint: PublicKey,
   tokenAProgram = TOKEN_PROGRAM_ID,
   tokenBProgram = TOKEN_PROGRAM_ID
@@ -45,17 +50,17 @@ export function getJupRemainingAccounts(
       pubkey: TOKEN_PROGRAM_ID,
     },
     {
-      pubkey: deriveZapAuthorityAddress(),
-      isSigner: false,
+      pubkey: user,
+      isSigner: true,
       isWritable: false,
     },
     {
-      pubkey: inputTokenAccount,
+      pubkey: userTokenInAccount,
       isSigner: false,
       isWritable: true,
     },
     {
-      pubkey: outputTokenAccount,
+      pubkey: userTokenOutAccount,
       isSigner: false,
       isWritable: true,
     },
@@ -101,12 +106,12 @@ export function getJupRemainingAccounts(
       isWritable: true,
     },
     {
-      pubkey: inputTokenAccount,
+      pubkey: userTokenInAccount,
       isSigner: false,
       isWritable: true,
     },
     {
-      pubkey: outputTokenAccount,
+      pubkey: userTokenOutAccount,
       isSigner: false,
       isWritable: true,
     },
@@ -131,8 +136,8 @@ export function getJupRemainingAccounts(
       isWritable: false,
     },
     {
-      pubkey: deriveZapAuthorityAddress(),
-      isSigner: false,
+      pubkey: user,
+      isSigner: true,
       isWritable: false,
     },
     {

@@ -146,6 +146,7 @@ describe("Zap out dlmm", () => {
   });
 
   it("fullflow zap out", async () => {
+    const inputTokenMint = tokenAMint;
     const tokenLedgerAccountTokenA = await initializeTokenLedger(
       svm,
       user,
@@ -190,8 +191,8 @@ describe("Zap out dlmm", () => {
     const zapOutTx = await zapOutDlmm(
       svm,
       lbPair,
-      tokenXAccount,
-      tokenYAccount
+      user.publicKey,
+      inputTokenMint
     );
 
     const finalTransaction = new Transaction()

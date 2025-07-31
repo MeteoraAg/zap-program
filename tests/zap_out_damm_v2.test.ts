@@ -63,10 +63,11 @@ describe("Zap out damm V2", () => {
   });
 
   it("full flow zap out", async () => {
+    const inputTokenMint = tokenAMint;
     const tokenLedgerAccountTokenA = await initializeTokenLedger(
       svm,
       user,
-      tokenAMint
+      inputTokenMint
     );
     const pool = await createDammV2Pool(svm, admin, tokenAMint, tokenBMint);
     const userPosition = await createPositionAndAddLiquidity(svm, user, pool);
@@ -88,9 +89,9 @@ describe("Zap out damm V2", () => {
 
     const zapOutTx = await zapOutDammv2(
       svm,
-      pool,
-      tokenAAccount,
-      tokenBAccount
+      user.publicKey,
+      inputTokenMint,
+      pool
     );
 
     const finalTransaction = new Transaction()

@@ -220,3 +220,7 @@ export function expectThrowsErrorCode(
     throw new Error("Expected an error but didn't get one");
   }
 }
+
+export function getTokenProgram(svm: LiteSVM, tokenMint: PublicKey): PublicKey {
+  return svm.getAccount(tokenMint).owner
+}

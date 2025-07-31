@@ -6,9 +6,24 @@ use anchor_lang::{
     },
 };
 
-use anchor_spl::token_2022::{
-    get_account_data_size, spl_token_2022::extension::ExtensionType, GetAccountDataSize,
+use anchor_spl::{
+    memo::{self, BuildMemo, Memo},
+    token::Token,
+    token_2022::{
+        get_account_data_size,
+        spl_token_2022::{
+            self,
+            extension::{
+                self, transfer_hook::get_program_id, BaseStateWithExtensions, ExtensionType,
+                StateWithExtensions,
+            },
+        },
+        GetAccountDataSize,
+    },
+    token_interface::{Mint, TokenAccount, TokenInterface},
 };
+
+use crate::error::ZapError;
 
 pub fn initialize_token_account<'info>(
     authority: &AccountInfo<'info>,
@@ -137,6 +152,106 @@ pub fn create_pda_account<'a>(
             &[new_pda_signer_seeds],
         )?;
     }
+
+    Ok(())
+}
+
+fn is_transfer_memo_required(user_token_ai: &AccountInfo<'_>) -> Result<bool> {
+    if user_token_ai.owner.eq(&anchor_spl::token::ID) {
+        return Ok(false);
+    }
+
+    let account_data = user_token_ai.try_borrow_data()?;
+    let token_account_unpacked =
+        StateWithExtensions::<spl_token_2022::state::Account>::unpack(&account_data)?;
+
+    let memo_transfer_ext =
+        token_account_unpacked.get_extension::<extension::memo_transfer::MemoTransfer>();
+
+    if let Ok(memo_transfer) = memo_transfer_ext {
+        Ok(memo_transfer.require_incoming_transfer_memos.into())
+    } else {
+        Ok(false)
+    }
+}
+
+fn get_transfer_hook_program_id<'info>(
+    token_mint: &InterfaceAccount<'info, Mint>,
+) -> Result<Option<Pubkey>> {
+    let token_mint_info = token_mint.to_account_info();
+    if *token_mint_info.owner == Token::id() {
+        return Ok(None);
+    }
+
+    let token_mint_data = token_mint_info.try_borrow_data()?;
+    let token_mint_unpacked =
+        StateWithExtensions::<spl_token_2022::state::Mint>::unpack(&token_mint_data)?;
+    Ok(get_program_id(&token_mint_unpacked))
+}
+
+#[derive(Clone, Copy)]
+pub struct MemoTransferContext<'a, 'info> {
+    pub memo_program: &'a Program<'info, Memo>,
+    pub memo: &'static [u8],
+}
+
+pub fn transfer_token<'c: 'info, 'info>(
+    zap_authority: AccountInfo<'info>,
+    token_mint: &InterfaceAccount<'info, Mint>,
+    token_ledger_account: &InterfaceAccount<'info, TokenAccount>,
+    receiver_token_account: &InterfaceAccount<'info, TokenAccount>,
+    token_program: &Interface<'info, TokenInterface>,
+    amount: u64,
+    signers_seeds: &[&[&[u8]]],
+    memo_transfer_context: Option<MemoTransferContext<'_, 'info>>,
+    transfer_hook_accounts: Option<&'c [AccountInfo<'info>]>,
+) -> Result<()> {
+    let destination_account = receiver_token_account.to_account_info();
+
+    if let Some(memo_ctx) = memo_transfer_context {
+        if is_transfer_memo_required(&destination_account)? {
+            let ctx = CpiContext::new(memo_ctx.memo_program.to_account_info(), BuildMemo {});
+            memo::build_memo(ctx, memo_ctx.memo)?;
+        }
+    }
+
+    let mut instruction = spl_token_2022::instruction::transfer_checked(
+        token_program.key,
+        &token_ledger_account.key(),
+        &token_mint.key(),
+        &receiver_token_account.key(),
+        &zap_authority.key(),
+        &[],
+        amount,
+        token_mint.decimals,
+    )?;
+
+    let mut account_infos = vec![
+        token_ledger_account.to_account_info(),
+        token_mint.to_account_info(),
+        receiver_token_account.to_account_info(),
+        zap_authority.to_account_info(),
+    ];
+
+    if let Some(hook_program_id) = get_transfer_hook_program_id(token_mint)? {
+        let Some(transfer_hook_accounts) = transfer_hook_accounts else {
+            return Err(ZapError::MissingRemainingAccountForTransferHook.into());
+        };
+
+        spl_transfer_hook_interface::onchain::add_extra_accounts_for_execute_cpi(
+            &mut instruction,
+            &mut account_infos,
+            &hook_program_id,
+            token_ledger_account.to_account_info(),
+            token_mint.to_account_info(),
+            receiver_token_account.to_account_info(),
+            zap_authority.to_account_info(),
+            amount,
+            transfer_hook_accounts,
+        )?;
+    }
+
+    invoke_signed(&instruction, &account_infos, signers_seeds)?;
 
     Ok(())
 }

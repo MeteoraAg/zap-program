@@ -227,9 +227,10 @@ checksum = "3c08cb5d762c0694f74bd02c9a5b04ea53cefc496e2c27b3234acffca5cd076b"
 dependencies = [
  "anchor-lang",
  "spl-associated-token-account",
+ "spl-memo",
  "spl-pod",
  "spl-token",
- "spl-token-2022 6.0.0",
+ "spl-token-2022",
  "spl-token-group-interface",
  "spl-token-metadata-interface",
 ]
@@ -603,14 +604,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "damm-v2"
-version = "0.0.1"
-dependencies = [
- "anchor-lang",
- "bytemuck",
-]
-
-[[package]]
 name = "derivation-path"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -634,13 +627,6 @@ dependencies = [
  "block-buffer 0.10.4",
  "crypto-common",
  "subtle",
-]
-
-[[package]]
-name = "dlmm"
-version = "0.0.1"
-dependencies = [
- "anchor-lang",
 ]
 
 [[package]]
@@ -806,13 +792,6 @@ checksum = "1cfaf33c695fc6e08064efbc1f72ec937429614f25eef83af942d0e227c3a28f"
 dependencies = [
  "once_cell",
  "wasm-bindgen",
-]
-
-[[package]]
-name = "jup-v6"
-version = "0.0.1"
-dependencies = [
- "anchor-lang",
 ]
 
 [[package]]
@@ -2265,7 +2244,7 @@ dependencies = [
  "solana-program",
  "spl-associated-token-account-client",
  "spl-token",
- "spl-token-2022 6.0.0",
+ "spl-token-2022",
  "thiserror 1.0.69",
 ]
 
@@ -2444,40 +2423,12 @@ dependencies = [
  "spl-token",
  "spl-token-confidential-transfer-ciphertext-arithmetic",
  "spl-token-confidential-transfer-proof-extraction",
- "spl-token-confidential-transfer-proof-generation 0.2.0",
+ "spl-token-confidential-transfer-proof-generation",
  "spl-token-group-interface",
  "spl-token-metadata-interface",
  "spl-transfer-hook-interface",
  "spl-type-length-value",
  "thiserror 1.0.69",
-]
-
-[[package]]
-name = "spl-token-2022"
-version = "7.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9048b26b0df0290f929ff91317c83db28b3ef99af2b3493dd35baa146774924c"
-dependencies = [
- "arrayref",
- "bytemuck",
- "num-derive",
- "num-traits",
- "num_enum",
- "solana-program",
- "solana-security-txt",
- "solana-zk-sdk",
- "spl-elgamal-registry",
- "spl-memo",
- "spl-pod",
- "spl-token",
- "spl-token-confidential-transfer-ciphertext-arithmetic",
- "spl-token-confidential-transfer-proof-extraction",
- "spl-token-confidential-transfer-proof-generation 0.3.0",
- "spl-token-group-interface",
- "spl-token-metadata-interface",
- "spl-transfer-hook-interface",
- "spl-type-length-value",
- "thiserror 2.0.12",
 ]
 
 [[package]]
@@ -2515,17 +2466,6 @@ dependencies = [
  "curve25519-dalek",
  "solana-zk-sdk",
  "thiserror 1.0.69",
-]
-
-[[package]]
-name = "spl-token-confidential-transfer-proof-generation"
-version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0e3597628b0d2fe94e7900fd17cdb4cfbb31ee35c66f82809d27d86e44b2848b"
-dependencies = [
- "curve25519-dalek",
- "solana-zk-sdk",
- "thiserror 2.0.12",
 ]
 
 [[package]]
@@ -2949,11 +2889,8 @@ dependencies = [
  "anchor-spl",
  "bytemuck",
  "const-crypto",
- "damm-v2",
- "dlmm",
- "jup-v6",
  "num_enum",
- "spl-token-2022 7.0.0",
+ "spl-transfer-hook-interface",
 ]
 
 [[package]]
