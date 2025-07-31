@@ -108,9 +108,9 @@ pub fn handle_zap_out<'c: 'info, 'info>(
     // validate params
     params.validate()?;
 
-    let remaining_accounts = ctx.remaining_accounts;
     let transfer_hook_length = params.transfer_hook_length as usize;
-    let accounts: Vec<AccountMeta> = remaining_accounts[transfer_hook_length..]
+    let transfer_hook_accounts = &ctx.remaining_accounts[..transfer_hook_length];
+    let accounts: Vec<AccountMeta> = ctx.remaining_accounts[transfer_hook_length..]
         .iter()
         .map(|acc| AccountMeta {
             pubkey: *acc.key,
@@ -119,13 +119,10 @@ pub fn handle_zap_out<'c: 'info, 'info>(
         })
         .collect();
 
-    let account_infos: Vec<AccountInfo> = remaining_accounts[transfer_hook_length..]
+    let account_infos: Vec<AccountInfo> = ctx.remaining_accounts[transfer_hook_length..]
         .iter()
         .map(|acc| AccountInfo { ..acc.clone() })
         .collect();
-
-    let signers_seeds = zap_authority_seeds!();
-    // transfer token to user_token_in_account
 
     let memo_transfer_context = if transfer_hook_length > 0 {
         require!(
@@ -140,13 +137,7 @@ pub fn handle_zap_out<'c: 'info, 'info>(
         None
     };
 
-    let transfer_hook_accounts = &remaining_accounts[..transfer_hook_length];
-
-    require!(
-        transfer_hook_accounts.len() == transfer_hook_length,
-        ZapError::MissingRemainingAccountForTransferHook
-    );
-
+    let signers_seeds = zap_authority_seeds!();
     // transfer from token_ledger_account to user_token_in_account
     transfer_token(
         ctx.accounts.zap_authority.to_account_info(),
@@ -171,7 +162,7 @@ pub fn handle_zap_out<'c: 'info, 'info>(
         params.offset_amount_in.into(),
     )?;
 
-    let user_token_out_pre_balance = ctx.accounts.user_token_out_account.amount;
+    let pre_balance_user_token_out = ctx.accounts.user_token_out_account.amount;
     // invoke instruction to amm
     invoke_signed(
         &Instruction {
@@ -185,9 +176,9 @@ pub fn handle_zap_out<'c: 'info, 'info>(
 
     ctx.accounts.user_token_out_account.reload()?;
 
-    let user_token_out_post_balance = ctx.accounts.user_token_out_account.amount;
+    let post_balance_user_token_out = ctx.accounts.user_token_out_account.amount;
     let total_amount_out_after_swap =
-        user_token_out_post_balance.safe_sub(user_token_out_pre_balance)?;
+        post_balance_user_token_out.safe_sub(pre_balance_user_token_out)?;
 
     // prevent slippage from swap instruction
     require!(
