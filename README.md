@@ -4,7 +4,7 @@ The Zap program provide util functions that allow user to zap in/out from any Am
 
 ## Zap out
 
-User can withdraw liquidity or claim fees from Meteora pools to a PDA account (token ledger), then swap all balance change through direct pools (Damm V2 or DLMM) or Jupiter 
+User can withdraw liquidity or claim fees from Meteora pools immediately swaps the withdrawn tokens through direct pools (Damm V2 or DLMM) or Jupiter.
 
 ## Zap in
 
