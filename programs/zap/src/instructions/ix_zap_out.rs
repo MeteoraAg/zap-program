@@ -63,6 +63,26 @@ pub struct ZapOutCtx<'info> {
 // Acknowledged: We are aware of memo transfer requirements for certain token accounts
 // but v1 does not support it as very few token accounts currently use the memo transfer extension.
 
+pub fn modify_instruction_data(
+    payload_data: &mut Vec<u8>,
+    amount_in: u64,
+    offset_amount_in: usize,
+) -> Result<()> {
+    let amount_in_bytes = amount_in.to_le_bytes();
+    let end_offset_index = offset_amount_in.safe_add(amount_in_bytes.len())?;
+
+    require!(
+        end_offset_index <= payload_data.len(),
+        ZapError::InvalidOffset
+    );
+    payload_data.splice(
+        offset_amount_in..end_offset_index,
+        amount_in_bytes.iter().cloned(),
+    );
+
+    Ok(())
+}
+
 impl<'info> ZapOutCtx<'info> {
     fn get_swap_amount(&self, total_amount: u64, percentage: u8) -> Result<u64> {
         let swap_amount = if percentage == 100 {
@@ -75,27 +95,6 @@ impl<'info> ZapOutCtx<'info> {
         };
 
         Ok(swap_amount)
-    }
-
-    fn modify_instruction_data(
-        &self,
-        payload_data: &mut Vec<u8>,
-        amount_in: u64,
-        offset_amount_in: usize,
-    ) -> Result<()> {
-        let amount_in_bytes = amount_in.to_le_bytes();
-        let end_offset_index = offset_amount_in.safe_add(amount_in_bytes.len())?;
-
-        require!(
-            end_offset_index <= payload_data.len(),
-            ZapError::InvalidOffset
-        );
-        payload_data.splice(
-            offset_amount_in..end_offset_index,
-            amount_in_bytes.iter().cloned(),
-        );
-
-        Ok(())
     }
 }
 
@@ -114,6 +113,10 @@ pub fn handle_zap_out<'c: 'info, 'info>(
     let transfer_hook_length = params.transfer_hook_length as usize;
     let transfer_hook_accounts = &ctx.remaining_accounts[..transfer_hook_length];
     let pre_balance_user_token_in = ctx.accounts.user_token_in_account.amount;
+    let token_ledger_balance = ctx.accounts.token_ledger_account.amount;
+    if token_ledger_balance == 0 {
+        return Ok(());
+    }
     // transfer from token_ledger_account to user_token_in_account
     // Acknowledged: With this design, users will be charged transfer fees twice if the token has the transfer fee extension enabled.
     // However, we can ignore this issue in the first version.
@@ -123,7 +126,7 @@ pub fn handle_zap_out<'c: 'info, 'info>(
         &ctx.accounts.token_ledger_account,
         &ctx.accounts.user_token_in_account,
         &ctx.accounts.input_token_program,
-        ctx.accounts.token_ledger_account.amount,
+        token_ledger_balance,
         transfer_hook_accounts,
     )?;
 
@@ -137,7 +140,7 @@ pub fn handle_zap_out<'c: 'info, 'info>(
 
     if swap_amount > 0 {
         let mut payload_data = params.payload_data.to_vec();
-        ctx.accounts.modify_instruction_data(
+        modify_instruction_data(
             &mut payload_data,
             swap_amount,
             params.offset_amount_in.into(),
