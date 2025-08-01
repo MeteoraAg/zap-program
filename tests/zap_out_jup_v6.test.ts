@@ -8,7 +8,6 @@ import {
 import {
   createZapProgram,
   createToken,
-  initializeTokenLedger,
   mintToken,
   ZapProgram,
   zapOutJupV6,
@@ -69,14 +68,14 @@ describe("Zap out Jup V6", () => {
 
   it("full flow zap out", async () => {
     const inputTokenAccount = tokenAMint;
-    const tokenLedgerAccountTokenA = await initializeTokenLedger(
-      svm,
-      user,
-      inputTokenAccount
-    );
     const pool = await createDammV2Pool(svm, admin, tokenAMint, tokenBMint);
     const userPosition = await createPositionAndAddLiquidity(svm, user, pool);
-    const tokenAAccount = tokenLedgerAccountTokenA;
+    const tokenAAccount = getAssociatedTokenAddressSync(
+      tokenAMint,
+      user.publicKey,
+      true,
+      TOKEN_PROGRAM_ID
+    );
     const tokenBAccount = getAssociatedTokenAddressSync(
       tokenBMint,
       user.publicKey,

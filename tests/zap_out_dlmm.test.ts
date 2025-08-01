@@ -8,7 +8,6 @@ import {
 import {
   createZapProgram,
   createToken,
-  initializeTokenLedger,
   mintToken,
   ZapProgram,
   zapOutDlmm,
@@ -147,11 +146,7 @@ describe("Zap out dlmm", () => {
 
   it("fullflow zap out", async () => {
     const inputTokenMint = tokenAMint;
-    const tokenLedgerAccountTokenA = await initializeTokenLedger(
-      svm,
-      user,
-      tokenAMint
-    );
+
     const amount = new BN(1000).mul(new BN(10 ** TOKEN_DECIMALS));
     const userPosition = await dlmmCreatePositionAndAddLiquidityRadius(
       svm,
@@ -167,7 +162,12 @@ describe("Zap out dlmm", () => {
       new BN(upperBinId)
     );
 
-    const tokenXAccount = tokenLedgerAccountTokenA;
+    const tokenXAccount = getAssociatedTokenAddressSync(
+      tokenAMint,
+      user.publicKey,
+      true,
+      TOKEN_PROGRAM_ID
+    );
     const tokenYAccount = getAssociatedTokenAddressSync(
       tokenBMint,
       user.publicKey,

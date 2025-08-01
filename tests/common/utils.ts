@@ -7,6 +7,7 @@ import {
 
 import ZapIDL from "../../target/idl/zap.json";
 import {
+  AccountLayout,
   createAssociatedTokenAccountInstruction,
   createInitializeMint2Instruction,
   createInitializeTransferHookInstruction,
@@ -222,5 +223,13 @@ export function expectThrowsErrorCode(
 }
 
 export function getTokenProgram(svm: LiteSVM, tokenMint: PublicKey): PublicKey {
-  return svm.getAccount(tokenMint).owner
+  return svm.getAccount(tokenMint).owner;
+}
+
+export function getTokenBalance(svm: LiteSVM, tokenAccount: PublicKey): BN {
+  const account = svm.getAccount(tokenAccount);
+  if(!account.data) {
+    return new BN(0)
+  }
+  return new BN(AccountLayout.decode(account.data).amount.toString());
 }

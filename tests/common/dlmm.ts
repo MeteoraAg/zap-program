@@ -19,6 +19,7 @@ import {
   SYSVAR_RENT_PUBKEY,
   ComputeBudgetProgram,
   AccountMeta,
+  TransactionInstruction,
 } from "@solana/web3.js";
 import {
   FailedTransactionMetadata,
@@ -41,6 +42,7 @@ import {
   deriveTokenBadge,
 } from "./pda";
 import { getExtraAccountMetasForTransferHook } from "./transferHook/transferHookUtils";
+import { getOrCreateAtA } from "./utils";
 
 export type PresetParameter = Omit<IdlAccounts<LbClmm>["presetParameter"], "">;
 export type BinLiquidityDistribution =
@@ -717,6 +719,9 @@ export async function removeAllLiquidity(
     new BN(upperBinId)
   );
 
+  getOrCreateAtA(svm, user, tokenXMint, user.publicKey, tokenXProgram);
+  getOrCreateAtA(svm, user, tokenYMint, user.publicKey, tokenYProgram);
+
   return program.methods
     .removeLiquidityByRange2(
       lowerBinId,
@@ -751,7 +756,6 @@ export function getDlmmRemainingAccounts(
   user: PublicKey,
   userInputTokenAccount: PublicKey,
   userTokenOutAccount: PublicKey,
-  inputIsTokenX: boolean,
   tokenXProgram: PublicKey,
   tokenYProgram: PublicKey
 ): {
@@ -760,7 +764,6 @@ export function getDlmmRemainingAccounts(
     isWritable: boolean;
     pubkey: PublicKey;
   }>;
-  hookAccounts: AccountMeta[];
   remainingAccountsInfo: RemainingAccountsInfo;
 } {
   const lbPairState = getLbPairState(svm, lbPair);
@@ -895,7 +898,6 @@ export function getDlmmRemainingAccounts(
 
   return {
     remainingAccounts,
-    hookAccounts: inputIsTokenX ? transferHookXAccounts : transferHookYAccounts,
     remainingAccountsInfo,
   };
 }

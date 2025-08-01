@@ -2,18 +2,15 @@ use anchor_lang::{
     prelude::*,
     solana_program::{instruction::Instruction, program::invoke},
 };
-use anchor_spl::token_interface::{Mint, TokenAccount, TokenInterface};
+use anchor_spl::token_interface::TokenAccount;
 
-use crate::{
-    const_pda, constants::WHITELISTED_AMM_PROGRAMS, error::ZapError, safe_math::SafeMath,
-    transfer_token,
-};
+use crate::{constants::WHITELISTED_AMM_PROGRAMS, error::ZapError, safe_math::SafeMath};
 
 #[derive(AnchorSerialize, AnchorDeserialize)]
 pub struct ZapOutParameters {
     pub percentage: u8,
     pub offset_amount_in: u16,
-    pub transfer_hook_length: u8,
+    pub user_token_balance: u64,
     pub payload_data: Vec<u8>,
 }
 
@@ -49,32 +46,12 @@ pub fn is_support_amm_program(amm_program: &Pubkey, discriminator: &[u8]) -> boo
 
 #[derive(Accounts)]
 pub struct ZapOutCtx<'info> {
-    /// CHECK: zap authority
-    #[account(
-        address = const_pda::zap_authority::ID,
-    )]
-    pub zap_authority: UncheckedAccount<'info>,
-
-    #[account(mut)]
-    pub token_ledger_account: InterfaceAccount<'info, TokenAccount>,
-
     #[account(mut)]
     pub user_token_in_account: InterfaceAccount<'info, TokenAccount>,
-
-    /// Token in mint
-    #[account(
-        mint::token_program = input_token_program,
-    )]
-    pub token_in_mint: InterfaceAccount<'info, Mint>,
-
-    pub input_token_program: Interface<'info, TokenInterface>,
 
     /// CHECK:
     pub amm_program: UncheckedAccount<'info>,
 }
-
-// Acknowledged: We are aware of memo transfer requirements for certain token accounts
-// but v1 does not support it as very few token accounts currently use the memo transfer extension.
 
 pub fn modify_instruction_data(
     payload_data: &mut Vec<u8>,
@@ -107,30 +84,12 @@ pub fn handle_zap_out<'c: 'info, 'info>(
         is_support_amm_program(ctx.accounts.amm_program.key, disciminator),
         ZapError::AmmIsNotSupported
     );
-    let token_ledger_balance = ctx.accounts.token_ledger_account.amount;
-    if token_ledger_balance == 0 {
-        // skip if token ledger balance is zero
+    let user_token_in_balance = ctx.accounts.user_token_in_account.amount;
+    let total_amount = user_token_in_balance.safe_sub(params.user_token_balance)?;
+    if total_amount == 0 {
+        // skip if total amount is zero
         return Ok(());
     }
-    let transfer_hook_length = params.transfer_hook_length as usize;
-    let transfer_hook_accounts = &ctx.remaining_accounts[..transfer_hook_length];
-    let pre_balance_user_token_in = ctx.accounts.user_token_in_account.amount;
-    // transfer from token_ledger_account to user_token_in_account
-    // Acknowledged: With this design, users will be charged transfer fees twice if the token has the transfer fee extension enabled.
-    // However, we can ignore this issue in the first version.
-    transfer_token(
-        ctx.accounts.zap_authority.to_account_info(),
-        &ctx.accounts.token_in_mint,
-        &ctx.accounts.token_ledger_account,
-        &ctx.accounts.user_token_in_account,
-        &ctx.accounts.input_token_program,
-        token_ledger_balance,
-        transfer_hook_accounts,
-    )?;
-
-    ctx.accounts.user_token_in_account.reload()?;
-    let post_balance_user_token_in = ctx.accounts.user_token_in_account.amount;
-    let total_amount = post_balance_user_token_in.safe_sub(pre_balance_user_token_in)?;
 
     let swap_amount = params.get_swap_amount(total_amount)?;
 
@@ -142,7 +101,8 @@ pub fn handle_zap_out<'c: 'info, 'info>(
             params.offset_amount_in.into(),
         )?;
 
-        let accounts: Vec<AccountMeta> = ctx.remaining_accounts[transfer_hook_length..]
+        let accounts: Vec<AccountMeta> = ctx
+            .remaining_accounts
             .iter()
             .map(|acc| AccountMeta {
                 pubkey: *acc.key,
@@ -151,7 +111,8 @@ pub fn handle_zap_out<'c: 'info, 'info>(
             })
             .collect();
 
-        let account_infos: Vec<AccountInfo> = ctx.remaining_accounts[transfer_hook_length..]
+        let account_infos: Vec<AccountInfo> = ctx
+            .remaining_accounts
             .iter()
             .map(|acc| AccountInfo { ..acc.clone() })
             .collect();
