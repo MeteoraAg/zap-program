@@ -106,6 +106,7 @@ export async function zapOutDammv2(
       percentage: 100,
       offsetAmountIn: 8,
       preUserTokenBalance,
+      maxSwapAmount:  new BN("100000000000"),
       payloadData,
     })
     .accountsPartial({
@@ -188,6 +189,7 @@ export async function zapOutDlmm(
       percentage: 100,
       offsetAmountIn: 8, // disc then amount_in
       preUserTokenBalance,
+      maxSwapAmount:  new BN("100000000000"),
       payloadData,
     })
     .accountsPartial({
@@ -266,6 +268,7 @@ export async function zapOutJupV6(
         routeStepPlanCount.length +
         routeStepPlanBuffer.length,
       preUserTokenBalance,
+      maxSwapAmount: new BN("100000000000"),
       payloadData,
     })
     .accountsPartial({
