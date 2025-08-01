@@ -122,7 +122,6 @@ export async function zapOutDammv2(
       zapAuthority: deriveZapAuthorityAddress(),
       tokenLedgerAccount: deriveTokenLedgerAddress(inputTokenMint),
       userTokenInAccount,
-      userTokenOutAccount,
       tokenInMint: inputTokenMint,
       inputTokenProgram, 
       ammProgram: DAMM_V2_PROGRAM_ID,
@@ -197,7 +196,6 @@ export async function zapOutDlmm(
       zapAuthority: deriveZapAuthorityAddress(),
       tokenLedgerAccount: deriveTokenLedgerAddress(inputTokenMint),
       userTokenInAccount,
-      userTokenOutAccount,
       tokenInMint: inputTokenMint,
       inputTokenProgram, 
       ammProgram: DLMM_PROGRAM_ID_LOCAL
@@ -263,7 +261,6 @@ export async function zapOutJupV6(
       zapAuthority: deriveZapAuthorityAddress(),
       tokenLedgerAccount: deriveTokenLedgerAddress(inputTokenMint),
       userTokenInAccount,
-      userTokenOutAccount,
       tokenInMint: inputTokenMint,
       inputTokenProgram, 
       ammProgram: JUP_V6_PROGRAM_ID

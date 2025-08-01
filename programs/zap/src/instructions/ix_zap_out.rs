@@ -48,9 +48,6 @@ pub struct ZapOutCtx<'info> {
     #[account(mut)]
     pub user_token_in_account: InterfaceAccount<'info, TokenAccount>,
 
-    #[account(mut)]
-    pub user_token_out_account: InterfaceAccount<'info, TokenAccount>,
-
     /// Token in mint
     #[account(
         mint::token_program = input_token_program,
