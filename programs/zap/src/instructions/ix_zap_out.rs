@@ -10,7 +10,7 @@ use crate::{constants::WHITELISTED_AMM_PROGRAMS, error::ZapError, safe_math::Saf
 pub struct ZapOutParameters {
     pub percentage: u8,
     pub offset_amount_in: u16,
-    pub user_token_balance: u64,
+    pub pre_user_token_balance: u64,
     pub payload_data: Vec<u8>,
 }
 
@@ -84,13 +84,12 @@ pub fn handle_zap_out<'c: 'info, 'info>(
         is_support_amm_program(ctx.accounts.amm_program.key, disciminator),
         ZapError::AmmIsNotSupported
     );
-    let user_token_in_balance = ctx.accounts.user_token_in_account.amount;
-    let total_amount = user_token_in_balance.safe_sub(params.user_token_balance)?;
-    if total_amount == 0 {
-        // skip if total amount is zero
+    let post_user_token_balance = ctx.accounts.user_token_in_account.amount;
+    if params.pre_user_token_balance >= post_user_token_balance {
+        // skip if pre_user_token_balance is greater than post_user_token_balance
         return Ok(());
     }
-
+    let total_amount = post_user_token_balance.safe_sub(params.pre_user_token_balance)?;
     let swap_amount = params.get_swap_amount(total_amount)?;
 
     if swap_amount > 0 {

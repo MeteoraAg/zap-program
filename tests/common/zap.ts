@@ -85,7 +85,7 @@ export async function zapOutDammv2(
     outputTokenProgram
   );
 
-  const userTokenBalance = getTokenBalance(svm, userTokenInAccount);
+  const preUserTokenBalance = getTokenBalance(svm, userTokenInAccount);
 
   const remainingAccounts = getDammV2RemainingAccounts(
     svm,
@@ -105,7 +105,7 @@ export async function zapOutDammv2(
     .zapOut({
       percentage: 100,
       offsetAmountIn: 8,
-      userTokenBalance,
+      preUserTokenBalance,
       payloadData,
     })
     .accountsPartial({
@@ -146,7 +146,7 @@ export async function zapOutDlmm(
     outputTokenProgram
   );
 
-  const userTokenBalance = getTokenBalance(svm, userTokenInAccount);
+  const preUserTokenBalance = getTokenBalance(svm, userTokenInAccount);
 
   const tokenXProgram = getTokenProgram(svm, lbPairState.tokenXMint);
   const tokenYProgram = getTokenProgram(svm, lbPairState.tokenYMint);
@@ -187,7 +187,7 @@ export async function zapOutDlmm(
     .zapOut({
       percentage: 100,
       offsetAmountIn: 8, // disc then amount_in
-      userTokenBalance,
+      preUserTokenBalance,
       payloadData,
     })
     .accountsPartial({
@@ -225,7 +225,7 @@ export async function zapOutJupV6(
     outputTokenProgram
   );
 
-  const userTokenBalance = getTokenBalance(svm, userTokenInAccount);
+  const preUserTokenBalance = getTokenBalance(svm, userTokenInAccount);
 
   const remainingAccounts = getJupRemainingAccounts(
     svm,
@@ -265,7 +265,7 @@ export async function zapOutJupV6(
         JUP_ROUTE_DISC.length +
         routeStepPlanCount.length +
         routeStepPlanBuffer.length,
-      userTokenBalance,
+      preUserTokenBalance,
       payloadData,
     })
     .accountsPartial({
