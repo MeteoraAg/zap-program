@@ -432,31 +432,29 @@ pub fn handle_zap_on_a_in_damm_v2(
     let mut liquidity_delta: u128;
     let mut b: u64;
 
-    let mut a: u64 = {
-        if let Some(r) = reference {
-            r
-        } else {
-            let pool = ctx.accounts.pool.load()?;
-            let liquidity_of_token_a = pool.liquidity.safe_div(pool.sqrt_price)?;
-            let gamma: u128 = u128::try_from(
-                mul_div_u256(
-                    U256::from(liquidity_of_token_a),
-                    U256::from(1).safe_shl(RESOLUTION as usize * 2)?,
-                    U256::from(liquidity_of_token_a.safe_add(amount_in.into())?),
-                    Rounding::Down,
-                )
-                .ok_or(ZapError::MathOverflow)?,
+    let mut a: u64 = if let Some(r) = reference {
+        r
+    } else {
+        let pool = ctx.accounts.pool.load()?;
+        let liquidity_of_token_a = pool.liquidity.safe_div(pool.sqrt_price)?;
+        let gamma: u128 = u128::try_from(
+            mul_div_u256(
+                U256::from(liquidity_of_token_a),
+                U256::from(1).safe_shl(RESOLUTION as usize * 2)?,
+                U256::from(liquidity_of_token_a.safe_add(amount_in.into())?),
+                Rounding::Down,
             )
-            .map_err(|_| ZapError::MathOverflow)?
-            .integer_sqrt();
+            .ok_or(ZapError::MathOverflow)?,
+        )
+        .map_err(|_| ZapError::MathOverflow)?
+        .integer_sqrt();
 
-            let precision = 1u128.safe_shl(RESOLUTION.into())?;
-            (amount_in as u128)
-                .safe_mul(precision)?
-                .safe_div(precision.safe_add(gamma)?)?
-                .try_into()
-                .map_err(|_| ZapError::MathOverflow)?
-        }
+        let precision = 1u128.safe_shl(RESOLUTION.into())?;
+        (amount_in as u128)
+            .safe_mul(precision)?
+            .safe_div(precision.safe_add(gamma)?)?
+            .try_into()
+            .map_err(|_| ZapError::MathOverflow)?
     };
 
     loop {
@@ -568,39 +566,37 @@ pub fn handle_zap_on_b_in_damm_v2(
     let mut liquidity_delta: u128;
     let mut a: u64;
 
-    let mut b: u64 = {
-        if let Some(r) = reference {
-            r
-        } else {
-            let pool = ctx.accounts.pool.load()?;
-            let liquidity_of_token_b: u128 = mul_div_u256(
-                U256::from(pool.liquidity),
-                U256::from(pool.sqrt_price),
+    let mut b: u64 = if let Some(r) = reference {
+        r
+    } else {
+        let pool = ctx.accounts.pool.load()?;
+        let liquidity_of_token_b: u128 = mul_div_u256(
+            U256::from(pool.liquidity),
+            U256::from(pool.sqrt_price),
+            U256::from(1).safe_shl(RESOLUTION as usize * 2)?,
+            Rounding::Down,
+        )
+        .ok_or(ZapError::MathOverflow)?
+        .try_into()
+        .map_err(|_| ZapError::MathOverflow)?;
+        let gamma: u128 = u128::try_from(
+            mul_div_u256(
+                U256::from(liquidity_of_token_b),
                 U256::from(1).safe_shl(RESOLUTION as usize * 2)?,
+                U256::from(liquidity_of_token_b.safe_add(amount_in.into())?),
                 Rounding::Down,
             )
-            .ok_or(ZapError::MathOverflow)?
-            .try_into()
-            .map_err(|_| ZapError::MathOverflow)?;
-            let gamma: u128 = u128::try_from(
-                mul_div_u256(
-                    U256::from(liquidity_of_token_b),
-                    U256::from(1).safe_shl(RESOLUTION as usize * 2)?,
-                    U256::from(liquidity_of_token_b.safe_add(amount_in.into())?),
-                    Rounding::Down,
-                )
-                .ok_or(ZapError::MathOverflow)?,
-            )
-            .map_err(|_| ZapError::MathOverflow)?
-            .integer_sqrt();
+            .ok_or(ZapError::MathOverflow)?,
+        )
+        .map_err(|_| ZapError::MathOverflow)?
+        .integer_sqrt();
 
-            let precision = 1u128.safe_shl(RESOLUTION.into())?;
-            (amount_in as u128)
-                .safe_mul(precision)?
-                .safe_div(precision.safe_add(gamma)?)?
-                .try_into()
-                .map_err(|_| ZapError::MathOverflow)?
-        }
+        let precision = 1u128.safe_shl(RESOLUTION.into())?;
+        (amount_in as u128)
+            .safe_mul(precision)?
+            .safe_div(precision.safe_add(gamma)?)?
+            .try_into()
+            .map_err(|_| ZapError::MathOverflow)?
     };
 
     loop {
