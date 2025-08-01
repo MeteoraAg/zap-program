@@ -116,7 +116,6 @@ export async function zapOutDammv2(
       percentage: 100,
       offsetAmountIn: 8,
       transferHookLength: 0, // no transfer hook
-      minAmountOut: new BN(10),
       payloadData
     })
     .accountsPartial({
@@ -192,7 +191,6 @@ export async function zapOutDlmm(
       percentage: 100,
       offsetAmountIn: 8, // disc then amount_in
       transferHookLength: hookAccounts.length,
-      minAmountOut: new BN(0),
       payloadData
     })
     .accountsPartial({
@@ -259,7 +257,6 @@ export async function zapOutJupV6(
       percentage: 100,
       offsetAmountIn: JUP_ROUTE_DISC.length + routeStepPlanCount.length + routeStepPlanBuffer.length,
       transferHookLength: 0,
-      minAmountOut: new BN(0),
       payloadData
     })
     .accountsPartial({

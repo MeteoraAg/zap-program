@@ -14,7 +14,6 @@ pub struct ZapOutParameters {
     pub percentage: u8,
     pub offset_amount_in: u16,
     pub transfer_hook_length: u8,
-    pub min_amount_out: u64,
     pub payload_data: Vec<u8>,
 }
 
