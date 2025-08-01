@@ -2,15 +2,9 @@
 
 use anchor_lang::prelude::*;
 
-#[macro_use]
-pub mod macros;
-
 pub mod instructions;
 pub use instructions::*;
-pub mod const_pda;
 pub mod constants;
-pub mod utils;
-pub use utils::*;
 pub mod error;
 pub mod math;
 pub use math::*;
@@ -22,10 +16,6 @@ declare_id!("zapvX9M3uf5pvy4wRPAbQgdQsM1xmuiFnkfHKPvwMiz");
 #[program]
 pub mod zap {
     use super::*;
-
-    pub fn initialize_token_ledger(ctx: Context<InitializeTokenLedgerCtx>) -> Result<()> {
-        instructions::handle_initialize_token_ledger(ctx)
-    }
 
     pub fn zap_out<'c: 'info, 'info>(
         ctx: Context<'_, '_, 'c, 'info, ZapOutCtx<'info>>,

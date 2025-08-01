@@ -4,7 +4,6 @@ import { LiteSVM } from "litesvm";
 import { Jupiter } from "./idl/jup_v6";
 import JupIDL from "../../idls/jup_v6.json";
 import { IdlTypes } from "@coral-xyz/anchor";
-import { deriveZapAuthorityAddress } from "./zap";
 import { DAMM_V2_PROGRAM_ID } from "./damm_v2";
 import {
   deriveDammV2EventAuthority,

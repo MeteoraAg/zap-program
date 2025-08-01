@@ -7,7 +7,6 @@ import {
 } from "@solana/web3.js";
 import {
   createToken,
-  initializeTokenLedger,
   mintToken,
   zapOutDlmm,
   TOKEN_DECIMALS,
@@ -184,12 +183,6 @@ describe("Zap out dlmm with transfer hook", () => {
 
   it("zap out", async () => {
     const inputTokenMint = tokenAMint;
-    const tokenLedgerAccountTokenX = await initializeTokenLedger(
-      svm,
-      user,
-      tokenAMint,
-      TOKEN_2022_PROGRAM_ID
-    );
 
     const amount = new BN(100).mul(new BN(10 ** TOKEN_DECIMALS));
     const userPosition = await dlmmCreatePositionAndAddLiquidityRadius(
@@ -208,7 +201,12 @@ describe("Zap out dlmm with transfer hook", () => {
       TOKEN_PROGRAM_ID
     );
 
-    const tokenXAccount = tokenLedgerAccountTokenX;
+    const tokenXAccount = getAssociatedTokenAddressSync(
+      tokenAMint,
+      user.publicKey,
+      true,
+      TOKEN_2022_PROGRAM_ID
+    );
     const tokenYAccount = getAssociatedTokenAddressSync(
       tokenBMint,
       user.publicKey,

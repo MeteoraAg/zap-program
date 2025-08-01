@@ -14,9 +14,6 @@ pub enum ZapError {
     #[msg("Math operation overflow")]
     InvalidZapOutParameters,
 
-    #[msg("Missing remaining account for transfer hook")]
-    MissingRemainingAccountForTransferHook,
-
     #[msg("Type cast error")]
     TypeCastFailed,
 
