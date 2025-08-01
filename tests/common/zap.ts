@@ -7,7 +7,7 @@ import {
 
 import ZapIDL from "../../target/idl/zap.json";
 import { Zap } from "../../target/types/zap";
-import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import { getAssociatedTokenAddressSync, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import {
   clusterApiUrl,
   Connection,
@@ -15,10 +15,12 @@ import {
   PublicKey,
   Transaction,
 } from "@solana/web3.js";
-import { DAMM_V2_PROGRAM_ID, getDammV2RemainingAccounts } from "./damm_v2";
-import { DLMM_PROGRAM_ID_LOCAL, getDlmmRemainingAccounts } from "./dlmm";
+import { DAMM_V2_PROGRAM_ID, DAMM_V2_SWAP_DISC, getDammV2RemainingAccounts } from "./damm_v2";
+import { DLMM_PROGRAM_ID_LOCAL, DLMM_SWAP_DISC, getDlmmRemainingAccounts, getLbPairState, MEMO_PROGRAM_ID } from "./dlmm";
 import { expect } from "chai";
-import { getJupRemainingAccounts, JUP_V6_PROGRAM_ID, RoutePlanStep } from "./jup";
+import { getJupRemainingAccounts, JUP_ROUTE_DISC, JUP_V6_PROGRAM_ID, RoutePlanStep } from "./jup";
+import { getTokenProgram } from "./utils";
+import { getDammV2Pool } from "./pda";
 
 export const ZAP_PROGRAM_ID = new PublicKey(ZapIDL.address);
 
@@ -85,25 +87,43 @@ export async function initializeTokenLedger(
 
 export async function zapOutDammv2(
   svm: LiteSVM,
+  user: PublicKey,
+  inputTokenMint: PublicKey,
   pool: PublicKey,
-  inputTokenAccount: PublicKey,
-  outputTokenAccount: PublicKey
 ): Promise<Transaction> {
   const zapProgram = createZapProgram();
+
+  const poolState = getDammV2Pool(svm, pool)
+  const outputTokenMint = poolState.tokenAMint.equals(inputTokenMint) ? poolState.tokenBMint : poolState.tokenAMint;
+  const inputTokenProgram = getTokenProgram(svm, inputTokenMint)
+  const outputTokenProgram = getTokenProgram(svm, outputTokenMint)
+
+  const userTokenInAccount = getAssociatedTokenAddressSync(inputTokenMint, user, true, inputTokenProgram)
+  const userTokenOutAccount = getAssociatedTokenAddressSync(outputTokenMint, user, true, outputTokenProgram)
 
   const remainingAccounts = getDammV2RemainingAccounts(
     svm,
     pool,
-    inputTokenAccount,
-    outputTokenAccount
+    user,
+    userTokenInAccount,
+    userTokenOutAccount
   );
-  const actionType = 0;
-  const payloadData = new BN(10).toArrayLike(Buffer, "le", 8);
+  const minAmountOutBuffer = new BN(10).toArrayLike(Buffer, "le", 8);
+  const amount = new BN(0).toArrayLike(Buffer, "le", 8)
+  const payloadData = Buffer.concat([Buffer.from(DAMM_V2_SWAP_DISC), amount, minAmountOutBuffer ])
   return await zapProgram.methods
-    .zapOut(actionType, payloadData)
+    .zapOut({
+      percentage: 100,
+      offsetAmountIn: 8,
+      transferHookLength: 0, // no transfer hook
+      payloadData
+    })
     .accountsPartial({
       zapAuthority: deriveZapAuthorityAddress(),
-      tokenLedgerAccount: inputTokenAccount,
+      tokenLedgerAccount: deriveTokenLedgerAddress(inputTokenMint),
+      userTokenInAccount,
+      tokenInMint: inputTokenMint,
+      inputTokenProgram, 
       ammProgram: DAMM_V2_PROGRAM_ID,
     })
     .remainingAccounts(remainingAccounts)
@@ -113,24 +133,35 @@ export async function zapOutDammv2(
 export async function zapOutDlmm(
   svm: LiteSVM,
   lbPair: PublicKey,
-  inputTokenAccount: PublicKey,
-  outputTokenAccount: PublicKey,
-  tokenXProgram = TOKEN_PROGRAM_ID,
-  tokenYProgram = TOKEN_PROGRAM_ID
+  user: PublicKey,
+  inputTokenMint: PublicKey
 ): Promise<Transaction> {
   const zapProgram = createZapProgram();
 
-  const { remainingAccounts, remainingAccountsInfo } = getDlmmRemainingAccounts(
+  const lbPairState = getLbPairState(svm, lbPair)
+  const inputIsTokenX = lbPairState.tokenXMint.equals(inputTokenMint)
+  const outputTokenMint = inputIsTokenX ? lbPairState.tokenYMint : lbPairState.tokenXMint;
+  const inputTokenProgram = getTokenProgram(svm, inputTokenMint)
+  const outputTokenProgram = getTokenProgram(svm, outputTokenMint)
+
+  const userTokenInAccount = getAssociatedTokenAddressSync(inputTokenMint, user, true, inputTokenProgram)
+  const userTokenOutAccount = getAssociatedTokenAddressSync(outputTokenMint, user, true, outputTokenProgram)
+
+  const tokenXProgram = getTokenProgram(svm, lbPairState.tokenXMint)
+  const tokenYProgram = getTokenProgram(svm, lbPairState.tokenYMint)
+
+  const { remainingAccounts, hookAccounts, remainingAccountsInfo } = getDlmmRemainingAccounts(
     svm,
     lbPair,
-    inputTokenAccount,
-    outputTokenAccount,
+    user,
+    userTokenInAccount,
+    userTokenOutAccount,
+    inputIsTokenX,
     tokenXProgram,
     tokenYProgram
   );
-  const actionType = 1;
   const minimumAmountOutData = new BN(10).toArrayLike(Buffer, "le", 8);
-
+  const amount = new BN(0).toArrayLike(Buffer, "le", 8)
   const sliceCount = Buffer.alloc(4);
   sliceCount.writeUInt32LE(remainingAccountsInfo.slices.length, 0);
 
@@ -145,49 +176,57 @@ export async function zapOutDlmm(
   );
 
   const payloadData = Buffer.concat([
+    Buffer.from(DLMM_SWAP_DISC),
+    amount,
     minimumAmountOutData,
     sliceCount,
     slicesData,
   ]);
 
+  const finalRemainingAccounts = [...hookAccounts, ...remainingAccounts]
+
   return await zapProgram.methods
-    .zapOut(actionType, payloadData)
+    .zapOut({
+      percentage: 100,
+      offsetAmountIn: 8, // disc then amount_in
+      transferHookLength: hookAccounts.length,
+      payloadData
+    })
     .accountsPartial({
       zapAuthority: deriveZapAuthorityAddress(),
-      tokenLedgerAccount: inputTokenAccount,
-      ammProgram: DLMM_PROGRAM_ID_LOCAL,
+      tokenLedgerAccount: deriveTokenLedgerAddress(inputTokenMint),
+      userTokenInAccount,
+      tokenInMint: inputTokenMint,
+      inputTokenProgram, 
+      ammProgram: DLMM_PROGRAM_ID_LOCAL
     })
-    .remainingAccounts(remainingAccounts)
+    .remainingAccounts(finalRemainingAccounts)
     .transaction();
 }
 
 export async function zapOutJupV6(
   svm: LiteSVM,
+  user: PublicKey,
+  inputTokenMint: PublicKey,
   pool: PublicKey,
-  inputTokenAccount: PublicKey,
-  outputTokenAccount: PublicKey,
-  outputMint: PublicKey
 ): Promise<Transaction> {
   const zapProgram = createZapProgram();
-  
+  const poolState = getDammV2Pool(svm, pool)
+  const outputTokenMint = poolState.tokenAMint.equals(inputTokenMint) ? poolState.tokenBMint : poolState.tokenAMint;
+  const inputTokenProgram = getTokenProgram(svm, inputTokenMint)
+  const outputTokenProgram = getTokenProgram(svm, outputTokenMint)
+
+  const userTokenInAccount = getAssociatedTokenAddressSync(inputTokenMint, user, true, inputTokenProgram)
+  const userTokenOutAccount = getAssociatedTokenAddressSync(outputTokenMint, user, true, outputTokenProgram)
+
   const remainingAccounts = getJupRemainingAccounts(
     svm,
     pool,
-    inputTokenAccount,
-    outputTokenAccount,
-    outputMint
+    user,
+    userTokenInAccount,
+    userTokenOutAccount,
+    outputTokenMint
   );
-  const actionType = 2;
-  // const routeStepPlan = [
-  //   {
-  //     swap: {
-  //       MeteoraDammV2: {}, // index 77 in enum
-  //     },
-  //     percent: 100,
-  //     inputIndex: 0,
-  //     outputIndex: 1,
-  //   },
-  // ];
   const routeStepPlanCount = Buffer.alloc(4);
   routeStepPlanCount.writeUInt32LE(1, 0); // route plan has 1 item. In Anchor, vector need 4 bytes index.
   const routeStepPlanBuffer = Buffer.alloc(4);
@@ -202,6 +241,7 @@ export async function zapOutJupV6(
   const platFormFee = Buffer.from([0]);
 
   const payloadData = Buffer.concat([
+    Buffer.from(JUP_ROUTE_DISC),
     routeStepPlanCount,
     routeStepPlanBuffer,
     inAmount,
@@ -211,11 +251,19 @@ export async function zapOutJupV6(
   ]);
 
   return await zapProgram.methods
-    .zapOut(actionType, payloadData)
+    .zapOut({
+      percentage: 100,
+      offsetAmountIn: JUP_ROUTE_DISC.length + routeStepPlanCount.length + routeStepPlanBuffer.length,
+      transferHookLength: 0,
+      payloadData
+    })
     .accountsPartial({
       zapAuthority: deriveZapAuthorityAddress(),
-      tokenLedgerAccount: inputTokenAccount,
-      ammProgram: JUP_V6_PROGRAM_ID,
+      tokenLedgerAccount: deriveTokenLedgerAddress(inputTokenMint),
+      userTokenInAccount,
+      tokenInMint: inputTokenMint,
+      inputTokenProgram, 
+      ammProgram: JUP_V6_PROGRAM_ID
     })
     .remainingAccounts(remainingAccounts)
     .transaction();

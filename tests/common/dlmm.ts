@@ -30,7 +30,6 @@ import {
   TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
 import { expect } from "chai";
-import { deriveZapAuthorityAddress } from "./zap";
 import {
   deriveBinArray,
   deriveBinArrayBitmapExtension,
@@ -40,10 +39,8 @@ import {
   derivePresetParameter2,
   deriveReserve,
   deriveTokenBadge,
-  getBinArraysForModifyLiquidity,
 } from "./pda";
 import { getExtraAccountMetasForTransferHook } from "./transferHook/transferHookUtils";
-import { min } from "bn.js";
 
 export type PresetParameter = Omit<IdlAccounts<LbClmm>["presetParameter"], "">;
 export type BinLiquidityDistribution =
@@ -72,6 +69,8 @@ export const DLMM_PROGRAM_ID_LOCAL = new PublicKey(
 export const MEMO_PROGRAM_ID = new PublicKey(
   "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr"
 );
+
+export const DLMM_SWAP_DISC = [65, 75, 63, 76, 235, 91, 91, 136];
 
 const CONSTANTS = Object.entries(DlmmIDL.constants);
 export const BIN_ARRAY_BITMAP_SIZE = new BN(
@@ -749,8 +748,10 @@ export async function removeAllLiquidity(
 export function getDlmmRemainingAccounts(
   svm: LiteSVM,
   lbPair: PublicKey,
-  inputTokenAccount: PublicKey,
-  outputTokenAccount: PublicKey,
+  user: PublicKey,
+  userInputTokenAccount: PublicKey,
+  userTokenOutAccount: PublicKey,
+  inputIsTokenX: boolean,
   tokenXProgram: PublicKey,
   tokenYProgram: PublicKey
 ): {
@@ -759,6 +760,7 @@ export function getDlmmRemainingAccounts(
     isWritable: boolean;
     pubkey: PublicKey;
   }>;
+  hookAccounts: AccountMeta[];
   remainingAccountsInfo: RemainingAccountsInfo;
 } {
   const lbPairState = getLbPairState(svm, lbPair);
@@ -817,12 +819,12 @@ export function getDlmmRemainingAccounts(
     {
       isSigner: false,
       isWritable: true,
-      pubkey: inputTokenAccount,
+      pubkey: userInputTokenAccount,
     },
     {
       isSigner: false,
       isWritable: true,
-      pubkey: outputTokenAccount,
+      pubkey: userTokenOutAccount,
     },
     {
       isSigner: false,
@@ -845,9 +847,9 @@ export function getDlmmRemainingAccounts(
       pubkey: new PublicKey(DLMM_PROGRAM_ID_LOCAL), // host fee option
     },
     {
-      isSigner: false,
+      isSigner: true,
       isWritable: false,
-      pubkey: deriveZapAuthorityAddress(),
+      pubkey: user,
     },
     {
       isSigner: false,
@@ -890,10 +892,12 @@ export function getDlmmRemainingAccounts(
     ...[...transferHookXAccounts, ...transferHookYAccounts]
   );
   remainingAccounts.push(...binArraysAccountMeta);
-  
-  
 
-  return { remainingAccounts, remainingAccountsInfo };
+  return {
+    remainingAccounts,
+    hookAccounts: inputIsTokenX ? transferHookXAccounts : transferHookYAccounts,
+    remainingAccountsInfo,
+  };
 }
 
 export function getBinArraysForSwap(

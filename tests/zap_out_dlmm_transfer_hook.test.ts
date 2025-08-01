@@ -183,6 +183,7 @@ describe("Zap out dlmm with transfer hook", () => {
   });
 
   it("zap out", async () => {
+    const inputTokenMint = tokenAMint;
     const tokenLedgerAccountTokenX = await initializeTokenLedger(
       svm,
       user,
@@ -232,9 +233,8 @@ describe("Zap out dlmm with transfer hook", () => {
     const zapOutTx = await zapOutDlmm(
       svm,
       lbPair,
-      tokenXAccount,
-      tokenYAccount,
-      TOKEN_2022_PROGRAM_ID
+      user.publicKey,
+      inputTokenMint
     );
 
     const finalTransaction = new Transaction()

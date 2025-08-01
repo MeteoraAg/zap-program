@@ -68,10 +68,11 @@ describe("Zap out Jup V6", () => {
   });
 
   it("full flow zap out", async () => {
+    const inputTokenAccount = tokenAMint;
     const tokenLedgerAccountTokenA = await initializeTokenLedger(
       svm,
       user,
-      tokenAMint
+      inputTokenAccount
     );
     const pool = await createDammV2Pool(svm, admin, tokenAMint, tokenBMint);
     const userPosition = await createPositionAndAddLiquidity(svm, user, pool);
@@ -93,10 +94,9 @@ describe("Zap out Jup V6", () => {
 
     const zapOutTx = await zapOutJupV6(
       svm,
-      pool,
-      tokenAAccount,
-      tokenBAccount,
-      tokenBMint
+      user.publicKey,
+      inputTokenAccount,
+      pool
     );
 
     const finalTransaction = new Transaction()

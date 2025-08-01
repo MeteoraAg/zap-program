@@ -5,18 +5,21 @@ use anchor_lang::prelude::*;
 #[error_code]
 #[derive(PartialEq)]
 pub enum ZapError {
-    #[msg("Invalid amm program id")]
-    InvalidAmmProgramId,
+    #[msg("Math operation overflow")]
+    MathOverflow,
 
-    #[msg("Invalid action type")]
-    InvalidActionType,
+    #[msg("Invalid offset")]
+    InvalidOffset,
+
+    #[msg("Math operation overflow")]
+    InvalidZapOutParameters,
+
+    #[msg("Missing remaining account for transfer hook")]
+    MissingRemainingAccountForTransferHook,
 
     #[msg("Type cast error")]
     TypeCastFailed,
 
-    #[msg("Invalid data length")]
-    InvalidDataLen,
-
-    #[msg("Math operation overflow")]
-    MathOverflow,
+    #[msg("Amm program is not supported")]
+    AmmIsNotSupported,
 }
