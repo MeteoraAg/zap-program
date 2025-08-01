@@ -26,6 +26,19 @@ impl ZapOutParameters {
 
         Ok(())
     }
+
+    fn get_swap_amount(&self, total_amount: u64) -> Result<u64> {
+        let swap_amount = if self.percentage == 100 {
+            total_amount
+        } else {
+            let amount = u128::from(total_amount)
+                .safe_mul(self.percentage.into())?
+                .safe_div(100)?;
+            u64::try_from(amount).map_err(|_| ZapError::TypeCastFailed)?
+        };
+
+        Ok(swap_amount)
+    }
 }
 
 pub fn is_support_amm_program(amm_program: &Pubkey, discriminator: &[u8]) -> bool {
@@ -83,21 +96,6 @@ pub fn modify_instruction_data(
     Ok(())
 }
 
-impl<'info> ZapOutCtx<'info> {
-    fn get_swap_amount(&self, total_amount: u64, percentage: u8) -> Result<u64> {
-        let swap_amount = if percentage == 100 {
-            total_amount
-        } else {
-            let amount = u128::from(total_amount)
-                .safe_mul(percentage.into())?
-                .safe_div(100)?;
-            u64::try_from(amount).map_err(|_| ZapError::TypeCastFailed)?
-        };
-
-        Ok(swap_amount)
-    }
-}
-
 pub fn handle_zap_out<'c: 'info, 'info>(
     ctx: Context<'_, '_, 'c, 'info, ZapOutCtx<'info>>,
     params: &ZapOutParameters,
@@ -109,14 +107,14 @@ pub fn handle_zap_out<'c: 'info, 'info>(
         is_support_amm_program(ctx.accounts.amm_program.key, disciminator),
         ZapError::AmmIsNotSupported
     );
-
+    let token_ledger_balance = ctx.accounts.token_ledger_account.amount;
+    if token_ledger_balance == 0 {
+        // skip if token ledger balance is zero
+        return Ok(());
+    }
     let transfer_hook_length = params.transfer_hook_length as usize;
     let transfer_hook_accounts = &ctx.remaining_accounts[..transfer_hook_length];
     let pre_balance_user_token_in = ctx.accounts.user_token_in_account.amount;
-    let token_ledger_balance = ctx.accounts.token_ledger_account.amount;
-    if token_ledger_balance == 0 {
-        return Ok(());
-    }
     // transfer from token_ledger_account to user_token_in_account
     // Acknowledged: With this design, users will be charged transfer fees twice if the token has the transfer fee extension enabled.
     // However, we can ignore this issue in the first version.
@@ -134,9 +132,7 @@ pub fn handle_zap_out<'c: 'info, 'info>(
     let post_balance_user_token_in = ctx.accounts.user_token_in_account.amount;
     let total_amount = post_balance_user_token_in.safe_sub(pre_balance_user_token_in)?;
 
-    let swap_amount = ctx
-        .accounts
-        .get_swap_amount(total_amount, params.percentage)?;
+    let swap_amount = params.get_swap_amount(total_amount)?;
 
     if swap_amount > 0 {
         let mut payload_data = params.payload_data.to_vec();
