@@ -1,3 +1,5 @@
+use std::cmp::min;
+
 use anchor_lang::{
     prelude::*,
     solana_program::{instruction::Instruction, program::invoke},
@@ -11,6 +13,7 @@ pub struct ZapOutParameters {
     pub percentage: u8,
     pub offset_amount_in: u16,
     pub pre_user_token_balance: u64,
+    pub max_swap_amount: u64,
     pub payload_data: Vec<u8>,
 }
 
@@ -93,12 +96,9 @@ pub fn handle_zap_out<'c: 'info, 'info>(
     let swap_amount = params.get_swap_amount(total_amount)?;
 
     if swap_amount > 0 {
+        let amount_in = min(swap_amount, params.max_swap_amount);
         let mut payload_data = params.payload_data.to_vec();
-        modify_instruction_data(
-            &mut payload_data,
-            swap_amount,
-            params.offset_amount_in.into(),
-        )?;
+        modify_instruction_data(&mut payload_data, amount_in, params.offset_amount_in.into())?;
 
         let accounts: Vec<AccountMeta> = ctx
             .remaining_accounts
