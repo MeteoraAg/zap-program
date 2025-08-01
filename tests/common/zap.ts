@@ -117,7 +117,6 @@ export async function zapOutDammv2(
       offsetAmountIn: 8,
       transferHookLength: 0, // no transfer hook
       minAmountOut: new BN(10),
-      padding: new Array(8).fill(new BN(0)),
       payloadData
     })
     .accountsPartial({
@@ -194,7 +193,6 @@ export async function zapOutDlmm(
       offsetAmountIn: 8, // disc then amount_in
       transferHookLength: hookAccounts.length,
       minAmountOut: new BN(0),
-      padding: new Array(8).fill(new BN(0)),
       payloadData
     })
     .accountsPartial({
@@ -204,8 +202,7 @@ export async function zapOutDlmm(
       userTokenOutAccount,
       tokenInMint: inputTokenMint,
       inputTokenProgram, 
-      ammProgram: DLMM_PROGRAM_ID_LOCAL,
-      memoProgram: MEMO_PROGRAM_ID
+      ammProgram: DLMM_PROGRAM_ID_LOCAL
     })
     .remainingAccounts(finalRemainingAccounts)
     .transaction();
@@ -263,7 +260,6 @@ export async function zapOutJupV6(
       offsetAmountIn: JUP_ROUTE_DISC.length + routeStepPlanCount.length + routeStepPlanBuffer.length,
       transferHookLength: 0,
       minAmountOut: new BN(0),
-      padding: new Array(8).fill(new BN(0)),
       payloadData
     })
     .accountsPartial({

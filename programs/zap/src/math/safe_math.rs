@@ -109,6 +109,7 @@ checked_impl!(u32, u32);
 checked_impl!(u64, u32);
 checked_impl!(i64, u32);
 checked_impl!(usize, u32);
+checked_impl!(u128, u32);
 
 #[cfg(test)]
 mod tests {

@@ -1,22 +1,17 @@
 use anchor_lang::{
     prelude::*,
-    solana_program::{
-        program::{invoke, invoke_signed},
-        system_instruction,
-    },
+    solana_program::program::{invoke, invoke_signed},
 };
 
+use solana_system_interface::instruction::{allocate, assign, create_account, transfer};
+
 use anchor_spl::{
-    memo::{self, BuildMemo, Memo},
     token::Token,
     token_2022::{
         get_account_data_size,
         spl_token_2022::{
             self,
-            extension::{
-                self, transfer_hook::get_program_id, BaseStateWithExtensions, ExtensionType,
-                StateWithExtensions,
-            },
+            extension::{transfer_hook::get_program_id, ExtensionType, StateWithExtensions},
         },
         GetAccountDataSize,
     },
@@ -115,7 +110,7 @@ pub fn create_pda_account<'a>(
 
         if required_lamports > 0 {
             invoke(
-                &system_instruction::transfer(payer.key, new_pda_account.key, required_lamports),
+                &transfer(payer.key, new_pda_account.key, required_lamports),
                 &[
                     payer.clone(),
                     new_pda_account.clone(),
@@ -125,19 +120,19 @@ pub fn create_pda_account<'a>(
         }
 
         invoke_signed(
-            &system_instruction::allocate(new_pda_account.key, space as u64),
+            &allocate(new_pda_account.key, space as u64),
             &[new_pda_account.clone(), system_program.clone()],
             &[new_pda_signer_seeds],
         )?;
 
         invoke_signed(
-            &system_instruction::assign(new_pda_account.key, owner),
+            &assign(new_pda_account.key, owner),
             &[new_pda_account.clone(), system_program.clone()],
             &[new_pda_signer_seeds],
         )?;
     } else {
         invoke_signed(
-            &system_instruction::create_account(
+            &create_account(
                 payer.key,
                 new_pda_account.key,
                 rent.minimum_balance(space).max(1),
@@ -156,25 +151,6 @@ pub fn create_pda_account<'a>(
     Ok(())
 }
 
-fn is_transfer_memo_required(user_token_ai: &AccountInfo<'_>) -> Result<bool> {
-    if user_token_ai.owner.eq(&anchor_spl::token::ID) {
-        return Ok(false);
-    }
-
-    let account_data = user_token_ai.try_borrow_data()?;
-    let token_account_unpacked =
-        StateWithExtensions::<spl_token_2022::state::Account>::unpack(&account_data)?;
-
-    let memo_transfer_ext =
-        token_account_unpacked.get_extension::<extension::memo_transfer::MemoTransfer>();
-
-    if let Ok(memo_transfer) = memo_transfer_ext {
-        Ok(memo_transfer.require_incoming_transfer_memos.into())
-    } else {
-        Ok(false)
-    }
-}
-
 fn get_transfer_hook_program_id<'info>(
     token_mint: &InterfaceAccount<'info, Mint>,
 ) -> Result<Option<Pubkey>> {
@@ -189,12 +165,6 @@ fn get_transfer_hook_program_id<'info>(
     Ok(get_program_id(&token_mint_unpacked))
 }
 
-#[derive(Clone, Copy)]
-pub struct MemoTransferContext<'a, 'info> {
-    pub memo_program: &'a Program<'info, Memo>,
-    pub memo: &'static [u8],
-}
-
 pub fn transfer_token<'c: 'info, 'info>(
     zap_authority: AccountInfo<'info>,
     token_mint: &InterfaceAccount<'info, Mint>,
@@ -204,18 +174,7 @@ pub fn transfer_token<'c: 'info, 'info>(
     amount: u64,
     signers_seeds: &[&[&[u8]]],
     transfer_hook_accounts: &'c [AccountInfo<'info>],
-    memo_transfer_context: Option<MemoTransferContext<'_, 'info>>,
 ) -> Result<()> {
-    let destination_account = receiver_token_account.to_account_info();
-
-    if let Some(memo_ctx) = memo_transfer_context {
-        if is_transfer_memo_required(&destination_account)? {
-            let ctx: CpiContext<'_, '_, '_, '_, BuildMemo> =
-                CpiContext::new(memo_ctx.memo_program.to_account_info(), BuildMemo {});
-            memo::build_memo(ctx, memo_ctx.memo)?;
-        }
-    }
-
     let mut instruction = spl_token_2022::instruction::transfer_checked(
         token_program.key,
         &token_ledger_account.key(),

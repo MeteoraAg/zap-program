@@ -14,12 +14,15 @@ pub enum ZapError {
     #[msg("Math operation overflow")]
     InvalidZapOutParameters,
 
-    #[msg("Exceeded slippage tolerance")]
-    ExceededSlippage,
-
     #[msg("Missing remaining account for transfer hook")]
     MissingRemainingAccountForTransferHook,
 
     #[msg("Missing memo program")]
     MissingMemoProgram,
+
+    #[msg("Type cast error")]
+    TypeCastFailed,
+
+    #[msg("Amm program is not supported")]
+    AmmIsNotSupported,
 }

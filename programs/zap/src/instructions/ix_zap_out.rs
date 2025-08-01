@@ -2,23 +2,19 @@ use anchor_lang::{
     prelude::*,
     solana_program::{instruction::Instruction, program::invoke_signed},
 };
-use anchor_spl::{
-    memo::Memo,
-    token_interface::{Mint, TokenAccount, TokenInterface},
-};
+use anchor_spl::token_interface::{Mint, TokenAccount, TokenInterface};
 
 use crate::{
-    const_pda, constants::ZAPOUT_TRANSFER_MEMO, error::ZapError, safe_math::SafeMath,
-    transfer_token, MemoTransferContext,
+    const_pda, constants::WHITELISTED_AMM_PROGRAMS, error::ZapError, safe_math::SafeMath,
+    transfer_token,
 };
 
 #[derive(AnchorSerialize, AnchorDeserialize)]
 pub struct ZapOutParameters {
     pub percentage: u8,
-    pub offset_amount_in: u8,
+    pub offset_amount_in: u16,
     pub transfer_hook_length: u8,
     pub min_amount_out: u64,
-    pub padding: [u64; 8],
     pub payload_data: Vec<u8>,
 }
 
@@ -29,10 +25,14 @@ impl ZapOutParameters {
             ZapError::InvalidZapOutParameters
         );
 
-        // TODO: check whether need more validate
-
         Ok(())
     }
+}
+
+pub fn is_support_amm_program(amm_program: &Pubkey, discriminator: &[u8]) -> bool {
+    WHITELISTED_AMM_PROGRAMS
+        .iter()
+        .any(|(program, disc)| program.eq(amm_program) && disc == discriminator)
 }
 
 #[derive(Accounts)]
@@ -62,18 +62,20 @@ pub struct ZapOutCtx<'info> {
 
     /// CHECK:
     pub amm_program: UncheckedAccount<'info>,
-
-    pub memo_program: Option<Program<'info, Memo>>,
 }
 
-impl<'info> ZapOutCtx<'info> {
-    fn get_swap_amount(&self, percentage: u8) -> Result<u64> {
-        let total_amount = self.token_ledger_account.amount;
+// Acknowledged: We are aware of memo transfer requirements for certain tokens,
+// but v1 does not support it as very few tokens currently use the memo transfer extension.
 
+impl<'info> ZapOutCtx<'info> {
+    fn get_swap_amount(&self, total_amount: u64, percentage: u8) -> Result<u64> {
         let swap_amount = if percentage == 100 {
             total_amount
         } else {
-            total_amount.safe_mul(percentage.into())?.safe_div(100)?
+            let amount = u128::from(total_amount)
+                .safe_mul(percentage.into())?
+                .safe_div(100)?;
+            u64::try_from(amount).map_err(|_| ZapError::TypeCastFailed)?
         };
 
         Ok(swap_amount)
@@ -107,38 +109,20 @@ pub fn handle_zap_out<'c: 'info, 'info>(
 ) -> Result<()> {
     // validate params
     params.validate()?;
+    let disciminator = &params.payload_data[..8]; // first 8 bytes is discriminator
+    require!(
+        is_support_amm_program(ctx.accounts.amm_program.key, disciminator),
+        ZapError::AmmIsNotSupported
+    );
 
     let transfer_hook_length = params.transfer_hook_length as usize;
     let transfer_hook_accounts = &ctx.remaining_accounts[..transfer_hook_length];
-    let accounts: Vec<AccountMeta> = ctx.remaining_accounts[transfer_hook_length..]
-        .iter()
-        .map(|acc| AccountMeta {
-            pubkey: *acc.key,
-            is_signer: acc.is_signer,
-            is_writable: acc.is_writable,
-        })
-        .collect();
-
-    let account_infos: Vec<AccountInfo> = ctx.remaining_accounts[transfer_hook_length..]
-        .iter()
-        .map(|acc| AccountInfo { ..acc.clone() })
-        .collect();
-
-    let memo_transfer_context = if transfer_hook_length > 0 {
-        require!(
-            ctx.accounts.memo_program.is_some(),
-            ZapError::MissingMemoProgram
-        );
-        Some(MemoTransferContext {
-            memo_program: ctx.accounts.memo_program.as_ref().unwrap(),
-            memo: ZAPOUT_TRANSFER_MEMO,
-        })
-    } else {
-        None
-    };
 
     let signers_seeds = zap_authority_seeds!();
+    let pre_balance_user_token_in = ctx.accounts.user_token_in_account.amount;
     // transfer from token_ledger_account to user_token_in_account
+    // Acknowledged: With this design, users will be charged transfer fees twice if the token has the transfer fee extension enabled.
+    // However, we can ignore this issue in the first version.
     transfer_token(
         ctx.accounts.zap_authority.to_account_info(),
         &ctx.accounts.token_in_mint,
@@ -148,43 +132,48 @@ pub fn handle_zap_out<'c: 'info, 'info>(
         ctx.accounts.token_ledger_account.amount,
         &[&signers_seeds[..]],
         transfer_hook_accounts,
-        memo_transfer_context,
     )?;
 
     ctx.accounts.user_token_in_account.reload()?;
+    let post_balance_user_token_in = ctx.accounts.user_token_in_account.amount;
+    let total_amount = post_balance_user_token_in.safe_sub(pre_balance_user_token_in)?;
 
-    let swap_amount = ctx.accounts.get_swap_amount(params.percentage)?;
+    let swap_amount = ctx
+        .accounts
+        .get_swap_amount(total_amount, params.percentage)?;
 
-    let mut payload_data = params.payload_data.to_vec();
-    ctx.accounts.modify_instruction_data(
-        &mut payload_data,
-        swap_amount,
-        params.offset_amount_in.into(),
-    )?;
+    if swap_amount > 0 {
+        let mut payload_data = params.payload_data.to_vec();
+        ctx.accounts.modify_instruction_data(
+            &mut payload_data,
+            swap_amount,
+            params.offset_amount_in.into(),
+        )?;
 
-    let pre_balance_user_token_out = ctx.accounts.user_token_out_account.amount;
-    // invoke instruction to amm
-    invoke_signed(
-        &Instruction {
-            program_id: ctx.accounts.amm_program.key(),
-            accounts,
-            data: payload_data,
-        },
-        &account_infos,
-        &[&signers_seeds[..]],
-    )?;
+        let accounts: Vec<AccountMeta> = ctx.remaining_accounts[transfer_hook_length..]
+            .iter()
+            .map(|acc| AccountMeta {
+                pubkey: *acc.key,
+                is_signer: acc.is_signer,
+                is_writable: acc.is_writable,
+            })
+            .collect();
 
-    ctx.accounts.user_token_out_account.reload()?;
-
-    let post_balance_user_token_out = ctx.accounts.user_token_out_account.amount;
-    let total_amount_out_after_swap =
-        post_balance_user_token_out.safe_sub(pre_balance_user_token_out)?;
-
-    // prevent slippage from swap instruction
-    require!(
-        total_amount_out_after_swap >= params.min_amount_out,
-        ZapError::ExceededSlippage
-    );
+        let account_infos: Vec<AccountInfo> = ctx.remaining_accounts[transfer_hook_length..]
+            .iter()
+            .map(|acc| AccountInfo { ..acc.clone() })
+            .collect();
+        // invoke instruction to amm
+        invoke_signed(
+            &Instruction {
+                program_id: ctx.accounts.amm_program.key(),
+                accounts,
+                data: payload_data,
+            },
+            &account_infos,
+            &[&signers_seeds[..]],
+        )?;
+    }
 
     Ok(())
 }

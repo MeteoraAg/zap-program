@@ -15,6 +15,8 @@ pub mod error;
 pub mod math;
 pub use math::*;
 
+pub mod tests;
+
 declare_id!("zapvX9M3uf5pvy4wRPAbQgdQsM1xmuiFnkfHKPvwMiz");
 
 #[program]
