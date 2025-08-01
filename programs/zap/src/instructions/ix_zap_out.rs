@@ -1,6 +1,6 @@
 use anchor_lang::{
     prelude::*,
-    solana_program::{instruction::Instruction, program::invoke_signed},
+    solana_program::{instruction::Instruction, program::invoke},
 };
 use anchor_spl::token_interface::{Mint, TokenAccount, TokenInterface};
 
@@ -31,7 +31,7 @@ impl ZapOutParameters {
 pub fn is_support_amm_program(amm_program: &Pubkey, discriminator: &[u8]) -> bool {
     WHITELISTED_AMM_PROGRAMS
         .iter()
-        .any(|(program, disc)| program.eq(amm_program) && disc == discriminator)
+        .any(|(program, disc)| program.eq(amm_program) && disc.eq(discriminator))
 }
 
 #[derive(Accounts)]
@@ -63,8 +63,8 @@ pub struct ZapOutCtx<'info> {
     pub amm_program: UncheckedAccount<'info>,
 }
 
-// Acknowledged: We are aware of memo transfer requirements for certain tokens,
-// but v1 does not support it as very few tokens currently use the memo transfer extension.
+// Acknowledged: We are aware of memo transfer requirements for certain token accounts
+// but v1 does not support it as very few token accounts currently use the memo transfer extension.
 
 impl<'info> ZapOutCtx<'info> {
     fn get_swap_amount(&self, total_amount: u64, percentage: u8) -> Result<u64> {
@@ -116,8 +116,6 @@ pub fn handle_zap_out<'c: 'info, 'info>(
 
     let transfer_hook_length = params.transfer_hook_length as usize;
     let transfer_hook_accounts = &ctx.remaining_accounts[..transfer_hook_length];
-
-    let signers_seeds = zap_authority_seeds!();
     let pre_balance_user_token_in = ctx.accounts.user_token_in_account.amount;
     // transfer from token_ledger_account to user_token_in_account
     // Acknowledged: With this design, users will be charged transfer fees twice if the token has the transfer fee extension enabled.
@@ -129,7 +127,6 @@ pub fn handle_zap_out<'c: 'info, 'info>(
         &ctx.accounts.user_token_in_account,
         &ctx.accounts.input_token_program,
         ctx.accounts.token_ledger_account.amount,
-        &[&signers_seeds[..]],
         transfer_hook_accounts,
     )?;
 
@@ -163,14 +160,13 @@ pub fn handle_zap_out<'c: 'info, 'info>(
             .map(|acc| AccountInfo { ..acc.clone() })
             .collect();
         // invoke instruction to amm
-        invoke_signed(
+        invoke(
             &Instruction {
                 program_id: ctx.accounts.amm_program.key(),
                 accounts,
                 data: payload_data,
             },
             &account_infos,
-            &[&signers_seeds[..]],
         )?;
     }
 

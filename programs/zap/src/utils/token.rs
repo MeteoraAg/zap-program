@@ -172,7 +172,6 @@ pub fn transfer_token<'c: 'info, 'info>(
     receiver_token_account: &InterfaceAccount<'info, TokenAccount>,
     token_program: &Interface<'info, TokenInterface>,
     amount: u64,
-    signers_seeds: &[&[&[u8]]],
     transfer_hook_accounts: &'c [AccountInfo<'info>],
 ) -> Result<()> {
     let mut instruction = spl_token_2022::instruction::transfer_checked(
@@ -212,7 +211,8 @@ pub fn transfer_token<'c: 'info, 'info>(
         )?;
     }
 
-    invoke_signed(&instruction, &account_infos, signers_seeds)?;
+    let signers_seeds = zap_authority_seeds!();
+    invoke_signed(&instruction, &account_infos, &[&signers_seeds[..]])?;
 
     Ok(())
 }

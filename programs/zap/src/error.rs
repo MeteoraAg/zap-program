@@ -17,9 +17,6 @@ pub enum ZapError {
     #[msg("Missing remaining account for transfer hook")]
     MissingRemainingAccountForTransferHook,
 
-    #[msg("Missing memo program")]
-    MissingMemoProgram,
-
     #[msg("Type cast error")]
     TypeCastFailed,
 
