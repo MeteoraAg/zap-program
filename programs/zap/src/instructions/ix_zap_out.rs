@@ -13,7 +13,7 @@ pub struct ZapOutParameters {
     pub percentage: u8,
     pub offset_amount_in: u16,
     pub pre_user_token_balance: u64,
-    pub max_swap_amount: u64,
+    pub max_swap_amount: u64, // avoid the issue someone send token to user token account when user zap out
     pub payload_data: Vec<u8>,
 }
 
@@ -27,17 +27,17 @@ impl ZapOutParameters {
         Ok(())
     }
 
-    fn get_swap_amount(&self, total_amount: u64) -> Result<u64> {
+    fn get_swap_amount(&self, balance_change_amount: u64) -> Result<u64> {
         let swap_amount = if self.percentage == 100 {
-            total_amount
+            balance_change_amount
         } else {
-            let amount = u128::from(total_amount)
+            let amount = u128::from(balance_change_amount)
                 .safe_mul(self.percentage.into())?
                 .safe_div(100)?;
             u64::try_from(amount).map_err(|_| ZapError::TypeCastFailed)?
         };
 
-        Ok(swap_amount)
+        Ok(min(swap_amount, self.max_swap_amount))
     }
 }
 
@@ -92,13 +92,16 @@ pub fn handle_zap_out<'c: 'info, 'info>(
         // skip if pre_user_token_balance is greater than post_user_token_balance
         return Ok(());
     }
-    let total_amount = post_user_token_balance.safe_sub(params.pre_user_token_balance)?;
-    let swap_amount = params.get_swap_amount(total_amount)?;
+    let balance_change_amount = post_user_token_balance.safe_sub(params.pre_user_token_balance)?;
+    let swap_amount = params.get_swap_amount(balance_change_amount)?;
 
     if swap_amount > 0 {
-        let amount_in = min(swap_amount, params.max_swap_amount);
         let mut payload_data = params.payload_data.to_vec();
-        modify_instruction_data(&mut payload_data, amount_in, params.offset_amount_in.into())?;
+        modify_instruction_data(
+            &mut payload_data,
+            swap_amount,
+            params.offset_amount_in.into(),
+        )?;
 
         let accounts: Vec<AccountMeta> = ctx
             .remaining_accounts
