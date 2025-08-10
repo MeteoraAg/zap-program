@@ -10,9 +10,9 @@ import {
   createToken,
   mintToken,
   ZapProgram,
-  zapOutDammv2,
+  zapInDammV2,
+  U64_MAX,
 } from "./common";
-import { TOKEN_PROGRAM_ID } from "@coral-xyz/anchor/dist/cjs/utils/token";
 import { expect } from "chai";
 
 import ZapIDL from "../target/idl/zap.json";
@@ -20,13 +20,11 @@ import DAMMV2IDL from "../idls/damm_v2.json";
 import {
   createDammV2Pool,
   createPositionAndAddLiquidity,
-  removeLiquidity,
+  swapDammV2,
 } from "./common/damm_v2";
-import {
-  getAssociatedTokenAddressSync
-} from "@solana/spl-token";
+import BN from "bn.js";
 
-describe("Zap out damm V2", () => {
+describe.only("Zap in damm V2", () => {
   let zapProgram: ZapProgram;
   let svm: LiteSVM;
   let tokenMint: PublicKey;
@@ -61,41 +59,33 @@ describe("Zap out damm V2", () => {
     mintToken(svm, admin, tokenBMint, admin, user.publicKey);
   });
 
-  it("full flow zap out", async () => {
-    const inputTokenMint = tokenAMint;
+  it("full flow zap in", async () => {
     const pool = await createDammV2Pool(svm, admin, tokenAMint, tokenBMint);
-    const {position: userPosition} = await createPositionAndAddLiquidity(svm, user, pool);
-    const tokenAAccount = getAssociatedTokenAddressSync(
-      tokenAMint,
-      user.publicKey,
-      true,
-      TOKEN_PROGRAM_ID
-    );
-    const tokenBAccount = getAssociatedTokenAddressSync(
-      tokenBMint,
-      user.publicKey,
-      true,
-      TOKEN_PROGRAM_ID
-    );
-    const removeLiquidityTx = await removeLiquidity(
+    const { position, positionNftAccount } =
+      await createPositionAndAddLiquidity(svm, user, pool);
+    const swapAmount = new BN("1000000000")
+    const swapTx = await swapDammV2(
       svm,
       user.publicKey,
       pool,
-      userPosition,
-      tokenAAccount,
-      tokenBAccount
+      tokenBMint,
+      swapAmount
     );
 
-    const zapOutTx = await zapOutDammv2(
+    const zapOutTx = await zapInDammV2(
       svm,
       user.publicKey,
-      inputTokenMint,
-      pool
+      pool,
+      position,
+      positionNftAccount,
+      U64_MAX,
+      U64_MAX,
+      swapAmount,
+      swapAmount
+
     );
 
-    const finalTransaction = new Transaction()
-      .add(removeLiquidityTx)
-      .add(zapOutTx);
+    const finalTransaction = new Transaction().add(swapTx).add(zapOutTx);
 
     finalTransaction.recentBlockhash = svm.latestBlockhash();
     finalTransaction.sign(user);

@@ -17,6 +17,9 @@ declare_id!("zapvX9M3uf5pvy4wRPAbQgdQsM1xmuiFnkfHKPvwMiz");
 pub mod zap {
     use super::*;
 
+    pub fn zap_in(ctx: Context<ZapInDammV2Ctx>, params: ZapInParameters) -> Result<()> {
+        instructions::handle_zap_in(ctx, &params)
+    }
     pub fn zap_out<'c: 'info, 'info>(
         ctx: Context<'_, '_, 'c, 'info, ZapOutCtx<'info>>,
         params: ZapOutParameters,

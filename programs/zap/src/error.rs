@@ -19,4 +19,7 @@ pub enum ZapError {
 
     #[msg("Amm program is not supported")]
     AmmIsNotSupported,
+
+    #[msg("Remaining amount is over threshold")]
+    RemainingAmountIsOverThreshold,
 }

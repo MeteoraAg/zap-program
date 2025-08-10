@@ -44,7 +44,7 @@ import {
 
 export const DAMM_V2_PROGRAM_ID = new PublicKey(CpAmmIDL.address);
 
-export const DAMM_V2_SWAP_DISC = [248, 198, 158, 145, 225, 117, 135, 200]
+export const DAMM_V2_SWAP_DISC = [248, 198, 158, 145, 225, 117, 135, 200];
 
 export type Pool = IdlAccounts<CpAmm>["pool"];
 export type Position = IdlAccounts<CpAmm>["position"];
@@ -248,7 +248,7 @@ export async function createPositionAndAddLiquidity(
   svm: LiteSVM,
   user: Keypair,
   pool: PublicKey
-): Promise<PublicKey> {
+): Promise<{ position: PublicKey; positionNftAccount: PublicKey }> {
   const program = createDammV2Program();
 
   const positionNftKP = Keypair.generate();
@@ -318,7 +318,7 @@ export async function createPositionAndAddLiquidity(
 
   const result = svm.sendTransaction(finalTransaction);
   expect(result).instanceOf(TransactionMetadata);
-  return position;
+  return { position, positionNftAccount };
 }
 
 export async function removeLiquidity(
@@ -363,6 +363,60 @@ export async function removeLiquidity(
       tokenBProgram: TOKEN_PROGRAM_ID,
       tokenAMint,
       tokenBMint,
+    })
+    .transaction();
+}
+
+export async function swapDammV2(
+  svm: LiteSVM,
+  user: PublicKey,
+  pool: PublicKey,
+  inputTokenMint: PublicKey,
+  amountIn: BN
+): Promise<Transaction> {
+  const program = createDammV2Program();
+  const poolState = getDammV2Pool(svm, pool);
+
+  const tokenAProgram =
+    poolState.tokenAFlag == 0 ? TOKEN_PROGRAM_ID : TOKEN_2022_PROGRAM_ID;
+  const tokenBProgram =
+    poolState.tokenAFlag == 0 ? TOKEN_PROGRAM_ID : TOKEN_2022_PROGRAM_ID;
+
+  const outputTokenMint = poolState.tokenAMint.equals(inputTokenMint)
+    ? poolState.tokenBMint
+    : poolState.tokenAMint;
+
+  const inputTokenAccount = getAssociatedTokenAddressSync(
+    inputTokenMint,
+    user,
+    true,
+    tokenAProgram
+  );
+  const outputTokenAccount = getAssociatedTokenAddressSync(
+    outputTokenMint,
+    user,
+    true,
+    tokenBProgram
+  );
+
+  return await program.methods
+    .swap({
+      amountIn,
+      minimumAmountOut: new BN(0),
+    })
+    .accountsPartial({
+      poolAuthority: deriveDammV2PoolAuthority(),
+      pool,
+      payer: user,
+      inputTokenAccount,
+      outputTokenAccount,
+      tokenAMint: poolState.tokenAMint,
+      tokenBMint: poolState.tokenBMint,
+      tokenAVault: poolState.tokenAVault,
+      tokenBVault: poolState.tokenBVault,
+      tokenAProgram,
+      tokenBProgram,
+      referralTokenAccount: null,
     })
     .transaction();
 }

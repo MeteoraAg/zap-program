@@ -69,7 +69,7 @@ describe("Zap out Jup V6", () => {
   it("full flow zap out", async () => {
     const inputTokenAccount = tokenAMint;
     const pool = await createDammV2Pool(svm, admin, tokenAMint, tokenBMint);
-    const userPosition = await createPositionAndAddLiquidity(svm, user, pool);
+    const {position: userPosition} = await createPositionAndAddLiquidity(svm, user, pool);
     const tokenAAccount = getAssociatedTokenAddressSync(
       tokenAMint,
       user.publicKey,
