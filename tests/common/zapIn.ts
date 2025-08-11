@@ -17,6 +17,8 @@ export async function zapInDammV2(
   pool: PublicKey,
   position: PublicKey,
   positionNftAccount: PublicKey,
+  amountADeposit: BN,
+  amountBDeposit: BN,
   thesholdAmountA: BN,
   thresholdAmountB: BN,
   maxDepositAmountA: BN,
@@ -49,6 +51,8 @@ export async function zapInDammV2(
     .zapIn({
       preTokenABalance,
       preTokenBBalance,
+      amountA0: amountADeposit,
+      amountB0: amountBDeposit,
       thesholdAmountA,
       thresholdAmountB,
       maxDepositAmountA,

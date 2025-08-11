@@ -8,6 +8,8 @@ pub mod constants;
 pub mod error;
 pub mod math;
 pub use math::*;
+pub mod utils;
+pub use utils::*;
 
 pub mod tests;
 

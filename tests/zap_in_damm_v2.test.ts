@@ -63,7 +63,7 @@ describe.only("Zap in damm V2", () => {
     const pool = await createDammV2Pool(svm, admin, tokenAMint, tokenBMint);
     const { position, positionNftAccount } =
       await createPositionAndAddLiquidity(svm, user, pool);
-    const swapAmount = new BN("1000000000")
+    const swapAmount = new BN(1_000_000)
     const swapTx = await swapDammV2(
       svm,
       user.publicKey,
@@ -72,12 +72,17 @@ describe.only("Zap in damm V2", () => {
       swapAmount
     );
 
+    const amountADeposit = new BN(1_000_000)
+    const amountBDeposit = new BN(2_000_000)
+
     const zapOutTx = await zapInDammV2(
       svm,
       user.publicKey,
       pool,
       position,
       positionNftAccount,
+      amountADeposit,
+      amountBDeposit,
       U64_MAX,
       U64_MAX,
       swapAmount,

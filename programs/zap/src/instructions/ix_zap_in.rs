@@ -2,9 +2,8 @@ use std::cmp::min;
 
 use anchor_lang::prelude::*;
 use anchor_spl::token_interface::{Mint, TokenAccount, TokenInterface};
-use ruint::aliases::{U256, U512};
 
-use crate::{error::ZapError, safe_math::SafeMath};
+use crate::{error::ZapError, get_liquidity_for_adding_liquidity, safe_math::SafeMath};
 
 use damm_v2::{
     accounts::{Pool, Position},
@@ -15,6 +14,8 @@ use damm_v2::{
 pub struct ZapInParameters {
     pub pre_token_a_balance: u64,
     pub pre_token_b_balance: u64,
+    pub amount_a_0: u64, // amount a user want to zap in and deposit
+    pub amount_b_0: u64, // amount b user want to zap in and deposit
     pub theshold_amount_a: u64,
     pub threshold_amount_b: u64,
     pub max_deposit_amount_a: u64,
@@ -75,84 +76,39 @@ pub struct ZapInDammV2Ctx<'info> {
     /// Token b program
     pub token_b_program: Interface<'info, TokenInterface>,
 }
-// Δa = L * (1 / √P_lower - 1 / √P_upper)
-// Δa = L * (√P_upper - √P_lower) / (√P_upper * √P_lower)
-// L = Δa * √P_upper * √P_lower / (√P_upper - √P_lower)
-fn calculate_liquidity_delta_from_amount_a(
-    max_amount_a: u64,
-    lower_sqrt_price: u128,
-    upper_sqrt_price: u128,
-) -> Result<u128> {
-    let numerator_1 = U512::from(max_amount_a);
-    let numerator_2 = U512::from(upper_sqrt_price);
-    let numerator_3 = U512::from(lower_sqrt_price);
-    let product = numerator_1.safe_mul(numerator_2)?.safe_mul(numerator_3)?;
-    let denominator = U512::from(upper_sqrt_price.safe_sub(lower_sqrt_price)?);
-
-    assert!(denominator > U512::ZERO);
-
-    let result = product.safe_div(denominator)?;
-    Ok(result.try_into().map_err(|_| ZapError::TypeCastFailed)?)
-}
-
-// Δb = L (√P_upper - √P_lower)
-// L = Δb / (√P_upper - √P_lower)
-fn calculate_liquidity_delta_from_amount_b(
-    max_amount_b: u64,
-    lower_sqrt_price: u128,
-    upper_sqrt_price: u128,
-) -> Result<u128> {
-    let denominator = upper_sqrt_price.safe_sub(lower_sqrt_price)?;
-    assert!(denominator > 0);
-
-    let product = U256::from(max_amount_b).safe_shl(128)?;
-    let result = product.safe_div(U256::from(denominator))?;
-    Ok(result.try_into().map_err(|_| ZapError::TypeCastFailed)?)
-}
-
-fn calculate_liquidity_delta(
-    max_amount_a: u64,
-    max_amount_b: u64,
-    current_sqrt_price: u128,
-    min_sqrt_price: u128,
-    max_sqrt_price: u128,
-) -> Result<u128> {
-    let liquidity_delta_a =
-        calculate_liquidity_delta_from_amount_a(max_amount_a, current_sqrt_price, max_sqrt_price)?;
-
-    let liquidity_delta_b =
-        calculate_liquidity_delta_from_amount_b(max_amount_b, min_sqrt_price, current_sqrt_price)?;
-
-    Ok(min(liquidity_delta_a, liquidity_delta_b))
-}
 
 pub fn handle_zap_in(ctx: Context<ZapInDammV2Ctx>, params: &ZapInParameters) -> Result<()> {
     let token_a_balance = ctx.accounts.user_token_a_account.amount;
     let token_b_balance = ctx.accounts.user_token_b_account.amount;
 
-    let token_a_changed = if params.pre_token_a_balance > token_a_balance {
-        params.pre_token_a_balance.safe_sub(token_a_balance)?
-    } else {
-        token_a_balance.safe_sub(params.pre_token_a_balance)?
-    };
+    let amount_a_to_deposit = params
+        .amount_a_0
+        .safe_add(token_a_balance)?
+        .safe_sub(params.pre_token_a_balance)?;
 
-    let token_b_changed = if params.pre_token_b_balance > token_b_balance {
-        params.pre_token_b_balance.safe_sub(token_b_balance)?
-    } else {
-        token_b_balance.safe_sub(params.pre_token_b_balance)?
-    };
+    let amount_b_to_deposit = params
+        .amount_b_0
+        .safe_add(token_b_balance)?
+        .safe_sub(params.pre_token_b_balance)?;
+
+    let max_deposit_amount_a = min(params.max_deposit_amount_a, amount_a_to_deposit);
+    let max_deposit_amount_b = min(params.max_deposit_amount_b, amount_b_to_deposit);
+
     let pool = ctx.accounts.pool.load()?;
 
-    let max_deposit_amount_a = min(params.max_deposit_amount_a, token_a_changed);
-    let max_deposit_amount_b = min(params.max_deposit_amount_b, token_b_changed);
-
-    let liquidity_delta = calculate_liquidity_delta(
+    let liquidity_delta = get_liquidity_for_adding_liquidity(
         max_deposit_amount_a,
         max_deposit_amount_b,
         pool.sqrt_price,
         pool.sqrt_min_price,
         pool.sqrt_max_price,
     )?;
+
+    msg!("liquidity_delta: {:?}", liquidity_delta);
+
+    msg!("max_deposit_amount_a: {:?}", max_deposit_amount_a);
+
+    msg!("max_deposit_amount_b: {:?}", max_deposit_amount_b);
 
     drop(pool);
 
