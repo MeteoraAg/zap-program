@@ -22,4 +22,7 @@ pub enum ZapError {
 
     #[msg("Remaining amount is over threshold")]
     RemainingAmountIsOverThreshold,
+
+    #[msg("Liquidity delta is zero")]
+    LiquidityDeltaIsZero,
 }

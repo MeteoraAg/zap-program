@@ -59,11 +59,11 @@ describe.only("Zap in damm V2", () => {
     mintToken(svm, admin, tokenBMint, admin, user.publicKey);
   });
 
-  it("full flow zap in", async () => {
+  it("zapin swap B->A", async () => {
     const pool = await createDammV2Pool(svm, admin, tokenAMint, tokenBMint);
     const { position, positionNftAccount } =
       await createPositionAndAddLiquidity(svm, user, pool);
-    const swapAmount = new BN(1_000_000)
+    const swapAmount = new BN(1_000_000);
     const swapTx = await swapDammV2(
       svm,
       user.publicKey,
@@ -72,8 +72,11 @@ describe.only("Zap in damm V2", () => {
       swapAmount
     );
 
-    const amountADeposit = new BN(1_000_000)
-    const amountBDeposit = new BN(2_000_000)
+    const amountADeposit = new BN(1_000_000);
+    const amountBDeposit = new BN(2_000_000);
+
+    const maxAmountA = U64_MAX;
+    const maxAmountB = U64_MAX;
 
     const zapOutTx = await zapInDammV2(
       svm,
@@ -85,9 +88,55 @@ describe.only("Zap in damm V2", () => {
       amountBDeposit,
       U64_MAX,
       U64_MAX,
-      swapAmount,
-      swapAmount
+      maxAmountA,
+      maxAmountB
+    );
 
+    const finalTransaction = new Transaction().add(swapTx).add(zapOutTx);
+
+    finalTransaction.recentBlockhash = svm.latestBlockhash();
+    finalTransaction.sign(user);
+
+    const result = svm.sendTransaction(finalTransaction);
+    if (result instanceof TransactionMetadata) {
+      console.log(result.logs());
+    } else {
+      console.log(result.meta().logs());
+    }
+    expect(result).instanceOf(TransactionMetadata);
+  });
+
+  it("zapin swap B->A", async () => {
+    const pool = await createDammV2Pool(svm, admin, tokenAMint, tokenBMint);
+    const { position, positionNftAccount } =
+      await createPositionAndAddLiquidity(svm, user, pool);
+    const swapAmount = new BN(1_000_000);
+    const swapTx = await swapDammV2(
+      svm,
+      user.publicKey,
+      pool,
+      tokenAMint,
+      swapAmount
+    );
+
+    const amountADeposit = new BN(2_000_000);
+    const amountBDeposit = new BN(2_000_000);
+
+    const maxAmountA = U64_MAX;
+    const maxAmountB = U64_MAX;
+
+    const zapOutTx = await zapInDammV2(
+      svm,
+      user.publicKey,
+      pool,
+      position,
+      positionNftAccount,
+      amountADeposit,
+      amountBDeposit,
+      U64_MAX,
+      U64_MAX,
+      maxAmountA,
+      maxAmountB
     );
 
     const finalTransaction = new Transaction().add(swapTx).add(zapOutTx);

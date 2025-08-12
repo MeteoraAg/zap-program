@@ -104,11 +104,7 @@ pub fn handle_zap_in(ctx: Context<ZapInDammV2Ctx>, params: &ZapInParameters) -> 
         pool.sqrt_max_price,
     )?;
 
-    msg!("liquidity_delta: {:?}", liquidity_delta);
-
-    msg!("max_deposit_amount_a: {:?}", max_deposit_amount_a);
-
-    msg!("max_deposit_amount_b: {:?}", max_deposit_amount_b);
+    require!(liquidity_delta > 0, ZapError::LiquidityDeltaIsZero);
 
     drop(pool);
 
