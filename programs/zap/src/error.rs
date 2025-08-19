@@ -11,7 +11,7 @@ pub enum ZapError {
     #[msg("Invalid offset")]
     InvalidOffset,
 
-    #[msg("Math operation overflow")]
+    #[msg("Invalid zapout parameters")]
     InvalidZapOutParameters,
 
     #[msg("Type cast error")]

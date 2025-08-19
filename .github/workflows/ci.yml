@@ -1,0 +1,83 @@
+name: Zap-Program
+
+on:
+  pull_request:
+    branches:
+      - main
+
+env:
+  SOLANA_CLI_VERSION: 2.1.0
+  NODE_VERSION: 22.15.0
+  ANCHOR_CLI_VERSION: 0.31.0
+  TOOLCHAIN: 1.76.0
+
+jobs:
+  program_changed_files:
+    runs-on: ubuntu-latest
+    outputs:
+      program: ${{steps.changed-files-specific.outputs.any_changed}}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Get specific changed files
+        id: changed-files-specific
+        uses: tj-actions/changed-files@v18.6
+        with:
+          files: |
+            programs/zap
+
+  anchor_build:
+    runs-on: ubuntu-latest
+    needs: program_changed_files
+    if: needs.program_changed_files.outputs.program == 'true'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: ./.github/actions/setup-solana
+      - uses: ./.github/actions/setup-dep
+      - uses: ./.github/actions/setup-anchor
+        # Cache rust, cargo
+      - uses: Swatinem/rust-cache@v2
+        with:
+          cache-targets: "true"
+          cache-on-failure: true
+      - uses: actions/cache@v4
+        with:
+          path: ~/.anchor
+          key: anchor-${{ runner.os }}-${{ hashFiles('Anchor.toml') }}
+      - run: anchor build
+        shell: bash
+
+  program_test:
+    runs-on: ubuntu-latest
+    needs: program_changed_files
+    if: needs.program_changed_files.outputs.program == 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-solana
+      - uses: ./.github/actions/setup-dep
+      - uses: ./.github/actions/setup-anchor
+      # Install pnpm
+      - uses: pnpm/action-setup@v3 # docs https://pnpm.io/continuous-integration#github-actions
+        with:
+          version: 9.5.0 # Optional: specify a pnpm version
+      # Install rust + toolchain
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: ${{ env.TOOLCHAIN }}
+          components: clippy
+      # Cache rust, cargo
+      - uses: Swatinem/rust-cache@v1
+      # Cache node_modules
+      - uses: actions/cache@v4
+        id: cache-node-modules
+        with:
+          path: ./node_modules
+          key: ${{ runner.os }}-${{ hashFiles('./package-lock.json') }}
+      # Testing
+      - run: pnpm install
+        shell: bash
+      - run: pnpm test
+        shell: bash
