@@ -1,7 +1,20 @@
 use anchor_lang::prelude::*;
+use anchor_spl::token_interface::Mint;
 use ruint::aliases::{U256, U512};
 
 use crate::{error::ZapError, safe_math::SafeMath};
+
+use damm_v2_program::{
+    activation_handler::ActivationHandler,
+    params::swap::TradeDirection,
+    state::{fee::FeeMode, pool::Pool, ModifyLiquidityResult},
+    token::{
+        calculate_transfer_fee_excluded_amount, calculate_transfer_fee_included_amount,
+        TransferFeeExcludedAmount, TransferFeeIncludedAmount,
+    },
+    u128x128_math::Rounding,
+    PoolError,
+};
 
 // Δa = L * (1 / √P_lower - 1 / √P_upper) => L = Δa / (1 / √P_lower - 1 / √P_upper)
 pub fn get_liquidity_delta_from_token_a(
@@ -48,4 +61,80 @@ pub fn get_liquidity_for_adding_liquidity(
             .try_into()
             .map_err(|_| ZapError::TypeCastFailed)?)
     }
+}
+
+pub fn simulate_swap<'info>(
+    pool: &AccountLoader<'info, Pool>,
+    amount_in: u64,
+    trade_direction: TradeDirection,
+    token_a_mint: &InterfaceAccount<'info, Mint>,
+    token_b_mint: &InterfaceAccount<'info, Mint>,
+) -> Result<u64> {
+    let pool = &mut pool.load_mut()?;
+    // Parse accounts
+    let (token_in_mint, token_out_mint) = if trade_direction == TradeDirection::AtoB {
+        (token_a_mint, token_b_mint)
+    } else {
+        (token_a_mint, token_b_mint)
+    };
+
+    let TransferFeeExcludedAmount {
+        amount: transfer_fee_excluded_amount_in,
+        ..
+    } = calculate_transfer_fee_excluded_amount(token_in_mint, amount_in)?;
+    require!(transfer_fee_excluded_amount_in > 0, PoolError::AmountIsZero);
+
+    let fee_mode = &FeeMode::get_fee_mode(pool.collect_fee_mode, trade_direction, false)?;
+    let current_timestamp = Clock::get()?.unix_timestamp as u64;
+    let current_point = ActivationHandler::get_current_point(pool.activation_type)?;
+
+    pool.update_pre_swap(current_timestamp)?;
+
+    let swap_result = pool.get_swap_result(
+        transfer_fee_excluded_amount_in,
+        fee_mode,
+        trade_direction,
+        current_point,
+    )?;
+    // Apply the swap result
+    pool.apply_swap_result(&swap_result, fee_mode, current_timestamp)?;
+
+    let TransferFeeExcludedAmount {
+        amount: transfer_fee_excluded_amount_out,
+        ..
+    } = calculate_transfer_fee_excluded_amount(token_out_mint, swap_result.output_amount)?;
+    Ok(transfer_fee_excluded_amount_out)
+}
+
+pub fn simulate_add_liquidity<'info>(
+    pool: &AccountLoader<'info, Pool>,
+    liquidity_delta: u128,
+    token_a_mint: &InterfaceAccount<'info, Mint>,
+    token_b_mint: &InterfaceAccount<'info, Mint>,
+) -> Result<SimulateAddLiquidityResult> {
+    let pool = pool.load()?;
+    let ModifyLiquidityResult {
+        token_a_amount,
+        token_b_amount,
+    } = pool.get_amounts_for_modify_liquidity(liquidity_delta, Rounding::Up)?;
+
+    let TransferFeeIncludedAmount {
+        amount: transfer_fee_included_token_a_amount,
+        ..
+    } = calculate_transfer_fee_included_amount(token_a_mint, token_a_amount)?;
+    let TransferFeeIncludedAmount {
+        amount: transfer_fee_included_token_b_amount,
+        ..
+    } = calculate_transfer_fee_included_amount(token_b_mint, token_b_amount)?;
+
+    Ok(SimulateAddLiquidityResult {
+        token_a_amount: transfer_fee_included_token_a_amount,
+        token_b_amount: transfer_fee_included_token_b_amount,
+    })
+}
+
+#[derive(Debug, PartialEq)]
+pub struct SimulateAddLiquidityResult {
+    pub token_a_amount: u64,
+    pub token_b_amount: u64,
 }
