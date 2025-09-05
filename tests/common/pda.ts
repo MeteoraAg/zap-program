@@ -73,6 +73,7 @@ export function deriveDammV2EventAuthority() {
     DAMM_V2_PROGRAM_ID
   )[0];
 }
+
 export function deriveDammV2PositionAddress(positionNft: PublicKey): PublicKey {
   return PublicKey.findProgramAddressSync(
     [Buffer.from("position"), positionNft.toBuffer()],

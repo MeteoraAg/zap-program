@@ -59,7 +59,7 @@ describe.only("Zap in damm V2", () => {
     mintToken(svm, admin, tokenBMint, admin, user.publicKey);
   });
 
-  it("zapin swap B->A", async () => {
+  it.only("zapin swap B->A", async () => {
     const pool = await createDammV2Pool(svm, admin, tokenAMint, tokenBMint);
     const { position, positionNftAccount } =
       await createPositionAndAddLiquidity(svm, user, pool);
@@ -77,6 +77,9 @@ describe.only("Zap in damm V2", () => {
 
     const maxAmountA = U64_MAX;
     const maxAmountB = U64_MAX;
+    const thresholdTokenA = new BN(1000)
+
+    const thresholdTokenB = new BN(1000)
 
     const zapOutTx = await zapInDammV2(
       svm,
@@ -86,8 +89,8 @@ describe.only("Zap in damm V2", () => {
       positionNftAccount,
       amountADeposit,
       amountBDeposit,
-      U64_MAX,
-      U64_MAX,
+      thresholdTokenA,
+      thresholdTokenB,
       maxAmountA,
       maxAmountB
     );

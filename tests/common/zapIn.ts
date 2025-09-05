@@ -1,7 +1,7 @@
 import { PublicKey, Transaction } from "@solana/web3.js";
 import { LiteSVM } from "litesvm";
 import { createZapProgram } from "./zapOut";
-import { deriveDammV2EventAuthority, getDammV2Pool } from "./pda";
+import { deriveDammV2EventAuthority, deriveDammV2PoolAuthority, getDammV2Pool } from "./pda";
 import { DAMM_V2_PROGRAM_ID } from "./damm_v2";
 import {
   getAssociatedTokenAddressSync,
@@ -19,7 +19,7 @@ export async function zapInDammV2(
   positionNftAccount: PublicKey,
   amountADeposit: BN,
   amountBDeposit: BN,
-  thesholdAmountA: BN,
+  thresholdAmountA: BN,
   thresholdAmountB: BN,
   maxDepositAmountA: BN,
   maxDepositAmountB: BN
@@ -53,7 +53,7 @@ export async function zapInDammV2(
       preTokenBBalance,
       amountA0: amountADeposit,
       amountB0: amountBDeposit,
-      thesholdAmountA,
+      thresholdAmountA,
       thresholdAmountB,
       maxDepositAmountA,
       maxDepositAmountB,
@@ -71,6 +71,7 @@ export async function zapInDammV2(
       owner: user,
       ammProgram: DAMM_V2_PROGRAM_ID,
       dammEventAuthority: deriveDammV2EventAuthority(),
+      dammPoolAuthority: deriveDammV2PoolAuthority(),
       tokenAProgram,
       tokenBProgram,
     })

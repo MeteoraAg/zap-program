@@ -1,5 +1,7 @@
 use anchor_lang::{prelude::Pubkey, pubkey};
 
+pub const MAX_SIMULATE_ZAP_IN: u8 = 5;
+
 pub const DAMM_V2: Pubkey = pubkey!("cpamdpZCGKUy5JxQXB4dcpGPiikHawvSWAd6mEn1sGG");
 // https://github.com/MeteoraAg/zap-program/blob/main/idls/damm_v2.json#L3512-L3521
 pub const DAMM_V2_SWAP_DISC: [u8; 8] = [248, 198, 158, 145, 225, 117, 135, 200];

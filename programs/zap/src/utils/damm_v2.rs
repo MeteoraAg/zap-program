@@ -1,3 +1,5 @@
+use std::cell::{Ref, RefMut};
+
 use anchor_lang::prelude::*;
 use anchor_spl::token_interface::Mint;
 use ruint::aliases::{U256, U512};
@@ -64,13 +66,12 @@ pub fn get_liquidity_for_adding_liquidity(
 }
 
 pub fn simulate_swap<'info>(
-    pool: &AccountLoader<'info, Pool>,
+    pool: &mut RefMut<'_, Pool>,
     amount_in: u64,
     trade_direction: TradeDirection,
     token_a_mint: &InterfaceAccount<'info, Mint>,
     token_b_mint: &InterfaceAccount<'info, Mint>,
 ) -> Result<u64> {
-    let pool = &mut pool.load_mut()?;
     // Parse accounts
     let (token_in_mint, token_out_mint) = if trade_direction == TradeDirection::AtoB {
         (token_a_mint, token_b_mint)
@@ -126,6 +127,8 @@ pub fn simulate_add_liquidity<'info>(
         amount: transfer_fee_included_token_b_amount,
         ..
     } = calculate_transfer_fee_included_amount(token_b_mint, token_b_amount)?;
+
+    drop(pool);
 
     Ok(SimulateAddLiquidityResult {
         token_a_amount: transfer_fee_included_token_a_amount,

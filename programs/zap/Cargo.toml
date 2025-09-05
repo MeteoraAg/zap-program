@@ -22,6 +22,6 @@ idl-build = ["anchor-lang/idl-build", "anchor-spl/idl-build"]
 anchor-lang = { workspace = true, features = ["event-cpi"] }
 anchor-spl = { workspace = true, features = [] }
 damm-v2 = { path = "../../libs/damm-v2" }
-damm-v2-program = { git = "https://github.com/MeteoraAg/damm-v2.git", package = "cp-amm", rev = "e9ffd023db1974d7a91c24e3b1c58916397bf5ae" }
+damm-v2-program = { git = "https://github.com/MeteoraAg/damm-v2.git", package = "cp-amm", rev = "e9ffd023db1974d7a91c24e3b1c58916397bf5ae", features = ["no-entrypoint"] }
 ruint = "1.3.0"
 num-traits = "0.2.19"
