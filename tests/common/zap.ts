@@ -106,7 +106,67 @@ export async function zapOutDammv2(
       percentage: 100,
       offsetAmountIn: 8,
       preUserTokenBalance,
-      maxSwapAmount:  new BN("100000000000"),
+      maxSwapAmount: new BN("100000000000"),
+      payloadData,
+    })
+    .accountsPartial({
+      userTokenInAccount,
+      ammProgram: DAMM_V2_PROGRAM_ID,
+    })
+    .remainingAccounts(remainingAccounts)
+    .transaction();
+}
+
+export async function zapOut2Dammv2(
+  svm: LiteSVM,
+  user: PublicKey,
+  inputTokenMint: PublicKey,
+  pool: PublicKey
+): Promise<Transaction> {
+  const zapProgram = createZapProgram();
+
+  const poolState = getDammV2Pool(svm, pool);
+  const outputTokenMint = poolState.tokenAMint.equals(inputTokenMint)
+    ? poolState.tokenBMint
+    : poolState.tokenAMint;
+  const inputTokenProgram = getTokenProgram(svm, inputTokenMint);
+  const outputTokenProgram = getTokenProgram(svm, outputTokenMint);
+
+  const userTokenInAccount = getAssociatedTokenAddressSync(
+    inputTokenMint,
+    user,
+    true,
+    inputTokenProgram
+  );
+  const userTokenOutAccount = getAssociatedTokenAddressSync(
+    outputTokenMint,
+    user,
+    true,
+    outputTokenProgram
+  );
+
+  const preUserTokenBalance = getTokenBalance(svm, userTokenInAccount);
+
+  const remainingAccounts = getDammV2RemainingAccounts(
+    svm,
+    pool,
+    user,
+    userTokenInAccount,
+    userTokenOutAccount
+  );
+  const minAmountOutBuffer = new BN(10).toArrayLike(Buffer, "le", 8);
+  const amount = new BN(0).toArrayLike(Buffer, "le", 8);
+  const payloadData = Buffer.concat([
+    Buffer.from(DAMM_V2_SWAP_DISC),
+    amount,
+    minAmountOutBuffer,
+  ]);
+  return await zapProgram.methods
+    .zapOut2({
+      percentage: 100,
+      offsetAmountIn: 8,
+      preUserTokenBalance,
+      maxSwapAmount: new BN("100000000000"),
       payloadData,
     })
     .accountsPartial({
@@ -189,7 +249,7 @@ export async function zapOutDlmm(
       percentage: 100,
       offsetAmountIn: 8, // disc then amount_in
       preUserTokenBalance,
-      maxSwapAmount:  new BN("100000000000"),
+      maxSwapAmount: new BN("100000000000"),
       payloadData,
     })
     .accountsPartial({

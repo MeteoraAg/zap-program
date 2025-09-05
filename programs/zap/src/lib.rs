@@ -24,4 +24,8 @@ pub mod zap {
     ) -> Result<()> {
         instructions::handle_zap_out(ctx, &params)
     }
+
+    pub fn zap_out_2(_ctx: Context<ZapOut2Ctx>, _params: ZapOut2Parameters) -> Result<()> {
+        Ok(())
+    }
 }
