@@ -1,10 +1,12 @@
 use std::cmp::min;
 
-use anchor_lang::{
-    prelude::*,
-    solana_program::{instruction::Instruction, program::invoke},
-};
+use anchor_lang::prelude::*;
 use anchor_spl::token_interface::TokenAccount;
+use pinocchio::{
+    cpi::slice_invoke,
+    instruction::{AccountMeta, Instruction},
+};
+// use pinocchio::cpi::invoke;
 
 use crate::{constants::WHITELISTED_AMM_PROGRAMS, error::ZapError, safe_math::SafeMath};
 
@@ -47,6 +49,9 @@ pub fn is_support_amm_program(amm_program: &Pubkey, discriminator: &[u8]) -> boo
         .any(|(program, disc)| program.eq(amm_program) && disc.eq(discriminator))
 }
 
+// pub const ZAP_OUT_IX_ACCOUNTS: usize = 2;
+pub const ZAP_OUT_IX_ACCOUNTS: usize = 2;
+pub const ZAP_OUT_MAX_IX_ACCOUNTS: usize = 100;
 #[derive(Accounts)]
 pub struct ZapOutCtx<'info> {
     #[account(mut)]
@@ -76,25 +81,90 @@ pub fn modify_instruction_data(
     Ok(())
 }
 
-pub fn handle_zap_out<'c: 'info, 'info>(
-    ctx: Context<'_, '_, 'c, 'info, ZapOutCtx<'info>>,
-    params: &ZapOutParameters,
+// pub fn handle_zap_out<'c: 'info, 'info>(
+//     ctx: Context<'_, '_, 'c, 'info, ZapOutCtx<'info>>,
+//     params: &ZapOutParameters,
+// ) -> Result<()> {
+//     // validate params
+//     params.validate()?;
+//     let disciminator = &params.payload_data[..8]; // first 8 bytes is discriminator
+//     require!(
+//         is_support_amm_program(ctx.accounts.amm_program.key, disciminator),
+//         ZapError::AmmIsNotSupported
+//     );
+//     let post_user_token_balance = ctx.accounts.user_token_in_account.amount;
+//     if params.pre_user_token_balance >= post_user_token_balance {
+//         // skip if pre_user_token_balance is greater than post_user_token_balance
+//         return Ok(());
+//     }
+//     let balance_change_amount = post_user_token_balance.safe_sub(params.pre_user_token_balance)?;
+//     let swap_amount = params.get_swap_amount(balance_change_amount)?;
+
+//     if swap_amount > 0 {
+//         let mut payload_data = params.payload_data.to_vec();
+//         modify_instruction_data(
+//             &mut payload_data,
+//             swap_amount,
+//             params.offset_amount_in.into(),
+//         )?;
+
+//         let accounts: Vec<AccountMeta> = ctx
+//             .remaining_accounts
+//             .iter()
+//             .map(|acc| AccountMeta {
+//                 pubkey: *acc.key,
+//                 is_signer: acc.is_signer,
+//                 is_writable: acc.is_writable,
+//             })
+//             .collect();
+
+//         let account_infos: Vec<AccountInfo> = ctx
+//             .remaining_accounts
+//             .iter()
+//             .map(|acc| AccountInfo { ..acc.clone() })
+//             .collect();
+//         // invoke instruction to amm
+//         invoke(
+//             &Instruction {
+//                 program_id: ctx.accounts.amm_program.key(),
+//                 accounts,
+//                 data: payload_data,
+//             },
+//             &account_infos,
+//         )?;
+//     }
+
+//     Ok(())
+// }
+
+pub fn p_handle_zap_out(
+    _program_id: &pinocchio::pubkey::Pubkey,
+    zap_out_accounts: &[pinocchio::account_info::AccountInfo],
+    remaining_accounts: &[pinocchio::account_info::AccountInfo],
+    data: &[u8],
 ) -> Result<()> {
+    // TODO fix unwrap
+    let params = ZapOutParameters::deserialize(&mut &data[8..]).unwrap();
+    let [user_token_in_account, amm_program] = zap_out_accounts else {
+        return Err(ProgramError::NotEnoughAccountKeys.into());
+    };
+
     // validate params
     params.validate()?;
     let disciminator = &params.payload_data[..8]; // first 8 bytes is discriminator
     require!(
-        is_support_amm_program(ctx.accounts.amm_program.key, disciminator),
+        is_support_amm_program(&Pubkey::new_from_array(*amm_program.key()), disciminator),
         ZapError::AmmIsNotSupported
     );
-    let post_user_token_balance = ctx.accounts.user_token_in_account.amount;
+    let user_token_in_account =
+        pinocchio_token::state::TokenAccount::from_account_info(user_token_in_account).unwrap();
+    let post_user_token_balance = user_token_in_account.amount();
     if params.pre_user_token_balance >= post_user_token_balance {
         // skip if pre_user_token_balance is greater than post_user_token_balance
         return Ok(());
     }
     let balance_change_amount = post_user_token_balance.safe_sub(params.pre_user_token_balance)?;
     let swap_amount = params.get_swap_amount(balance_change_amount)?;
-
     if swap_amount > 0 {
         let mut payload_data = params.payload_data.to_vec();
         modify_instruction_data(
@@ -103,30 +173,29 @@ pub fn handle_zap_out<'c: 'info, 'info>(
             params.offset_amount_in.into(),
         )?;
 
-        let accounts: Vec<AccountMeta> = ctx
-            .remaining_accounts
+        let accounts: Vec<AccountMeta> = remaining_accounts
             .iter()
             .map(|acc| AccountMeta {
-                pubkey: *acc.key,
-                is_signer: acc.is_signer,
-                is_writable: acc.is_writable,
+                pubkey: acc.key(),
+                is_signer: acc.is_signer(),
+                is_writable: acc.is_writable(),
             })
             .collect();
 
-        let account_infos: Vec<AccountInfo> = ctx
-            .remaining_accounts
-            .iter()
-            .map(|acc| AccountInfo { ..acc.clone() })
-            .collect();
+        let account_infos: Vec<&pinocchio::account_info::AccountInfo> =
+            remaining_accounts.iter().map(|acc| acc).collect();
+
+        drop(user_token_in_account);
         // invoke instruction to amm
-        invoke(
+        slice_invoke(
             &Instruction {
-                program_id: ctx.accounts.amm_program.key(),
-                accounts,
-                data: payload_data,
+                program_id: amm_program.key(),
+                accounts: &accounts,
+                data: &payload_data,
             },
-            &account_infos,
-        )?;
+            &account_infos[..],
+        )
+        .unwrap();
     }
 
     Ok(())

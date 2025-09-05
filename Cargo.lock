@@ -1005,6 +1005,30 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e3148f5046208a5d56bcfc03053e3ca6334e51da8dfb19b6cdc8b306fae3283e"
 
 [[package]]
+name = "pinocchio"
+version = "0.9.0"
+source = "git+https://github.com/anza-xyz/pinocchio.git?rev=17b0e862c01a868ea07ef81a2f8a9b4a504bdfed#17b0e862c01a868ea07ef81a2f8a9b4a504bdfed"
+
+[[package]]
+name = "pinocchio-pubkey"
+version = "0.3.0"
+source = "git+https://github.com/anza-xyz/pinocchio.git?rev=17b0e862c01a868ea07ef81a2f8a9b4a504bdfed#17b0e862c01a868ea07ef81a2f8a9b4a504bdfed"
+dependencies = [
+ "five8_const",
+ "pinocchio",
+ "sha2-const-stable",
+]
+
+[[package]]
+name = "pinocchio-token"
+version = "0.4.0"
+source = "git+https://github.com/anza-xyz/pinocchio.git?rev=17b0e862c01a868ea07ef81a2f8a9b4a504bdfed#17b0e862c01a868ea07ef81a2f8a9b4a504bdfed"
+dependencies = [
+ "pinocchio",
+ "pinocchio-pubkey",
+]
+
+[[package]]
 name = "polyval"
 version = "0.6.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1285,6 +1309,12 @@ dependencies = [
  "cpufeatures",
  "digest 0.10.7",
 ]
+
+[[package]]
+name = "sha2-const-stable"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5f179d4e11094a893b82fff208f74d448a7512f99f5a0acbd5c679b705f83ed9"
 
 [[package]]
 name = "sha3"
@@ -2864,6 +2894,8 @@ version = "0.1.0"
 dependencies = [
  "anchor-lang",
  "anchor-spl",
+ "pinocchio",
+ "pinocchio-token",
 ]
 
 [[package]]

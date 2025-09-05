@@ -11,6 +11,9 @@ pub use math::*;
 
 pub mod tests;
 
+mod entrypoint;
+pub use entrypoint::entrypoint;
+
 declare_id!("zapvX9M3uf5pvy4wRPAbQgdQsM1xmuiFnkfHKPvwMiz");
 
 #[program]
@@ -21,6 +24,7 @@ pub mod zap {
         ctx: Context<'_, '_, 'c, 'info, ZapOutCtx<'info>>,
         params: ZapOutParameters,
     ) -> Result<()> {
-        instructions::handle_zap_out(ctx, &params)
+        // instructions::handle_zap_out(ctx, &params)
+        Ok(())
     }
 }
