@@ -24,10 +24,9 @@ import {
 } from "./common/damm_v2";
 import { getAssociatedTokenAddressSync } from "@solana/spl-token";
 
-describe("Zap out damm V2", () => {
+describe("Zap out 2 on damm V2", () => {
   let zapProgram: ZapProgram;
   let svm: LiteSVM;
-  let tokenMint: PublicKey;
   let user: Keypair;
   let admin: Keypair;
   let tokenAMint: PublicKey;
@@ -59,7 +58,7 @@ describe("Zap out damm V2", () => {
     mintToken(svm, admin, tokenBMint, admin, user.publicKey);
   });
 
-  it("full flow zap out", async () => {
+  it("full flow zap out 2", async () => {
     const inputTokenMint = tokenAMint;
     const pool = await createDammV2Pool(svm, admin, tokenAMint, tokenBMint);
     const userPosition = await createPositionAndAddLiquidity(svm, user, pool);
