@@ -9,7 +9,7 @@ crate-type = ["cdylib", "lib"]
 name = "zap"
 
 [features]
-default = []
+default = ["no-entrypoint"]
 local = []
 cpi = ["no-entrypoint"]
 no-entrypoint = []
@@ -21,3 +21,6 @@ idl-build = ["anchor-lang/idl-build", "anchor-spl/idl-build"]
 [dependencies]
 anchor-lang = { workspace = true, features = ["event-cpi"] }
 anchor-spl = { workspace = true, features = [] }
+pinocchio = "0.9.1"
+pinocchio-log = "0.5.0"
+pinocchio-token = "0.4.0"

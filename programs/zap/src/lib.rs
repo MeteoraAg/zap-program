@@ -2,14 +2,15 @@
 
 use anchor_lang::prelude::*;
 
-pub mod instructions;
-pub use instructions::*;
 pub mod constants;
+pub mod entrypoint;
 pub mod error;
+pub mod instructions;
 pub mod math;
-pub use math::*;
-
 pub mod tests;
+
+pub use instructions::*;
+pub use math::*;
 
 declare_id!("zapvX9M3uf5pvy4wRPAbQgdQsM1xmuiFnkfHKPvwMiz");
 
