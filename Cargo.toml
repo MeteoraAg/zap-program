@@ -16,4 +16,3 @@ codegen-units = 1
 [workspace.dependencies]
 anchor-lang = "0.31.1"
 anchor-spl = "0.31.1"
-bytemuck = "1.20.0"
