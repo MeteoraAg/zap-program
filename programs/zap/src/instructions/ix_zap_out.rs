@@ -145,7 +145,7 @@ pub fn p_handle_zap_out(
 ) -> Result<()> {
     // TODO fix unwrap
     let params = ZapOutParameters::deserialize(&mut &data[8..]).unwrap();
-    let [user_token_in_account, amm_program] = zap_out_accounts else {
+    let [user_token_in_account_info, amm_program] = zap_out_accounts else {
         return Err(ProgramError::NotEnoughAccountKeys.into());
     };
 
@@ -156,9 +156,20 @@ pub fn p_handle_zap_out(
         is_support_amm_program(&Pubkey::new_from_array(*amm_program.key()), disciminator),
         ZapError::AmmIsNotSupported
     );
-    let user_token_in_account =
-        pinocchio_token::state::TokenAccount::from_account_info(user_token_in_account).unwrap();
-    let post_user_token_balance = user_token_in_account.amount();
+
+    let post_user_token_balance = if user_token_in_account_info.owner() == &pinocchio_token::ID {
+        let user_token_in_account =
+            pinocchio_token::state::TokenAccount::from_account_info(user_token_in_account_info)
+                .unwrap();
+        user_token_in_account.amount()
+    } else {
+        let user_token_in_account = pinocchio_token_2022::state::TokenAccount::from_account_info(
+            user_token_in_account_info,
+        )
+        .unwrap();
+        user_token_in_account.amount()
+    };
+
     if params.pre_user_token_balance >= post_user_token_balance {
         // skip if pre_user_token_balance is greater than post_user_token_balance
         return Ok(());
@@ -185,7 +196,6 @@ pub fn p_handle_zap_out(
         let account_infos: Vec<&pinocchio::account_info::AccountInfo> =
             remaining_accounts.iter().map(|acc| acc).collect();
 
-        drop(user_token_in_account);
         // invoke instruction to amm
         slice_invoke(
             &Instruction {

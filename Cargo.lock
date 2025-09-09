@@ -1029,6 +1029,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "pinocchio-token-2022"
+version = "0.1.0"
+source = "git+https://github.com/anza-xyz/pinocchio.git?rev=17b0e862c01a868ea07ef81a2f8a9b4a504bdfed#17b0e862c01a868ea07ef81a2f8a9b4a504bdfed"
+dependencies = [
+ "pinocchio",
+ "pinocchio-pubkey",
+]
+
+[[package]]
 name = "polyval"
 version = "0.6.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2896,6 +2905,7 @@ dependencies = [
  "anchor-spl",
  "pinocchio",
  "pinocchio-token",
+ "pinocchio-token-2022",
 ]
 
 [[package]]
