@@ -110,9 +110,18 @@ pub mod p_zap_out_2 {
             return Err(PinoError::AmmIsNotSupported.into());
         }
 
-        let post_user_token_balance = {
-            let user_token_in_account = TokenAccount::from_account_info(user_token_in_account_info)
-                .map_err(|_| PinoError::InvalidAccount)?;
+        let post_user_token_balance = if user_token_in_account_info.owner() == &pinocchio_token::ID
+        {
+            let user_token_in_account =
+                pinocchio_token::state::TokenAccount::from_account_info(user_token_in_account_info)
+                    .unwrap();
+            user_token_in_account.amount()
+        } else {
+            let user_token_in_account =
+                pinocchio_token_2022::state::TokenAccount::from_account_info(
+                    user_token_in_account_info,
+                )
+                .unwrap();
             user_token_in_account.amount()
         };
 

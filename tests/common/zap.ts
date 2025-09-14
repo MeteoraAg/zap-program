@@ -102,7 +102,7 @@ export async function zapOutDammv2(
     minAmountOutBuffer,
   ]);
   return await zapProgram.methods
-    .zapOut({
+    .zapOut2({
       percentage: 100,
       offsetAmountIn: 8,
       preUserTokenBalance,
@@ -245,7 +245,7 @@ export async function zapOutDlmm(
   ]);
 
   return await zapProgram.methods
-    .zapOut({
+    .zapOut2({
       percentage: 100,
       offsetAmountIn: 8, // disc then amount_in
       preUserTokenBalance,
@@ -321,7 +321,7 @@ export async function zapOutJupV6(
   ]);
 
   return await zapProgram.methods
-    .zapOut({
+    .zapOut2({
       percentage: 100,
       offsetAmountIn:
         JUP_ROUTE_DISC.length +
