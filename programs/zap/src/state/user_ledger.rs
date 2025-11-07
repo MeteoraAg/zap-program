@@ -14,17 +14,21 @@ pub struct UserLedger {
 }
 
 impl UserLedger {
-    pub fn update_ledger_balance(
+    pub fn update_ledger_balances(
         &mut self,
-        pre_amount: u64,
-        post_amount: u64,
-        is_token_a: bool,
+        pre_amount_a: u64,
+        post_amount_a: u64,
+        pre_amount_b: u64,
+        post_amount_b: u64,
     ) -> Result<()> {
-        if is_token_a {
-            self.amount_a = self.amount_a.safe_add(post_amount)?.safe_sub(pre_amount)?;
-        } else {
-            self.amount_b = self.amount_b.safe_add(post_amount)?.safe_sub(pre_amount)?;
-        }
+        self.amount_a = self
+            .amount_a
+            .safe_add(post_amount_a)?
+            .safe_sub(pre_amount_a)?;
+        self.amount_b = self
+            .amount_b
+            .safe_add(post_amount_b)?
+            .safe_sub(pre_amount_b)?;
         Ok(())
     }
     pub fn get_liquidity_from_amounts_and_trade_direction(

@@ -167,8 +167,12 @@ pub fn handle_zap_in_damm_v2(
     let user_amount_a_2 = accessor::amount(&ctx.accounts.token_a_account.to_account_info())?;
     let user_amount_b_2 = accessor::amount(&ctx.accounts.token_b_account.to_account_info())?;
 
-    ledger.update_ledger_balance(user_amount_a_1, user_amount_a_2, true)?;
-    ledger.update_ledger_balance(user_amount_b_1, user_amount_b_2, false)?;
+    ledger.update_ledger_balances(
+        user_amount_a_1,
+        user_amount_a_2,
+        user_amount_b_1,
+        user_amount_b_2,
+    )?;
 
     let remaining_amount = if trade_direction == TradeDirection::AtoB {
         ledger.amount_a
@@ -202,8 +206,12 @@ pub fn handle_zap_in_damm_v2(
     let user_amount_a_3 = accessor::amount(&ctx.accounts.token_a_account.to_account_info())?;
     let user_amount_b_3 = accessor::amount(&ctx.accounts.token_b_account.to_account_info())?;
 
-    ledger.update_ledger_balance(user_amount_a_2, user_amount_a_3, true)?;
-    ledger.update_ledger_balance(user_amount_b_2, user_amount_b_3, false)?;
+    ledger.update_ledger_balances(
+        user_amount_a_2,
+        user_amount_a_3,
+        user_amount_b_2,
+        user_amount_b_3,
+    )?;
 
     let (liquidity, _trade_direction) = ledger.get_liquidity_from_amounts_and_trade_direction(
         pool.sqrt_price,
