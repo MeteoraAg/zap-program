@@ -8,9 +8,11 @@ pub mod constants;
 pub mod error;
 pub mod math;
 pub use math::*;
+pub mod state;
 pub mod tests;
-pub mod utils;
-pub use utils::*;
+pub use state::*;
+pub mod damm_v2_ultils;
+pub use damm_v2_ultils::*;
 declare_id!("zapvX9M3uf5pvy4wRPAbQgdQsM1xmuiFnkfHKPvwMiz");
 
 #[program]
@@ -24,36 +26,34 @@ pub mod zap {
         instructions::handle_zap_out(ctx, &params)
     }
 
-    /// helpful when user swap firstly, and want to transfer the delta of amount to the new token account
-    pub fn transfer_delta_balance<'c: 'info, 'info>(
-        ctx: Context<'_, '_, 'c, 'info, TransferBalanceCtx<'info>>,
+    pub fn initialize_ledger_account(ctx: Context<InitializeLedgerAccountCtx>) -> Result<()> {
+        instructions::handle_initialize_ledger_account(ctx)
+    }
+
+    pub fn close_ledger_account(ctx: Context<CloseLedgerAccountCtx>) -> Result<()> {
+        instructions::handle_close_ledger_account(ctx)
+    }
+
+    pub fn set_ledger_balance(
+        ctx: Context<SetLedgerBalanceCtx>,
+        amount: u64,
+        is_token_a: bool,
+    ) -> Result<()> {
+        instructions::handle_set_ledger_balance(ctx, amount, is_token_a)
+    }
+
+    pub fn update_ledger_balance_after_swap(
+        ctx: Context<UpdateLedgerBalanceAfterSwapCtx>,
         pre_source_token_balance: u64,
         max_transfer_amount: u64,
-        remaining_accounts_info: RemainingAccountsInfo,
+        is_token_a: bool,
     ) -> Result<()> {
-        instructions::handle_transfer_delta_balance(
+        instructions::handle_update_ledger_balance_after_swap(
             ctx,
             pre_source_token_balance,
             max_transfer_amount,
-            remaining_accounts_info,
+            is_token_a,
         )
-    }
-
-    /// helpful when user want to transfer full amount of a token account
-    pub fn transfer_full_balance<'c: 'info, 'info>(
-        ctx: Context<'_, '_, 'c, 'info, TransferBalanceCtx<'info>>,
-        remaining_accounts_info: RemainingAccountsInfo,
-    ) -> Result<()> {
-        instructions::handle_transfer_full_balance(ctx, remaining_accounts_info)
-    }
-
-    /// same as full balance, but get capped by max_amount
-    pub fn transfer_max_balance<'c: 'info, 'info>(
-        ctx: Context<'_, '_, 'c, 'info, TransferBalanceCtx<'info>>,
-        max_amount: u64,
-        remaining_accounts_info: RemainingAccountsInfo,
-    ) -> Result<()> {
-        instructions::handle_transfer_max_balance(ctx, max_amount, remaining_accounts_info)
     }
 
     pub fn zap_in_damm_v2(

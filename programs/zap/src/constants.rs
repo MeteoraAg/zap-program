@@ -34,3 +34,10 @@ pub const WHITELISTED_AMM_PROGRAMS: [(Pubkey, [u8; 8]); 4] = [
 
 #[constant]
 pub const MAX_BASIS_POINT: u16 = 10_000;
+
+pub mod seeds {
+    use anchor_lang::constant;
+
+    #[constant]
+    pub const USER_LEDGER_PREFIX: &[u8] = b"user_ledger";
+}

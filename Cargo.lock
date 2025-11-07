@@ -3510,9 +3510,9 @@ version = "0.2.0"
 dependencies = [
  "anchor-lang",
  "anchor-spl",
+ "bytemuck",
  "cp-amm",
  "ruint",
- "spl-transfer-hook-interface",
 ]
 
 [[package]]

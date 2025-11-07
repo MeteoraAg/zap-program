@@ -1,19 +1,21 @@
 use anchor_lang::prelude::*;
-use anchor_spl::token_interface::{TokenAccount, TokenInterface};
+use anchor_spl::token::accessor;
 use damm_v2::{
     activation_handler::ActivationHandler, params::swap::TradeDirection, state::Pool,
     AddLiquidityParameters, SwapMode, SwapParameters2,
 };
 
 use crate::{
-    damm_v2_ultils::{
-        calculate_swap_amount, get_liquidity_from_amounts_and_trade_direction, get_price_change_bps,
-    },
+    damm_v2_ultils::{calculate_swap_amount, get_price_change_bps},
     error::ZapError,
+    UserLedger,
 };
 
 #[derive(Accounts)]
 pub struct ZapInDammv2Ctx<'info> {
+    #[account(mut, has_one = owner)]
+    pub ledger: AccountLoader<'info, UserLedger>,
+
     #[account(mut)]
     pub pool: AccountLoader<'info, Pool>,
 
@@ -24,15 +26,13 @@ pub struct ZapInDammv2Ctx<'info> {
     #[account(mut)]
     pub position: UncheckedAccount<'info>,
 
-    /// The user token a account
-    /// TODO we could change it to unchecked account
+    /// CHECK: The user token a account
     #[account(mut)]
-    pub token_a_account: Box<InterfaceAccount<'info, TokenAccount>>,
+    pub token_a_account: UncheckedAccount<'info>,
 
-    /// The user token b account
-    /// TODO we could change it to unchecked account
+    /// CHECK: The user token b account
     #[account(mut)]
-    pub token_b_account: Box<InterfaceAccount<'info, TokenAccount>>,
+    pub token_b_account: UncheckedAccount<'info>,
 
     /// CHECK: token_a_vault, will be checked when we call function in damm v2
     #[account(mut)]
@@ -54,11 +54,11 @@ pub struct ZapInDammv2Ctx<'info> {
     /// owner of position
     pub owner: Signer<'info>,
 
-    /// Token a program
-    pub token_a_program: Interface<'info, TokenInterface>,
+    /// CHECK: Token a program
+    pub token_a_program: UncheckedAccount<'info>,
 
-    /// Token b program
-    pub token_b_program: Interface<'info, TokenInterface>,
+    /// CHECK: Token b program
+    pub token_b_program: UncheckedAccount<'info>,
 
     pub damm_program: Program<'info, damm_v2::program::CpAmm>,
 
@@ -144,14 +144,15 @@ pub fn handle_zap_in_damm_v2(
     ctx: Context<ZapInDammv2Ctx>,
     max_sqrt_price_change_bps: u32,
 ) -> Result<()> {
+    let mut ledger = ctx.accounts.ledger.load_mut()?;
     // 1. we add liquidity firstly, so later if we need swap, user could get some fees back
     let pool = ctx.accounts.pool.load()?;
     let pre_sqrt_price = pool.sqrt_price;
-    let token_a_amount = ctx.accounts.token_a_account.amount;
-    let token_b_amount = ctx.accounts.token_b_account.amount;
-    let (liquidity, trade_direction) = get_liquidity_from_amounts_and_trade_direction(
-        token_a_amount,
-        token_b_amount,
+
+    let user_amount_a_1 = accessor::amount(&ctx.accounts.token_a_account.to_account_info())?;
+    let user_amount_b_1 = accessor::amount(&ctx.accounts.token_b_account.to_account_info())?;
+    // TODO do we need to care for transfer fee extensions?
+    let (liquidity, trade_direction) = ledger.get_liquidity_from_amounts_and_trade_direction(
         pool.sqrt_price,
         pool.sqrt_min_price,
         pool.sqrt_max_price,
@@ -163,13 +164,18 @@ pub fn handle_zap_in_damm_v2(
     }
 
     // 2. We check if user is still having some balance left, we will swap before they could add remanining liquidity
+    let user_amount_a_2 = accessor::amount(&ctx.accounts.token_a_account.to_account_info())?;
+    let user_amount_b_2 = accessor::amount(&ctx.accounts.token_b_account.to_account_info())?;
+
+    ledger.update_ledger_balance(user_amount_a_1, user_amount_a_2, true)?;
+    ledger.update_ledger_balance(user_amount_b_1, user_amount_b_2, false)?;
+
     let remaining_amount = if trade_direction == TradeDirection::AtoB {
-        ctx.accounts.token_a_account.reload()?;
-        ctx.accounts.token_a_account.amount
+        ledger.amount_a
     } else {
-        ctx.accounts.token_b_account.reload()?;
-        ctx.accounts.token_b_account.amount
+        ledger.amount_b
     };
+
     if remaining_amount > 0 {
         let pool = ctx.accounts.pool.load()?;
         let current_point = ActivationHandler::get_current_point(pool.activation_type)?;
@@ -193,15 +199,13 @@ pub fn handle_zap_in_damm_v2(
 
     // 3. Do final add liquidity
     // reload balance
-    ctx.accounts.token_a_account.reload()?;
-    ctx.accounts.token_b_account.reload()?;
+    let user_amount_a_3 = accessor::amount(&ctx.accounts.token_a_account.to_account_info())?;
+    let user_amount_b_3 = accessor::amount(&ctx.accounts.token_b_account.to_account_info())?;
 
-    let token_a_amount = ctx.accounts.token_a_account.amount;
-    let token_b_amount = ctx.accounts.token_b_account.amount;
+    ledger.update_ledger_balance(user_amount_a_2, user_amount_a_3, true)?;
+    ledger.update_ledger_balance(user_amount_b_2, user_amount_b_3, false)?;
 
-    let (liquidity, _trade_direction) = get_liquidity_from_amounts_and_trade_direction(
-        token_a_amount,
-        token_b_amount,
+    let (liquidity, _trade_direction) = ledger.get_liquidity_from_amounts_and_trade_direction(
         pool.sqrt_price,
         pool.sqrt_min_price,
         pool.sqrt_max_price,

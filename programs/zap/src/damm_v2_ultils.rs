@@ -304,7 +304,7 @@ pub fn calculate_swap_amount(
 }
 
 // Δa = L * (1 / √P_lower - 1 / √P_upper) => L = Δa / (1 / √P_lower - 1 / √P_upper)
-fn get_liquidity_from_amount_a(
+pub fn get_liquidity_from_amount_a(
     amount_a: u64,
     sqrt_max_price: u128,
     sqrt_price: u128,
@@ -318,7 +318,7 @@ fn get_liquidity_from_amount_a(
 }
 
 // Δb = L (√P_upper - √P_lower) => L = Δb / (√P_upper - √P_lower)
-fn get_liquidity_from_amount_b(
+pub fn get_liquidity_from_amount_b(
     amount_b: u64,
     sqrt_min_price: u128,
     sqrt_price: u128,
@@ -327,24 +327,6 @@ fn get_liquidity_from_amount_b(
     let quote_amount = U256::from(amount_b).safe_shl(128)?;
     let liquidity = quote_amount.safe_div(price_delta)?; // round down
     return Ok(liquidity.try_into().map_err(|_| ZapError::TypeCastFailed)?);
-}
-
-pub fn get_liquidity_from_amounts_and_trade_direction(
-    token_a_amount: u64,
-    token_b_amount: u64,
-    sqrt_price: u128,
-    min_sqrt_price: u128,
-    max_sqrt_price: u128,
-) -> Result<(u128, TradeDirection)> {
-    let liquidity_from_a = get_liquidity_from_amount_a(token_a_amount, max_sqrt_price, sqrt_price)?;
-    let liquidity_from_b = get_liquidity_from_amount_b(token_b_amount, min_sqrt_price, sqrt_price)?;
-    if liquidity_from_a > liquidity_from_b {
-        // a is surplus, so we need to swap AtoB
-        Ok((liquidity_from_b, TradeDirection::AtoB))
-    } else {
-        // b is surplus, so we need to swap BtoA
-        Ok((liquidity_from_b, TradeDirection::BtoA))
-    }
 }
 
 // u32::MAX == 4_294_967_295, so we dont allow price change to go over 4_294_967_295 * 100 / 10_000 = 42_949_672 (%)
