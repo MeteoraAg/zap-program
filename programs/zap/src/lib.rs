@@ -11,8 +11,9 @@ pub use math::*;
 pub mod state;
 pub mod tests;
 pub use state::*;
-pub mod damm_v2_ultils;
-pub use damm_v2_ultils::*;
+pub mod ultils;
+pub use ultils::*;
+
 declare_id!("zapvX9M3uf5pvy4wRPAbQgdQsM1xmuiFnkfHKPvwMiz");
 
 #[program]

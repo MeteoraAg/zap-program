@@ -1,5 +1,5 @@
 use anchor_lang::prelude::*;
-use anchor_spl::token::accessor;
+use anchor_spl::{token::accessor, token_interface::Mint};
 use damm_v2::{
     activation_handler::ActivationHandler, params::swap::TradeDirection, state::Pool,
     AddLiquidityParameters, SwapMode, SwapParameters2,
@@ -43,10 +43,10 @@ pub struct ZapInDammv2Ctx<'info> {
     pub token_b_vault: UncheckedAccount<'info>,
 
     /// CHECK: The mint of token a
-    pub token_a_mint: UncheckedAccount<'info>,
+    pub token_a_mint: InterfaceAccount<'info, Mint>,
 
     /// CHECK: The mint of token b
-    pub token_b_mint: UncheckedAccount<'info>,
+    pub token_b_mint: InterfaceAccount<'info, Mint>,
 
     /// CHECK: position_nft_account, will be checked when we call function in damm v2
     pub position_nft_account: UncheckedAccount<'info>,
@@ -151,8 +151,9 @@ pub fn handle_zap_in_damm_v2(
 
     let user_amount_a_1 = accessor::amount(&ctx.accounts.token_a_account.to_account_info())?;
     let user_amount_b_1 = accessor::amount(&ctx.accounts.token_b_account.to_account_info())?;
-    // TODO do we need to care for transfer fee extensions?
     let (liquidity, trade_direction) = ledger.get_liquidity_from_amounts_and_trade_direction(
+        &ctx.accounts.token_a_mint,
+        &ctx.accounts.token_b_mint,
         pool.sqrt_price,
         pool.sqrt_min_price,
         pool.sqrt_max_price,
@@ -214,6 +215,8 @@ pub fn handle_zap_in_damm_v2(
     )?;
 
     let (liquidity, _trade_direction) = ledger.get_liquidity_from_amounts_and_trade_direction(
+        &ctx.accounts.token_a_mint,
+        &ctx.accounts.token_b_mint,
         pool.sqrt_price,
         pool.sqrt_min_price,
         pool.sqrt_max_price,
