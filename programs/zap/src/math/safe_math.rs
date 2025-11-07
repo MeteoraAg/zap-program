@@ -1,7 +1,7 @@
-use anchor_lang::solana_program::msg;
-use std::panic::Location;
-
 use crate::error::ZapError;
+use anchor_lang::solana_program::msg;
+use ruint::aliases::{U192, U256, U512};
+use std::panic::Location;
 
 pub trait SafeMath<T>: Sized {
     fn safe_add(self, rhs: Self) -> Result<Self, ZapError>;
@@ -110,6 +110,9 @@ checked_impl!(u64, u32);
 checked_impl!(i64, u32);
 checked_impl!(usize, u32);
 checked_impl!(u128, u32);
+checked_impl!(U192, usize);
+checked_impl!(U256, usize);
+checked_impl!(U512, usize);
 
 #[cfg(test)]
 mod tests {
