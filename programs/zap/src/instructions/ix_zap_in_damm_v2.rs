@@ -165,7 +165,7 @@ pub fn handle_zap_in_damm_v2(
         ctx.accounts.add_liquidity(liquidity)?;
     }
 
-    // 2. We check if user is still having some balance left, we will swap before they could add remanining liquidity
+    // 2. We check if user is still having some balance left, we will swap before they could add remainining liquidity
     let user_amount_a_2 = accessor::amount(&ctx.accounts.token_a_account.to_account_info())?;
     let user_amount_b_2 = accessor::amount(&ctx.accounts.token_b_account.to_account_info())?;
 

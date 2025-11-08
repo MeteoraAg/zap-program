@@ -1,6 +1,5 @@
 use anchor_lang::prelude::*;
 use damm_v2::{
-    base,
     base_fee::{BaseFeeHandler, FeeRateLimiter},
     constants::fee::get_max_fee_numerator,
     curve::{
