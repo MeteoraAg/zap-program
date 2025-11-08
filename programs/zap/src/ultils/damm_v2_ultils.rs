@@ -1,5 +1,7 @@
 use anchor_lang::prelude::*;
 use damm_v2::{
+    base,
+    base_fee::{BaseFeeHandler, FeeRateLimiter},
     constants::fee::get_max_fee_numerator,
     curve::{
         get_delta_amount_a_unsigned, get_delta_amount_b_unsigned, get_next_sqrt_price_from_input,
@@ -108,14 +110,20 @@ struct SimulateSwapResult {
 /// Replicate exactly how swap_exact_in work
 /// Note: it doesn't work properly if
 /// Token has transfer fee extensions
-/// Pool fee is applying rate limiter
 fn calculate_swap_result(
     pool: &Pool,
+    current_point: u64,
     amount_in: u64,
     trade_direction: TradeDirection,
-    trade_fee_numerator: u64,
+    fee_handler: &FeeHander,
     fee_mode: &FeeMode,
 ) -> Result<SimulateSwapResult> {
+    let trade_fee_numerator = fee_handler.get_total_fee_numerator(
+        amount_in,
+        current_point,
+        pool.activation_point,
+        trade_direction,
+    )?;
     let actual_amount_in = if fee_mode.fees_on_input {
         let FeeOnAmountResult { amount, .. } = pool.pool_fees.get_fee_on_amount(
             amount_in,
@@ -191,44 +199,126 @@ fn validate_swap_result(
     }
 }
 
-/// Note: it doesn't work properly if pool fee is applying rate limiter
-fn get_trade_fee_numerator(
+struct FeeHander {
+    pub rate_limiter_handler: FeeRateLimiter, // avoid copy
+    pub variable_fee_numerator: u128,
+    pub max_fee_numerator: u64,
+    pub total_fee_numerator: u64,
+    pub is_rate_limiter: bool,
+}
+
+impl FeeHander {
+    pub fn get_total_fee_numerator(
+        &self,
+        input_amount: u64,
+        current_point: u64,
+        activation_point: u64,
+        trade_direction: TradeDirection,
+    ) -> Result<u64> {
+        if self.is_rate_limiter {
+            let base_fee_numerator = self
+                .rate_limiter_handler
+                .get_base_fee_numerator_from_included_fee_amount(
+                    current_point,
+                    activation_point,
+                    trade_direction,
+                    input_amount,
+                )?;
+            let total_fee_numerator = self
+                .variable_fee_numerator
+                .safe_add(base_fee_numerator.into())?;
+            let total_fee_numerator: u64 = total_fee_numerator
+                .try_into()
+                .map_err(|_| ZapError::TypeCastFailed)?;
+
+            if total_fee_numerator > self.max_fee_numerator {
+                Ok(self.max_fee_numerator)
+            } else {
+                Ok(total_fee_numerator)
+            }
+        } else {
+            Ok(self.total_fee_numerator)
+        }
+    }
+}
+
+fn get_fee_handler(
     pool: &Pool,
     current_point: u64,
     trade_direction: TradeDirection,
-) -> Result<u64> {
+) -> Result<FeeHander> {
+    let variable_fee_numerator = pool.pool_fees.dynamic_fee.get_variable_fee()?;
+    let max_fee_numerator = get_max_fee_numerator(pool.version)?;
+
     let base_fee_mode = pool.pool_fees.base_fee.base_fee_mode;
-    let base_fee_numerator = if let Ok(value) = BaseFeeMode::try_from(base_fee_mode) {
-        if value == BaseFeeMode::FeeSchedulerLinear || value == BaseFeeMode::FeeSchedulerExponential
-        {
-            let base_fee_handler = pool.pool_fees.base_fee.get_base_fee_handler()?;
-            // fee scheduler doesn't care for amount
-            let trade_fee_numerator = base_fee_handler
-                .get_base_fee_numerator_from_included_fee_amount(
-                    current_point,
-                    pool.activation_point,
-                    trade_direction,
-                    0,
-                )?;
-            trade_fee_numerator
-        } else {
-            // otherwise, we just use cliff_fee_numerator
-            pool.pool_fees.base_fee.cliff_fee_numerator
+    match BaseFeeMode::try_from(base_fee_mode) {
+        Ok(value) => {
+            match value {
+                BaseFeeMode::FeeSchedulerLinear | BaseFeeMode::FeeSchedulerExponential => {
+                    let base_fee_handler = pool.pool_fees.base_fee.get_base_fee_handler()?;
+                    // fee scheduler doesn't care for amount
+                    let base_fee_numerator = base_fee_handler
+                        .get_base_fee_numerator_from_included_fee_amount(
+                            current_point,
+                            pool.activation_point,
+                            trade_direction,
+                            0,
+                        )?;
+
+                    let total_fee_numerator = get_total_fee_numerator(
+                        base_fee_numerator,
+                        variable_fee_numerator,
+                        max_fee_numerator,
+                    )?;
+                    Ok(FeeHander {
+                        rate_limiter_handler: FeeRateLimiter::default(),
+                        variable_fee_numerator,
+                        max_fee_numerator,
+                        total_fee_numerator,
+                        is_rate_limiter: false,
+                    })
+                }
+                BaseFeeMode::RateLimiter => {
+                    let rate_limiter_handler = pool.pool_fees.base_fee.get_fee_rate_limiter()?;
+                    Ok(FeeHander {
+                        rate_limiter_handler,
+                        total_fee_numerator: 0,
+                        variable_fee_numerator,
+                        max_fee_numerator,
+                        is_rate_limiter: true,
+                    })
+                }
+            }
         }
-    } else {
-        // otherwise, we just use cliff_fee_numerator
-        // that is in case the damm v2 update for the new base fee function
-        pool.pool_fees.base_fee.cliff_fee_numerator
-    };
+        _ => {
+            // otherwise, we just use cliff_fee_numerator
+            // that is in case the damm v2 update for the new base fee function
+            let base_fee_numerator = pool.pool_fees.base_fee.cliff_fee_numerator;
+            let total_fee_numerator = get_total_fee_numerator(
+                base_fee_numerator,
+                variable_fee_numerator,
+                max_fee_numerator,
+            )?;
+            Ok(FeeHander {
+                rate_limiter_handler: FeeRateLimiter::default(),
+                variable_fee_numerator,
+                max_fee_numerator,
+                total_fee_numerator,
+                is_rate_limiter: false,
+            })
+        }
+    }
+}
 
-    let dynamic_fee = pool.pool_fees.dynamic_fee.get_variable_fee()?;
-
-    let total_fee_numerator = dynamic_fee.safe_add(base_fee_numerator.into())?;
+fn get_total_fee_numerator(
+    base_fee_numerator: u64,
+    variable_fee_numerator: u128,
+    max_fee_numerator: u64,
+) -> Result<u64> {
+    let total_fee_numerator = variable_fee_numerator.safe_add(base_fee_numerator.into())?;
     let total_fee_numerator: u64 = total_fee_numerator
         .try_into()
         .map_err(|_| ZapError::TypeCastFailed)?;
-
-    let max_fee_numerator = get_max_fee_numerator(pool.version)?;
 
     if total_fee_numerator > max_fee_numerator {
         Ok(max_fee_numerator)
@@ -247,7 +337,8 @@ pub fn calculate_swap_amount(
     let mut min_swap_amount = 0;
     let mut swap_amount = 0;
 
-    let trade_fee_numerator = get_trade_fee_numerator(pool, current_point, trade_direction)?;
+    let fee_handler = get_fee_handler(pool, current_point, trade_direction)?;
+
     let fee_mode = FeeMode::get_fee_mode(pool.collect_fee_mode, trade_direction, false)?;
 
     let (pool_amount_a, pool_amount_b) = pool.get_reserves_amount()?;
@@ -258,9 +349,10 @@ pub fn calculate_swap_amount(
         let amount_in = max_swap_amount.safe_add(min_swap_amount)?.safe_div(2)?;
         if let Ok(swap_result) = calculate_swap_result(
             pool,
+            current_point,
             amount_in,
             trade_direction,
-            trade_fee_numerator,
+            &fee_handler,
             &fee_mode,
         ) {
             // update swap amount
