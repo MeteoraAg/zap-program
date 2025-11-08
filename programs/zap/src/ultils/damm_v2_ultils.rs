@@ -118,7 +118,7 @@ fn calculate_swap_result(
     fee_handler: &FeeHander,
     fee_mode: &FeeMode,
 ) -> Result<SimulateSwapResult> {
-    let trade_fee_numerator = fee_handler.get_total_fee_numerator(
+    let trade_fee_numerator = fee_handler.get_trade_fee_numerator(
         amount_in,
         current_point,
         pool.activation_point,
@@ -208,7 +208,7 @@ struct FeeHander {
 }
 
 impl FeeHander {
-    pub fn get_total_fee_numerator(
+    pub fn get_trade_fee_numerator(
         &self,
         input_amount: u64,
         current_point: u64,
@@ -224,18 +224,12 @@ impl FeeHander {
                     trade_direction,
                     input_amount,
                 )?;
-            let total_fee_numerator = self
-                .variable_fee_numerator
-                .safe_add(base_fee_numerator.into())?;
-            let total_fee_numerator: u64 = total_fee_numerator
-                .try_into()
-                .map_err(|_| ZapError::TypeCastFailed)?;
 
-            if total_fee_numerator > self.max_fee_numerator {
-                Ok(self.max_fee_numerator)
-            } else {
-                Ok(total_fee_numerator)
-            }
+            get_total_fee_numerator(
+                base_fee_numerator,
+                self.variable_fee_numerator,
+                self.max_fee_numerator,
+            )
         } else {
             Ok(self.total_fee_numerator)
         }
