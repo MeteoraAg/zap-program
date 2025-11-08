@@ -15,7 +15,11 @@ import {
   PublicKey,
   Transaction,
 } from "@solana/web3.js";
-import { LiteSVM, TransactionMetadata } from "litesvm";
+import {
+  FailedTransactionMetadata,
+  LiteSVM,
+  TransactionMetadata,
+} from "litesvm";
 import {
   AccountLayout,
   getAssociatedTokenAddressSync,
@@ -44,7 +48,7 @@ import {
 
 export const DAMM_V2_PROGRAM_ID = new PublicKey(CpAmmIDL.address);
 
-export const DAMM_V2_SWAP_DISC = [248, 198, 158, 145, 225, 117, 135, 200]
+export const DAMM_V2_SWAP_DISC = [248, 198, 158, 145, 225, 117, 135, 200];
 
 export type Pool = IdlAccounts<CpAmm>["pool"];
 export type Position = IdlAccounts<CpAmm>["position"];
@@ -183,21 +187,21 @@ export async function createDammV2Pool(
     TOKEN_PROGRAM_ID
   );
 
+  const poolFees = {
+    baseFee: {
+      cliffFeeNumerator: new BN(2_500_000),
+      firstFactor: 0,
+      secondFactor: Array.from(new BN(0).toArrayLike(Buffer, "le", 8)),
+      thirdFactor: new BN(0),
+      baseFeeMode: 0,
+    },
+    padding: [],
+    dynamicFee: null,
+  };
+
   const transaction = await program.methods
     .initializeCustomizablePool({
-      poolFees: {
-        baseFee: {
-          cliffFeeNumerator: new BN(2_500_000),
-          numberOfPeriod: 0,
-          reductionFactor: new BN(0),
-          periodFrequency: new BN(0),
-          feeSchedulerMode: 0,
-        },
-        protocolFeePercent: 20,
-        partnerFeePercent: 0,
-        referralFeePercent: 20,
-        dynamicFee: null,
-      },
+      poolFees,
       sqrtMinPrice: MIN_SQRT_PRICE,
       sqrtMaxPrice: MAX_SQRT_PRICE,
       hasAlphaVault: false,
@@ -230,6 +234,9 @@ export async function createDammV2Pool(
   transaction.sign(creator, positionNftKP);
 
   const result = svm.sendTransaction(transaction);
+  if (result instanceof FailedTransactionMetadata) {
+    console.log(result.meta().logs());
+  }
   expect(result).instanceOf(TransactionMetadata);
 
   const tokenAVaultData = svm.getAccount(tokenAVault).data;

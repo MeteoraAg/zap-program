@@ -1,4 +1,8 @@
-import { LiteSVM, TransactionMetadata } from "litesvm";
+import {
+  FailedTransactionMetadata,
+  LiteSVM,
+  TransactionMetadata,
+} from "litesvm";
 import {
   PublicKey,
   Keypair,
@@ -6,18 +10,20 @@ import {
   Transaction,
 } from "@solana/web3.js";
 import {
-  createZapProgram,
   createToken,
   mintToken,
-  ZapProgram,
   zapOutDlmm,
   TOKEN_DECIMALS,
-} from "./common";
+  createTokenWithTransferHook,
+} from "../common";
 import { TOKEN_PROGRAM_ID } from "@coral-xyz/anchor/dist/cjs/utils/token";
 import { expect } from "chai";
 
-import ZapIDL from "../target/idl/zap.json";
-import { getAssociatedTokenAddressSync } from "@solana/spl-token";
+import ZapIDL from "../../target/idl/zap.json";
+import {
+  getAssociatedTokenAddressSync,
+  TOKEN_2022_PROGRAM_ID,
+} from "@solana/spl-token";
 import {
   binIdToBinArrayIndex,
   createBinArrays,
@@ -25,13 +31,17 @@ import {
   createPresetParameter2,
   DLMM_PROGRAM_ID_LOCAL,
   dlmmCreatePositionAndAddLiquidityRadius,
+  initializeTokenBadge,
   MAX_BIN_PER_POSITION,
   removeAllLiquidity,
-} from "./common/dlmm";
+} from "../common/dlmm";
 import { BN } from "@coral-xyz/anchor";
+import {
+  createExtraAccountMetaListAndCounter,
+  TRANSFER_HOOK_COUNTER_PROGRAM_ID,
+} from "../common/transferHook";
 
-describe("Zap out dlmm", () => {
-  let zapProgram: ZapProgram;
+describe("Zap out dlmm with transfer hook", () => {
   let svm: LiteSVM;
   let user: Keypair;
   let tokenAMint: PublicKey;
@@ -40,9 +50,10 @@ describe("Zap out dlmm", () => {
 
   const binStep = new BN(10);
   const activeId = new BN(5660);
-  const lowerBinId = activeId.toNumber() - MAX_BIN_PER_POSITION.toNumber() / 2;
   // 5 = Create 5 lower bin arrays, and 5 upper bin arrays surrounding the active bin arrays. Total bins = 600 * 11
   const binArrayDelta = 5;
+  const lowerBinId = activeId.toNumber() - MAX_BIN_PER_POSITION.toNumber() / 2;
+
   const upperBinId = MAX_BIN_PER_POSITION.toNumber() + lowerBinId - 1;
 
   const admin = Keypair.fromSecretKey(
@@ -55,7 +66,6 @@ describe("Zap out dlmm", () => {
   );
 
   beforeEach(async () => {
-    zapProgram = createZapProgram();
     svm = new LiteSVM();
     svm.addProgramFromFile(
       new PublicKey(ZapIDL.address),
@@ -65,18 +75,44 @@ describe("Zap out dlmm", () => {
       new PublicKey(DLMM_PROGRAM_ID_LOCAL),
       "./tests/fixtures/dlmm.so"
     );
+    svm.addProgramFromFile(
+      new PublicKey(TRANSFER_HOOK_COUNTER_PROGRAM_ID),
+      "./tests/fixtures/transfer_hook_counter.so"
+    );
 
     user = Keypair.generate();
     // admin = Keypair.generate();
     svm.airdrop(user.publicKey, BigInt(LAMPORTS_PER_SOL));
     svm.airdrop(admin.publicKey, BigInt(LAMPORTS_PER_SOL));
 
-    tokenAMint = createToken(svm, admin, admin.publicKey, null);
+    tokenAMint = createTokenWithTransferHook(
+      svm,
+      admin,
+      admin.publicKey,
+      null,
+      TRANSFER_HOOK_COUNTER_PROGRAM_ID
+    );
+
+    await createExtraAccountMetaListAndCounter(svm, admin, tokenAMint);
     tokenBMint = createToken(svm, admin, admin.publicKey, null);
-    mintToken(svm, admin, tokenAMint, admin, admin.publicKey);
+    mintToken(
+      svm,
+      admin,
+      tokenAMint,
+      admin,
+      admin.publicKey,
+      TOKEN_2022_PROGRAM_ID
+    );
     mintToken(svm, admin, tokenBMint, admin, admin.publicKey);
 
-    mintToken(svm, admin, tokenAMint, admin, user.publicKey);
+    mintToken(
+      svm,
+      admin,
+      tokenAMint,
+      admin,
+      user.publicKey,
+      TOKEN_2022_PROGRAM_ID
+    );
     mintToken(svm, admin, tokenBMint, admin, user.publicKey);
 
     console.log("create presetParameter2");
@@ -95,6 +131,9 @@ describe("Zap out dlmm", () => {
       0
     );
 
+    console.log("create token badge");
+    await initializeTokenBadge(svm, admin, tokenAMint);
+
     console.log("create lb pair");
     lbPair = await createDlmmPool(
       svm,
@@ -102,7 +141,7 @@ describe("Zap out dlmm", () => {
       tokenAMint,
       tokenBMint,
       activeId,
-      TOKEN_PROGRAM_ID,
+      TOKEN_2022_PROGRAM_ID,
       TOKEN_PROGRAM_ID,
       presetParameter2
     );
@@ -126,7 +165,7 @@ describe("Zap out dlmm", () => {
     }
     await createBinArrays(svm, admin, lbPair, binArrayIndexes);
 
-    const amount = new BN(100_000_000).mul(new BN(10 ** TOKEN_DECIMALS));
+    const amount = new BN(100_000).mul(new BN(10 ** TOKEN_DECIMALS));
     console.log("create position and add liquidity");
 
     await dlmmCreatePositionAndAddLiquidityRadius(
@@ -140,14 +179,16 @@ describe("Zap out dlmm", () => {
       amount,
       amount,
       new BN(lowerBinId),
-      new BN(upperBinId)
+      new BN(upperBinId),
+      TOKEN_2022_PROGRAM_ID,
+      TOKEN_PROGRAM_ID
     );
   });
 
-  it("fullflow zap out", async () => {
+  it("zap out", async () => {
     const inputTokenMint = tokenAMint;
 
-    const amount = new BN(1000).mul(new BN(10 ** TOKEN_DECIMALS));
+    const amount = new BN(100).mul(new BN(10 ** TOKEN_DECIMALS));
     const userPosition = await dlmmCreatePositionAndAddLiquidityRadius(
       svm,
       user,
@@ -159,14 +200,16 @@ describe("Zap out dlmm", () => {
       amount,
       amount,
       new BN(lowerBinId),
-      new BN(upperBinId)
+      new BN(upperBinId),
+      TOKEN_2022_PROGRAM_ID,
+      TOKEN_PROGRAM_ID
     );
 
     const tokenXAccount = getAssociatedTokenAddressSync(
       tokenAMint,
       user.publicKey,
       true,
-      TOKEN_PROGRAM_ID
+      TOKEN_2022_PROGRAM_ID
     );
     const tokenYAccount = getAssociatedTokenAddressSync(
       tokenBMint,
@@ -185,7 +228,8 @@ describe("Zap out dlmm", () => {
       tokenXAccount,
       tokenYAccount,
       lowerBinId,
-      upperBinId
+      upperBinId,
+      TOKEN_2022_PROGRAM_ID
     );
 
     const zapOutTx = await zapOutDlmm(
@@ -203,9 +247,7 @@ describe("Zap out dlmm", () => {
     finalTransaction.sign(user);
 
     const result = svm.sendTransaction(finalTransaction);
-    if (result instanceof TransactionMetadata) {
-      console.log(result.logs());
-    } else {
+    if (result instanceof FailedTransactionMetadata) {
       console.log(result.meta().logs());
     }
     expect(result).instanceOf(TransactionMetadata);
