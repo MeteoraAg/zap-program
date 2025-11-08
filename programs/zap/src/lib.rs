@@ -59,8 +59,9 @@ pub mod zap {
 
     pub fn zap_in_damm_v2(
         ctx: Context<ZapInDammv2Ctx>,
+        pre_sqrt_price: u128,
         max_sqrt_price_change_bps: u32,
     ) -> Result<()> {
-        instructions::handle_zap_in_damm_v2(ctx, max_sqrt_price_change_bps)
+        instructions::handle_zap_in_damm_v2(ctx, pre_sqrt_price, max_sqrt_price_change_bps)
     }
 }

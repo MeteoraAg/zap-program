@@ -102,7 +102,7 @@ impl<'info> ZapInDammv2Ctx<'info> {
             ),
             SwapParameters2 {
                 amount_0: amount,
-                amount_1: 0, // TODO do we need to care for slippage rate
+                amount_1: 0,
                 swap_mode: SwapMode::ExactIn.into(),
             },
         )?;
@@ -132,7 +132,7 @@ impl<'info> ZapInDammv2Ctx<'info> {
             ),
             AddLiquidityParameters {
                 liquidity_delta: liquidity,
-                token_a_amount_threshold: u64::MAX, // TODO should we take care for that
+                token_a_amount_threshold: u64::MAX,
                 token_b_amount_threshold: u64::MAX,
             },
         )?;
@@ -142,15 +142,16 @@ impl<'info> ZapInDammv2Ctx<'info> {
 
 pub fn handle_zap_in_damm_v2(
     ctx: Context<ZapInDammv2Ctx>,
-    max_sqrt_price_change_bps: u32,
+    pre_sqrt_price: u128,           // sqrt price user observe in local
+    max_sqrt_price_change_bps: u32, // max sqrt price change after swap
 ) -> Result<()> {
     let mut ledger = ctx.accounts.ledger.load_mut()?;
     // 1. we add liquidity firstly, so later if we need swap, user could get some fees back
     let pool = ctx.accounts.pool.load()?;
-    let pre_sqrt_price = pool.sqrt_price;
 
     let user_amount_a_1 = accessor::amount(&ctx.accounts.token_a_account.to_account_info())?;
     let user_amount_b_1 = accessor::amount(&ctx.accounts.token_b_account.to_account_info())?;
+
     let (liquidity, trade_direction) = ledger.get_liquidity_from_amounts_and_trade_direction(
         &ctx.accounts.token_a_mint,
         &ctx.accounts.token_b_mint,

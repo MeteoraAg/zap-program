@@ -26,7 +26,7 @@ pub fn get_swap_result_status(
     total_amount_a: u64,
     total_amount_b: u64,
 ) -> Result<SwapResultStatus> {
-    // TODO check if total_amount_a and total_amount_b is zero
+    // if total_amount_a and total_amount_b is zero, it will return error, but outside function will skip that
     let r1 = u128::from(token_a_amount)
         .safe_shl(64)?
         .safe_div(u128::from(total_amount_a))?;
@@ -256,24 +256,22 @@ pub fn calculate_swap_amount(
     // need to test for compute unit
     for _i in 0..20 {
         let amount_in = max_swap_amount.safe_add(min_swap_amount)?.safe_div(2)?;
-        match calculate_swap_result(
+        if let Ok(swap_result) = calculate_swap_result(
             pool,
             amount_in,
             trade_direction,
             trade_fee_numerator,
             &fee_mode,
         ) {
-            Ok(swap_result) => {
-                // update swap amount
-                swap_amount = amount_in;
-                let status = validate_swap_result(
-                    &swap_result,
-                    remaining_amount,
-                    pool_amount_a,
-                    pool_amount_b,
-                    trade_direction,
-                )?;
-
+            // update swap amount
+            swap_amount = amount_in;
+            if let Ok(status) = validate_swap_result(
+                &swap_result,
+                remaining_amount,
+                pool_amount_a,
+                pool_amount_b,
+                trade_direction,
+            ) {
                 match status {
                     SwapResultStatus::Done => break,
                     SwapResultStatus::ExceededA => {
@@ -295,8 +293,11 @@ pub fn calculate_swap_amount(
                         }
                     }
                 }
+            } else {
+                break; // if we can't validate swap result, then just break
             }
-            _ => break, // if we can't simulate swap result, then just break
+        } else {
+            break; // if we can't simulate swap result, then just break
         }
     }
 
