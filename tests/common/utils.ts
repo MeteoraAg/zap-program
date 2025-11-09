@@ -228,8 +228,23 @@ export function getTokenProgram(svm: LiteSVM, tokenMint: PublicKey): PublicKey {
 
 export function getTokenBalance(svm: LiteSVM, tokenAccount: PublicKey): BN {
   const account = svm.getAccount(tokenAccount);
-  if(!account.data) {
-    return new BN(0)
+  if (!account.data) {
+    return new BN(0);
   }
   return new BN(AccountLayout.decode(account.data).amount.toString());
+}
+
+export function convertAccountTypeToNumber(accountType: object): number {
+  if (JSON.stringify(accountType) === JSON.stringify({ transferHookX: {} })) {
+    return 0;
+  }
+
+  if (JSON.stringify(accountType) === JSON.stringify({ transferHookY: {} })) {
+    return 1;
+  }
+  if (
+    JSON.stringify(accountType) === JSON.stringify({ transferHookReward: {} })
+  ) {
+    return 2;
+  }
 }

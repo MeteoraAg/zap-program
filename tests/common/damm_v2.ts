@@ -13,6 +13,7 @@ import {
   Connection,
   Keypair,
   PublicKey,
+  SYSVAR_INSTRUCTIONS_PUBKEY,
   Transaction,
 } from "@solana/web3.js";
 import {
@@ -23,6 +24,7 @@ import {
 import {
   AccountLayout,
   getAssociatedTokenAddressSync,
+  NATIVE_MINT,
   TOKEN_2022_PROGRAM_ID,
   TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
@@ -174,17 +176,20 @@ export async function createDammV2Pool(
   const tokenAVault = deriveDammV2TokenVaultAddress(tokenAMint, pool);
   const tokenBVault = deriveDammV2TokenVaultAddress(tokenBMint, pool);
 
+  const tokenAProgram = svm.getAccount(tokenAMint).owner;
+  const tokenBProgram = svm.getAccount(tokenBMint).owner;
+
   const payerTokenA = getAssociatedTokenAddressSync(
     tokenAMint,
     creator.publicKey,
     true,
-    TOKEN_PROGRAM_ID
+    tokenAProgram
   );
   const payerTokenB = getAssociatedTokenAddressSync(
     tokenBMint,
     creator.publicKey,
     true,
-    TOKEN_PROGRAM_ID
+    tokenBProgram
   );
 
   const poolFees = {
@@ -226,8 +231,8 @@ export async function createDammV2Pool(
       payerTokenA,
       payerTokenB,
       token2022Program: TOKEN_2022_PROGRAM_ID,
-      tokenAProgram: TOKEN_PROGRAM_ID,
-      tokenBProgram: TOKEN_PROGRAM_ID,
+      tokenAProgram: tokenAProgram,
+      tokenBProgram: tokenBProgram,
     })
     .transaction();
   transaction.recentBlockhash = svm.latestBlockhash();
@@ -249,6 +254,48 @@ export async function createDammV2Pool(
   expect(vaultBBalance).greaterThan(0);
 
   return pool;
+}
+
+export async function createDammV2Position(
+  svm: LiteSVM,
+  user: Keypair,
+  pool: PublicKey
+): Promise<{
+  position: PublicKey;
+  positionNftAccount: PublicKey;
+}> {
+  const program = createDammV2Program();
+
+  const positionNftKP = Keypair.generate();
+  const position = deriveDammV2PositionAddress(positionNftKP.publicKey);
+  const positionNftAccount = deriveDammV2PositionNftAccount(
+    positionNftKP.publicKey
+  );
+
+  const tx = await program.methods
+    .createPosition()
+    .accountsPartial({
+      owner: user.publicKey,
+      positionNftMint: positionNftKP.publicKey,
+      poolAuthority: deriveDammV2PoolAuthority(),
+      positionNftAccount,
+      payer: user.publicKey,
+      pool,
+      position,
+      tokenProgram: TOKEN_2022_PROGRAM_ID,
+    })
+    .transaction();
+
+  tx.recentBlockhash = svm.latestBlockhash();
+  tx.sign(user, positionNftKP);
+
+  const result = svm.sendTransaction(tx);
+  expect(result).instanceOf(TransactionMetadata);
+
+  return {
+    position,
+    positionNftAccount,
+  };
 }
 
 export async function createPositionAndAddLiquidity(
@@ -371,5 +418,71 @@ export async function removeLiquidity(
       tokenAMint,
       tokenBMint,
     })
+    .transaction();
+}
+
+export async function swap(params: {
+  svm: LiteSVM;
+  user: PublicKey;
+  pool: PublicKey;
+  amountIn: BN;
+  inputTokenMint: PublicKey;
+  outputTokenMint: PublicKey;
+}): Promise<Transaction> {
+  const dammV2Program = createDammV2Program();
+
+  const { svm, pool, amountIn, user, inputTokenMint, outputTokenMint } = params;
+
+  const poolState = getDammV2Pool(svm, pool);
+
+  const tokenAProgram = svm.getAccount(poolState.tokenAMint).owner;
+
+  const tokenBProgram = svm.getAccount(poolState.tokenBMint).owner;
+
+  const inputTokenAccount = getAssociatedTokenAddressSync(
+    inputTokenMint,
+    user,
+    true,
+    tokenAProgram
+  );
+
+  const outputTokenAccount = getAssociatedTokenAddressSync(
+    outputTokenMint,
+    user,
+    true,
+    tokenBProgram
+  );
+
+  const { tokenAMint, tokenBMint, tokenAVault, tokenBVault } = poolState;
+
+  return await dammV2Program.methods
+    .swap({
+      amountIn,
+      minimumAmountOut: new BN(0),
+    })
+    .accountsPartial({
+      poolAuthority: deriveDammV2PoolAuthority(),
+      pool,
+      payer: user,
+      inputTokenAccount,
+      outputTokenAccount,
+      tokenAVault,
+      tokenBVault,
+      tokenAProgram,
+      tokenBProgram,
+      tokenAMint,
+      tokenBMint,
+      referralTokenAccount: null,
+    })
+    .remainingAccounts(
+      // TODO should check condition to add this in remaining accounts
+      [
+        {
+          isSigner: false,
+          isWritable: false,
+          pubkey: SYSVAR_INSTRUCTIONS_PUBKEY,
+        },
+      ]
+    )
     .transaction();
 }

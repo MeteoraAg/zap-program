@@ -8,6 +8,16 @@ import {
   Position,
 } from "./damm_v2";
 import { LiteSVM } from "litesvm";
+import { ZAP_PROGRAM_ID } from "./endpoints";
+
+////// ZAP PDA /////
+
+export function deriveLedgerAccount(owner: PublicKey): PublicKey {
+  return PublicKey.findProgramAddressSync(
+    [Buffer.from("user_ledger"), owner.toBuffer()],
+    ZAP_PROGRAM_ID
+  )[0];
+}
 
 ///////// DAMM V2 ////////////
 
