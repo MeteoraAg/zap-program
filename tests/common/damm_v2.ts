@@ -47,6 +47,10 @@ import {
   getDammV2Pool,
   getDammV2Position,
 } from "./pda";
+import {
+  getLiquidityDeltaFromAmountA,
+  getLiquidityDeltaFromAmountB,
+} from "@meteora-ag/cp-amm-sdk";
 
 export const DAMM_V2_PROGRAM_ID = new PublicKey(CpAmmIDL.address);
 
@@ -160,7 +164,9 @@ export async function createDammV2Pool(
   svm: LiteSVM,
   creator: Keypair,
   tokenAMint: PublicKey,
-  tokenBMint: PublicKey
+  tokenBMint: PublicKey,
+  amountA?: BN,
+  amountB?: BN
 ): Promise<PublicKey> {
   const program = createDammV2Program();
 
@@ -203,6 +209,22 @@ export async function createDammV2Pool(
     padding: [],
     dynamicFee: null,
   };
+  let liquidityDelta = LIQUIDITY_DELTA;
+  if (amountA && amountB) {
+    const liquidityFromA = getLiquidityDeltaFromAmountA(
+      amountA,
+      INIT_PRICE,
+      MAX_SQRT_PRICE
+    );
+
+    const liquidityFromB = getLiquidityDeltaFromAmountB(
+      amountB,
+      MIN_SQRT_PRICE,
+      INIT_PRICE
+    );
+
+    liquidityDelta = BN.min(liquidityFromA, liquidityFromB);
+  }
 
   const transaction = await program.methods
     .initializeCustomizablePool({
@@ -210,7 +232,7 @@ export async function createDammV2Pool(
       sqrtMinPrice: MIN_SQRT_PRICE,
       sqrtMaxPrice: MAX_SQRT_PRICE,
       hasAlphaVault: false,
-      liquidity: LIQUIDITY_DELTA,
+      liquidity: liquidityDelta,
       sqrtPrice: INIT_PRICE,
       activationType: 0,
       collectFeeMode: 0,
