@@ -5,278 +5,14 @@
  * IDL can be found at `target/idl/lb_clmm.json`.
  */
 export type LbClmm = {
-  address: "LbVRzDTvBDEcrthxfZ4RL6yiq3uZw8bS6MwtdY6UhFQ";
+  address: "LBUZKhRxPF3XUpBCjp4YzTKgLccjZhTSDM9YuVaPwxo";
   metadata: {
     name: "lbClmm";
-    version: "0.9.1";
+    version: "0.10.1";
     spec: "0.1.0";
+    description: "Created with Anchor";
   };
   instructions: [
-    {
-      name: "initializeLbPair";
-      discriminator: [45, 154, 237, 210, 221, 15, 166, 92];
-      accounts: [
-        {
-          name: "lbPair";
-          writable: true;
-        },
-        {
-          name: "binArrayBitmapExtension";
-          writable: true;
-          optional: true;
-        },
-        {
-          name: "tokenMintX";
-        },
-        {
-          name: "tokenMintY";
-        },
-        {
-          name: "reserveX";
-          writable: true;
-        },
-        {
-          name: "reserveY";
-          writable: true;
-        },
-        {
-          name: "oracle";
-          writable: true;
-        },
-        {
-          name: "presetParameter";
-        },
-        {
-          name: "funder";
-          writable: true;
-          signer: true;
-        },
-        {
-          name: "tokenProgram";
-        },
-        {
-          name: "systemProgram";
-        },
-        {
-          name: "rent";
-        },
-        {
-          name: "eventAuthority";
-        },
-        {
-          name: "program";
-        }
-      ];
-      args: [
-        {
-          name: "activeId";
-          type: "i32";
-        },
-        {
-          name: "binStep";
-          type: "u16";
-        }
-      ];
-    },
-    {
-      name: "initializePermissionLbPair";
-      discriminator: [108, 102, 213, 85, 251, 3, 53, 21];
-      accounts: [
-        {
-          name: "base";
-          signer: true;
-        },
-        {
-          name: "lbPair";
-          writable: true;
-        },
-        {
-          name: "binArrayBitmapExtension";
-          writable: true;
-          optional: true;
-        },
-        {
-          name: "tokenMintX";
-        },
-        {
-          name: "tokenMintY";
-        },
-        {
-          name: "reserveX";
-          writable: true;
-        },
-        {
-          name: "reserveY";
-          writable: true;
-        },
-        {
-          name: "oracle";
-          writable: true;
-        },
-        {
-          name: "admin";
-          writable: true;
-          signer: true;
-        },
-        {
-          name: "tokenBadgeX";
-          optional: true;
-        },
-        {
-          name: "tokenBadgeY";
-          optional: true;
-        },
-        {
-          name: "tokenProgramX";
-        },
-        {
-          name: "tokenProgramY";
-        },
-        {
-          name: "systemProgram";
-        },
-        {
-          name: "rent";
-        },
-        {
-          name: "eventAuthority";
-        },
-        {
-          name: "program";
-        }
-      ];
-      args: [
-        {
-          name: "ixData";
-          type: {
-            defined: {
-              name: "initPermissionPairIx";
-            };
-          };
-        }
-      ];
-    },
-    {
-      name: "initializeCustomizablePermissionlessLbPair";
-      discriminator: [46, 39, 41, 135, 111, 183, 200, 64];
-      accounts: [
-        {
-          name: "lbPair";
-          writable: true;
-        },
-        {
-          name: "binArrayBitmapExtension";
-          writable: true;
-          optional: true;
-        },
-        {
-          name: "tokenMintX";
-        },
-        {
-          name: "tokenMintY";
-        },
-        {
-          name: "reserveX";
-          writable: true;
-        },
-        {
-          name: "reserveY";
-          writable: true;
-        },
-        {
-          name: "oracle";
-          writable: true;
-        },
-        {
-          name: "userTokenX";
-        },
-        {
-          name: "funder";
-          writable: true;
-          signer: true;
-        },
-        {
-          name: "tokenProgram";
-        },
-        {
-          name: "systemProgram";
-        },
-        {
-          name: "userTokenY";
-        },
-        {
-          name: "eventAuthority";
-        },
-        {
-          name: "program";
-        }
-      ];
-      args: [
-        {
-          name: "params";
-          type: {
-            defined: {
-              name: "customizableParams";
-            };
-          };
-        }
-      ];
-    },
-    {
-      name: "initializeBinArrayBitmapExtension";
-      discriminator: [47, 157, 226, 180, 12, 240, 33, 71];
-      accounts: [
-        {
-          name: "lbPair";
-        },
-        {
-          name: "binArrayBitmapExtension";
-          docs: [
-            "Initialize an account to store if a bin array is initialized."
-          ];
-          writable: true;
-        },
-        {
-          name: "funder";
-          writable: true;
-          signer: true;
-        },
-        {
-          name: "systemProgram";
-        },
-        {
-          name: "rent";
-        }
-      ];
-      args: [];
-    },
-    {
-      name: "initializeBinArray";
-      discriminator: [35, 86, 19, 185, 78, 212, 75, 211];
-      accounts: [
-        {
-          name: "lbPair";
-        },
-        {
-          name: "binArray";
-          writable: true;
-        },
-        {
-          name: "funder";
-          writable: true;
-          signer: true;
-        },
-        {
-          name: "systemProgram";
-        }
-      ];
-      args: [
-        {
-          name: "index";
-          type: "i64";
-        }
-      ];
-    },
     {
       name: "addLiquidity";
       discriminator: [181, 157, 89, 67, 143, 182, 52, 72];
@@ -288,6 +24,12 @@ export type LbClmm = {
         {
           name: "lbPair";
           writable: true;
+          relations: [
+            "position",
+            "binArrayBitmapExtension",
+            "binArrayLower",
+            "binArrayUpper"
+          ];
         },
         {
           name: "binArrayBitmapExtension";
@@ -305,16 +47,20 @@ export type LbClmm = {
         {
           name: "reserveX";
           writable: true;
+          relations: ["lbPair"];
         },
         {
           name: "reserveY";
           writable: true;
+          relations: ["lbPair"];
         },
         {
           name: "tokenXMint";
+          relations: ["lbPair"];
         },
         {
           name: "tokenYMint";
+          relations: ["lbPair"];
         },
         {
           name: "binArrayLower";
@@ -330,12 +76,40 @@ export type LbClmm = {
         },
         {
           name: "tokenXProgram";
+          address: "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
         },
         {
           name: "tokenYProgram";
+          address: "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
         },
         {
           name: "eventAuthority";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ];
+              }
+            ];
+          };
         },
         {
           name: "program";
@@ -353,8 +127,8 @@ export type LbClmm = {
       ];
     },
     {
-      name: "addLiquidityByWeight";
-      discriminator: [28, 140, 238, 99, 231, 162, 21, 149];
+      name: "addLiquidity2";
+      discriminator: [228, 162, 78, 28, 70, 219, 116, 115];
       accounts: [
         {
           name: "position";
@@ -363,6 +137,7 @@ export type LbClmm = {
         {
           name: "lbPair";
           writable: true;
+          relations: ["position", "binArrayBitmapExtension"];
         },
         {
           name: "binArrayBitmapExtension";
@@ -380,24 +155,20 @@ export type LbClmm = {
         {
           name: "reserveX";
           writable: true;
+          relations: ["lbPair"];
         },
         {
           name: "reserveY";
           writable: true;
+          relations: ["lbPair"];
         },
         {
           name: "tokenXMint";
+          relations: ["lbPair"];
         },
         {
           name: "tokenYMint";
-        },
-        {
-          name: "binArrayLower";
-          writable: true;
-        },
-        {
-          name: "binArrayUpper";
-          writable: true;
+          relations: ["lbPair"];
         },
         {
           name: "sender";
@@ -411,6 +182,32 @@ export type LbClmm = {
         },
         {
           name: "eventAuthority";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ];
+              }
+            ];
+          };
         },
         {
           name: "program";
@@ -421,7 +218,15 @@ export type LbClmm = {
           name: "liquidityParameter";
           type: {
             defined: {
-              name: "liquidityParameterByWeight";
+              name: "liquidityParameter";
+            };
+          };
+        },
+        {
+          name: "remainingAccountsInfo";
+          type: {
+            defined: {
+              name: "remainingAccountsInfo";
             };
           };
         }
@@ -438,6 +243,12 @@ export type LbClmm = {
         {
           name: "lbPair";
           writable: true;
+          relations: [
+            "position",
+            "binArrayBitmapExtension",
+            "binArrayLower",
+            "binArrayUpper"
+          ];
         },
         {
           name: "binArrayBitmapExtension";
@@ -455,16 +266,20 @@ export type LbClmm = {
         {
           name: "reserveX";
           writable: true;
+          relations: ["lbPair"];
         },
         {
           name: "reserveY";
           writable: true;
+          relations: ["lbPair"];
         },
         {
           name: "tokenXMint";
+          relations: ["lbPair"];
         },
         {
           name: "tokenYMint";
+          relations: ["lbPair"];
         },
         {
           name: "binArrayLower";
@@ -480,12 +295,40 @@ export type LbClmm = {
         },
         {
           name: "tokenXProgram";
+          address: "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
         },
         {
           name: "tokenYProgram";
+          address: "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
         },
         {
           name: "eventAuthority";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ];
+              }
+            ];
+          };
         },
         {
           name: "program";
@@ -503,8 +346,8 @@ export type LbClmm = {
       ];
     },
     {
-      name: "addLiquidityByStrategyOneSide";
-      discriminator: [41, 5, 238, 175, 100, 225, 6, 205];
+      name: "addLiquidityByStrategy2";
+      discriminator: [3, 221, 149, 218, 111, 141, 118, 213];
       accounts: [
         {
           name: "position";
@@ -513,128 +356,7 @@ export type LbClmm = {
         {
           name: "lbPair";
           writable: true;
-        },
-        {
-          name: "binArrayBitmapExtension";
-          writable: true;
-          optional: true;
-        },
-        {
-          name: "userToken";
-          writable: true;
-        },
-        {
-          name: "reserve";
-          writable: true;
-        },
-        {
-          name: "tokenMint";
-        },
-        {
-          name: "binArrayLower";
-          writable: true;
-        },
-        {
-          name: "binArrayUpper";
-          writable: true;
-        },
-        {
-          name: "sender";
-          signer: true;
-        },
-        {
-          name: "tokenProgram";
-        },
-        {
-          name: "eventAuthority";
-        },
-        {
-          name: "program";
-        }
-      ];
-      args: [
-        {
-          name: "liquidityParameter";
-          type: {
-            defined: {
-              name: "liquidityParameterByStrategyOneSide";
-            };
-          };
-        }
-      ];
-    },
-    {
-      name: "addLiquidityOneSide";
-      discriminator: [94, 155, 103, 151, 70, 95, 220, 165];
-      accounts: [
-        {
-          name: "position";
-          writable: true;
-        },
-        {
-          name: "lbPair";
-          writable: true;
-        },
-        {
-          name: "binArrayBitmapExtension";
-          writable: true;
-          optional: true;
-        },
-        {
-          name: "userToken";
-          writable: true;
-        },
-        {
-          name: "reserve";
-          writable: true;
-        },
-        {
-          name: "tokenMint";
-        },
-        {
-          name: "binArrayLower";
-          writable: true;
-        },
-        {
-          name: "binArrayUpper";
-          writable: true;
-        },
-        {
-          name: "sender";
-          signer: true;
-        },
-        {
-          name: "tokenProgram";
-        },
-        {
-          name: "eventAuthority";
-        },
-        {
-          name: "program";
-        }
-      ];
-      args: [
-        {
-          name: "liquidityParameter";
-          type: {
-            defined: {
-              name: "liquidityOneSideParameter";
-            };
-          };
-        }
-      ];
-    },
-    {
-      name: "removeLiquidity";
-      discriminator: [80, 85, 209, 72, 24, 206, 177, 108];
-      accounts: [
-        {
-          name: "position";
-          writable: true;
-        },
-        {
-          name: "lbPair";
-          writable: true;
+          relations: ["position", "binArrayBitmapExtension"];
         },
         {
           name: "binArrayBitmapExtension";
@@ -652,16 +374,225 @@ export type LbClmm = {
         {
           name: "reserveX";
           writable: true;
+          relations: ["lbPair"];
         },
         {
           name: "reserveY";
           writable: true;
+          relations: ["lbPair"];
         },
         {
           name: "tokenXMint";
+          relations: ["lbPair"];
         },
         {
           name: "tokenYMint";
+          relations: ["lbPair"];
+        },
+        {
+          name: "sender";
+          signer: true;
+        },
+        {
+          name: "tokenXProgram";
+        },
+        {
+          name: "tokenYProgram";
+        },
+        {
+          name: "eventAuthority";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ];
+              }
+            ];
+          };
+        },
+        {
+          name: "program";
+        }
+      ];
+      args: [
+        {
+          name: "liquidityParameter";
+          type: {
+            defined: {
+              name: "liquidityParameterByStrategy";
+            };
+          };
+        },
+        {
+          name: "remainingAccountsInfo";
+          type: {
+            defined: {
+              name: "remainingAccountsInfo";
+            };
+          };
+        }
+      ];
+    },
+    {
+      name: "addLiquidityByStrategyOneSide";
+      discriminator: [41, 5, 238, 175, 100, 225, 6, 205];
+      accounts: [
+        {
+          name: "position";
+          writable: true;
+        },
+        {
+          name: "lbPair";
+          writable: true;
+          relations: [
+            "position",
+            "binArrayBitmapExtension",
+            "binArrayLower",
+            "binArrayUpper"
+          ];
+        },
+        {
+          name: "binArrayBitmapExtension";
+          writable: true;
+          optional: true;
+        },
+        {
+          name: "userToken";
+          writable: true;
+        },
+        {
+          name: "reserve";
+          writable: true;
+        },
+        {
+          name: "tokenMint";
+        },
+        {
+          name: "binArrayLower";
+          writable: true;
+        },
+        {
+          name: "binArrayUpper";
+          writable: true;
+        },
+        {
+          name: "sender";
+          signer: true;
+        },
+        {
+          name: "tokenProgram";
+          address: "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
+        },
+        {
+          name: "eventAuthority";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ];
+              }
+            ];
+          };
+        },
+        {
+          name: "program";
+        }
+      ];
+      args: [
+        {
+          name: "liquidityParameter";
+          type: {
+            defined: {
+              name: "liquidityParameterByStrategyOneSide";
+            };
+          };
+        }
+      ];
+    },
+    {
+      name: "addLiquidityByWeight";
+      discriminator: [28, 140, 238, 99, 231, 162, 21, 149];
+      accounts: [
+        {
+          name: "position";
+          writable: true;
+        },
+        {
+          name: "lbPair";
+          writable: true;
+          relations: [
+            "position",
+            "binArrayBitmapExtension",
+            "binArrayLower",
+            "binArrayUpper"
+          ];
+        },
+        {
+          name: "binArrayBitmapExtension";
+          writable: true;
+          optional: true;
+        },
+        {
+          name: "userTokenX";
+          writable: true;
+        },
+        {
+          name: "userTokenY";
+          writable: true;
+        },
+        {
+          name: "reserveX";
+          writable: true;
+          relations: ["lbPair"];
+        },
+        {
+          name: "reserveY";
+          writable: true;
+          relations: ["lbPair"];
+        },
+        {
+          name: "tokenXMint";
+          relations: ["lbPair"];
+        },
+        {
+          name: "tokenYMint";
+          relations: ["lbPair"];
         },
         {
           name: "binArrayLower";
@@ -677,12 +608,40 @@ export type LbClmm = {
         },
         {
           name: "tokenXProgram";
+          address: "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
         },
         {
           name: "tokenYProgram";
+          address: "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
         },
         {
           name: "eventAuthority";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ];
+              }
+            ];
+          };
         },
         {
           name: "program";
@@ -690,475 +649,475 @@ export type LbClmm = {
       ];
       args: [
         {
-          name: "binLiquidityRemoval";
+          name: "liquidityParameter";
           type: {
-            vec: {
-              defined: {
-                name: "binLiquidityReduction";
-              };
+            defined: {
+              name: "liquidityParameterByWeight";
             };
           };
         }
       ];
     },
     {
-      name: "initializePosition";
-      discriminator: [219, 192, 234, 71, 190, 191, 102, 80];
-      accounts: [
-        {
-          name: "payer";
-          writable: true;
-          signer: true;
-        },
-        {
-          name: "position";
-          writable: true;
-          signer: true;
-        },
-        {
-          name: "lbPair";
-        },
-        {
-          name: "owner";
-          signer: true;
-        },
-        {
-          name: "systemProgram";
-        },
-        {
-          name: "rent";
-        },
-        {
-          name: "eventAuthority";
-        },
-        {
-          name: "program";
-        }
-      ];
-      args: [
-        {
-          name: "lowerBinId";
-          type: "i32";
-        },
-        {
-          name: "width";
-          type: "i32";
-        }
-      ];
-    },
-    {
-      name: "initializePositionPda";
-      discriminator: [46, 82, 125, 146, 85, 141, 228, 153];
-      accounts: [
-        {
-          name: "payer";
-          writable: true;
-          signer: true;
-        },
-        {
-          name: "base";
-          signer: true;
-        },
-        {
-          name: "position";
-          writable: true;
-        },
-        {
-          name: "lbPair";
-        },
-        {
-          name: "owner";
-          docs: ["owner"];
-          signer: true;
-        },
-        {
-          name: "systemProgram";
-        },
-        {
-          name: "rent";
-        },
-        {
-          name: "eventAuthority";
-        },
-        {
-          name: "program";
-        }
-      ];
-      args: [
-        {
-          name: "lowerBinId";
-          type: "i32";
-        },
-        {
-          name: "width";
-          type: "i32";
-        }
-      ];
-    },
-    {
-      name: "initializePositionByOperator";
-      discriminator: [251, 189, 190, 244, 117, 254, 35, 148];
-      accounts: [
-        {
-          name: "payer";
-          writable: true;
-          signer: true;
-        },
-        {
-          name: "base";
-          signer: true;
-        },
-        {
-          name: "position";
-          writable: true;
-        },
-        {
-          name: "lbPair";
-        },
-        {
-          name: "owner";
-        },
-        {
-          name: "operator";
-          docs: ["operator"];
-          signer: true;
-        },
-        {
-          name: "operatorTokenX";
-        },
-        {
-          name: "ownerTokenX";
-        },
-        {
-          name: "systemProgram";
-        },
-        {
-          name: "eventAuthority";
-        },
-        {
-          name: "program";
-        }
-      ];
-      args: [
-        {
-          name: "lowerBinId";
-          type: "i32";
-        },
-        {
-          name: "width";
-          type: "i32";
-        },
-        {
-          name: "feeOwner";
-          type: "pubkey";
-        },
-        {
-          name: "lockReleasePoint";
-          type: "u64";
-        }
-      ];
-    },
-    {
-      name: "updatePositionOperator";
-      discriminator: [202, 184, 103, 143, 180, 191, 116, 217];
+      name: "addLiquidityOneSide";
+      discriminator: [94, 155, 103, 151, 70, 95, 220, 165];
       accounts: [
         {
           name: "position";
           writable: true;
         },
         {
-          name: "owner";
-          signer: true;
-        },
-        {
-          name: "eventAuthority";
-        },
-        {
-          name: "program";
-        }
-      ];
-      args: [
-        {
-          name: "operator";
-          type: "pubkey";
-        }
-      ];
-    },
-    {
-      name: "swap";
-      discriminator: [248, 198, 158, 145, 225, 117, 135, 200];
-      accounts: [
-        {
           name: "lbPair";
           writable: true;
+          relations: [
+            "position",
+            "binArrayBitmapExtension",
+            "binArrayLower",
+            "binArrayUpper"
+          ];
         },
         {
           name: "binArrayBitmapExtension";
-          optional: true;
-        },
-        {
-          name: "reserveX";
-          writable: true;
-        },
-        {
-          name: "reserveY";
-          writable: true;
-        },
-        {
-          name: "userTokenIn";
-          writable: true;
-        },
-        {
-          name: "userTokenOut";
-          writable: true;
-        },
-        {
-          name: "tokenXMint";
-        },
-        {
-          name: "tokenYMint";
-        },
-        {
-          name: "oracle";
-          writable: true;
-        },
-        {
-          name: "hostFeeIn";
           writable: true;
           optional: true;
         },
         {
-          name: "user";
+          name: "userToken";
+          writable: true;
+        },
+        {
+          name: "reserve";
+          writable: true;
+        },
+        {
+          name: "tokenMint";
+        },
+        {
+          name: "binArrayLower";
+          writable: true;
+        },
+        {
+          name: "binArrayUpper";
+          writable: true;
+        },
+        {
+          name: "sender";
           signer: true;
         },
         {
-          name: "tokenXProgram";
-        },
-        {
-          name: "tokenYProgram";
-        },
-        {
-          name: "eventAuthority";
-        },
-        {
-          name: "program";
-        }
-      ];
-      args: [
-        {
-          name: "amountIn";
-          type: "u64";
-        },
-        {
-          name: "minAmountOut";
-          type: "u64";
-        }
-      ];
-    },
-    {
-      name: "swapExactOut";
-      discriminator: [250, 73, 101, 33, 38, 207, 75, 184];
-      accounts: [
-        {
-          name: "lbPair";
-          writable: true;
-        },
-        {
-          name: "binArrayBitmapExtension";
-          optional: true;
-        },
-        {
-          name: "reserveX";
-          writable: true;
-        },
-        {
-          name: "reserveY";
-          writable: true;
-        },
-        {
-          name: "userTokenIn";
-          writable: true;
-        },
-        {
-          name: "userTokenOut";
-          writable: true;
-        },
-        {
-          name: "tokenXMint";
-        },
-        {
-          name: "tokenYMint";
-        },
-        {
-          name: "oracle";
-          writable: true;
-        },
-        {
-          name: "hostFeeIn";
-          writable: true;
-          optional: true;
-        },
-        {
-          name: "user";
-          signer: true;
-        },
-        {
-          name: "tokenXProgram";
-        },
-        {
-          name: "tokenYProgram";
+          name: "tokenProgram";
+          address: "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
         },
         {
           name: "eventAuthority";
-        },
-        {
-          name: "program";
-        }
-      ];
-      args: [
-        {
-          name: "maxInAmount";
-          type: "u64";
-        },
-        {
-          name: "outAmount";
-          type: "u64";
-        }
-      ];
-    },
-    {
-      name: "swapWithPriceImpact";
-      discriminator: [56, 173, 230, 208, 173, 228, 156, 205];
-      accounts: [
-        {
-          name: "lbPair";
-          writable: true;
-        },
-        {
-          name: "binArrayBitmapExtension";
-          optional: true;
-        },
-        {
-          name: "reserveX";
-          writable: true;
-        },
-        {
-          name: "reserveY";
-          writable: true;
-        },
-        {
-          name: "userTokenIn";
-          writable: true;
-        },
-        {
-          name: "userTokenOut";
-          writable: true;
-        },
-        {
-          name: "tokenXMint";
-        },
-        {
-          name: "tokenYMint";
-        },
-        {
-          name: "oracle";
-          writable: true;
-        },
-        {
-          name: "hostFeeIn";
-          writable: true;
-          optional: true;
-        },
-        {
-          name: "user";
-          signer: true;
-        },
-        {
-          name: "tokenXProgram";
-        },
-        {
-          name: "tokenYProgram";
-        },
-        {
-          name: "eventAuthority";
-        },
-        {
-          name: "program";
-        }
-      ];
-      args: [
-        {
-          name: "amountIn";
-          type: "u64";
-        },
-        {
-          name: "activeId";
-          type: {
-            option: "i32";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ];
+              }
+            ];
           };
         },
         {
-          name: "maxPriceImpactBps";
-          type: "u16";
+          name: "program";
+        }
+      ];
+      args: [
+        {
+          name: "liquidityParameter";
+          type: {
+            defined: {
+              name: "liquidityOneSideParameter";
+            };
+          };
         }
       ];
     },
     {
-      name: "withdrawProtocolFee";
-      discriminator: [158, 201, 158, 189, 33, 93, 162, 103];
+      name: "addLiquidityOneSidePrecise";
+      discriminator: [161, 194, 103, 84, 171, 71, 250, 154];
+      accounts: [
+        {
+          name: "position";
+          writable: true;
+        },
+        {
+          name: "lbPair";
+          writable: true;
+          relations: [
+            "position",
+            "binArrayBitmapExtension",
+            "binArrayLower",
+            "binArrayUpper"
+          ];
+        },
+        {
+          name: "binArrayBitmapExtension";
+          writable: true;
+          optional: true;
+        },
+        {
+          name: "userToken";
+          writable: true;
+        },
+        {
+          name: "reserve";
+          writable: true;
+        },
+        {
+          name: "tokenMint";
+        },
+        {
+          name: "binArrayLower";
+          writable: true;
+        },
+        {
+          name: "binArrayUpper";
+          writable: true;
+        },
+        {
+          name: "sender";
+          signer: true;
+        },
+        {
+          name: "tokenProgram";
+          address: "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
+        },
+        {
+          name: "eventAuthority";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ];
+              }
+            ];
+          };
+        },
+        {
+          name: "program";
+        }
+      ];
+      args: [
+        {
+          name: "parameter";
+          type: {
+            defined: {
+              name: "addLiquiditySingleSidePreciseParameter";
+            };
+          };
+        }
+      ];
+    },
+    {
+      name: "addLiquidityOneSidePrecise2";
+      discriminator: [33, 51, 163, 201, 117, 98, 125, 231];
+      accounts: [
+        {
+          name: "position";
+          writable: true;
+        },
+        {
+          name: "lbPair";
+          writable: true;
+          relations: ["position", "binArrayBitmapExtension"];
+        },
+        {
+          name: "binArrayBitmapExtension";
+          writable: true;
+          optional: true;
+        },
+        {
+          name: "userToken";
+          writable: true;
+        },
+        {
+          name: "reserve";
+          writable: true;
+        },
+        {
+          name: "tokenMint";
+        },
+        {
+          name: "sender";
+          signer: true;
+        },
+        {
+          name: "tokenProgram";
+        },
+        {
+          name: "eventAuthority";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ];
+              }
+            ];
+          };
+        },
+        {
+          name: "program";
+        }
+      ];
+      args: [
+        {
+          name: "liquidityParameter";
+          type: {
+            defined: {
+              name: "addLiquiditySingleSidePreciseParameter2";
+            };
+          };
+        },
+        {
+          name: "remainingAccountsInfo";
+          type: {
+            defined: {
+              name: "remainingAccountsInfo";
+            };
+          };
+        }
+      ];
+    },
+    {
+      name: "claimFee";
+      discriminator: [169, 32, 79, 137, 136, 232, 70, 137];
       accounts: [
         {
           name: "lbPair";
           writable: true;
+          relations: ["position", "binArrayLower", "binArrayUpper"];
+        },
+        {
+          name: "position";
+          writable: true;
+        },
+        {
+          name: "binArrayLower";
+          writable: true;
+        },
+        {
+          name: "binArrayUpper";
+          writable: true;
+        },
+        {
+          name: "sender";
+          signer: true;
         },
         {
           name: "reserveX";
           writable: true;
+          relations: ["lbPair"];
         },
         {
           name: "reserveY";
           writable: true;
+          relations: ["lbPair"];
+        },
+        {
+          name: "userTokenX";
+          writable: true;
+        },
+        {
+          name: "userTokenY";
+          writable: true;
         },
         {
           name: "tokenXMint";
+          relations: ["lbPair"];
         },
         {
           name: "tokenYMint";
+          relations: ["lbPair"];
         },
         {
-          name: "receiverTokenX";
+          name: "tokenProgram";
+          address: "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
+        },
+        {
+          name: "eventAuthority";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ];
+              }
+            ];
+          };
+        },
+        {
+          name: "program";
+        }
+      ];
+      args: [];
+    },
+    {
+      name: "claimFee2";
+      discriminator: [112, 191, 101, 171, 28, 144, 127, 187];
+      accounts: [
+        {
+          name: "lbPair";
+          writable: true;
+          relations: ["position"];
+        },
+        {
+          name: "position";
           writable: true;
         },
         {
-          name: "receiverTokenY";
-          writable: true;
-        },
-        {
-          name: "claimFeeOperator";
-        },
-        {
-          name: "operator";
-          docs: ["operator"];
+          name: "sender";
           signer: true;
         },
         {
-          name: "tokenXProgram";
+          name: "reserveX";
+          writable: true;
+          relations: ["lbPair"];
         },
         {
-          name: "tokenYProgram";
+          name: "reserveY";
+          writable: true;
+          relations: ["lbPair"];
+        },
+        {
+          name: "userTokenX";
+          writable: true;
+        },
+        {
+          name: "userTokenY";
+          writable: true;
+        },
+        {
+          name: "tokenXMint";
+          relations: ["lbPair"];
+        },
+        {
+          name: "tokenYMint";
+          relations: ["lbPair"];
+        },
+        {
+          name: "tokenProgramX";
+        },
+        {
+          name: "tokenProgramY";
         },
         {
           name: "memoProgram";
+          address: "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr";
+        },
+        {
+          name: "eventAuthority";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ];
+              }
+            ];
+          };
+        },
+        {
+          name: "program";
         }
       ];
       args: [
         {
-          name: "amountX";
-          type: "u64";
+          name: "minBinId";
+          type: "i32";
         },
         {
-          name: "amountY";
-          type: "u64";
+          name: "maxBinId";
+          type: "i32";
         },
         {
           name: "remainingAccountsInfo";
@@ -1167,185 +1126,6 @@ export type LbClmm = {
               name: "remainingAccountsInfo";
             };
           };
-        }
-      ];
-    },
-    {
-      name: "initializeReward";
-      discriminator: [95, 135, 192, 196, 242, 129, 230, 68];
-      accounts: [
-        {
-          name: "lbPair";
-          writable: true;
-        },
-        {
-          name: "rewardVault";
-          writable: true;
-        },
-        {
-          name: "rewardMint";
-        },
-        {
-          name: "tokenBadge";
-          optional: true;
-        },
-        {
-          name: "admin";
-          writable: true;
-          signer: true;
-        },
-        {
-          name: "tokenProgram";
-        },
-        {
-          name: "systemProgram";
-        },
-        {
-          name: "rent";
-        },
-        {
-          name: "eventAuthority";
-        },
-        {
-          name: "program";
-        }
-      ];
-      args: [
-        {
-          name: "rewardIndex";
-          type: "u64";
-        },
-        {
-          name: "rewardDuration";
-          type: "u64";
-        },
-        {
-          name: "funder";
-          type: "pubkey";
-        }
-      ];
-    },
-    {
-      name: "fundReward";
-      discriminator: [188, 50, 249, 165, 93, 151, 38, 63];
-      accounts: [
-        {
-          name: "lbPair";
-          writable: true;
-        },
-        {
-          name: "rewardVault";
-          writable: true;
-        },
-        {
-          name: "rewardMint";
-        },
-        {
-          name: "funderTokenAccount";
-          writable: true;
-        },
-        {
-          name: "funder";
-          signer: true;
-        },
-        {
-          name: "binArray";
-          writable: true;
-        },
-        {
-          name: "tokenProgram";
-        },
-        {
-          name: "eventAuthority";
-        },
-        {
-          name: "program";
-        }
-      ];
-      args: [
-        {
-          name: "rewardIndex";
-          type: "u64";
-        },
-        {
-          name: "amount";
-          type: "u64";
-        },
-        {
-          name: "carryForward";
-          type: "bool";
-        },
-        {
-          name: "remainingAccountsInfo";
-          type: {
-            defined: {
-              name: "remainingAccountsInfo";
-            };
-          };
-        }
-      ];
-    },
-    {
-      name: "updateRewardFunder";
-      discriminator: [211, 28, 48, 32, 215, 160, 35, 23];
-      accounts: [
-        {
-          name: "lbPair";
-          writable: true;
-        },
-        {
-          name: "admin";
-          signer: true;
-        },
-        {
-          name: "eventAuthority";
-        },
-        {
-          name: "program";
-        }
-      ];
-      args: [
-        {
-          name: "rewardIndex";
-          type: "u64";
-        },
-        {
-          name: "newFunder";
-          type: "pubkey";
-        }
-      ];
-    },
-    {
-      name: "updateRewardDuration";
-      discriminator: [138, 174, 196, 169, 213, 235, 254, 107];
-      accounts: [
-        {
-          name: "lbPair";
-          writable: true;
-        },
-        {
-          name: "admin";
-          signer: true;
-        },
-        {
-          name: "binArray";
-          writable: true;
-        },
-        {
-          name: "eventAuthority";
-        },
-        {
-          name: "program";
-        }
-      ];
-      args: [
-        {
-          name: "rewardIndex";
-          type: "u64";
-        },
-        {
-          name: "newDuration";
-          type: "u64";
         }
       ];
     },
@@ -1356,6 +1136,7 @@ export type LbClmm = {
         {
           name: "lbPair";
           writable: true;
+          relations: ["position", "binArrayLower", "binArrayUpper"];
         },
         {
           name: "position";
@@ -1386,9 +1167,36 @@ export type LbClmm = {
         },
         {
           name: "tokenProgram";
+          address: "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
         },
         {
           name: "eventAuthority";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ];
+              }
+            ];
+          };
         },
         {
           name: "program";
@@ -1402,23 +1210,16 @@ export type LbClmm = {
       ];
     },
     {
-      name: "claimFee";
-      discriminator: [169, 32, 79, 137, 136, 232, 70, 137];
+      name: "claimReward2";
+      discriminator: [190, 3, 127, 119, 178, 87, 157, 183];
       accounts: [
         {
           name: "lbPair";
           writable: true;
+          relations: ["position"];
         },
         {
           name: "position";
-          writable: true;
-        },
-        {
-          name: "binArrayLower";
-          writable: true;
-        },
-        {
-          name: "binArrayUpper";
           writable: true;
         },
         {
@@ -1426,35 +1227,94 @@ export type LbClmm = {
           signer: true;
         },
         {
-          name: "reserveX";
+          name: "rewardVault";
           writable: true;
         },
         {
-          name: "reserveY";
+          name: "rewardMint";
+        },
+        {
+          name: "userTokenAccount";
           writable: true;
-        },
-        {
-          name: "userTokenX";
-          writable: true;
-        },
-        {
-          name: "userTokenY";
-          writable: true;
-        },
-        {
-          name: "tokenXMint";
-        },
-        {
-          name: "tokenYMint";
         },
         {
           name: "tokenProgram";
         },
         {
+          name: "memoProgram";
+          address: "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr";
+        },
+        {
           name: "eventAuthority";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ];
+              }
+            ];
+          };
         },
         {
           name: "program";
+        }
+      ];
+      args: [
+        {
+          name: "rewardIndex";
+          type: "u64";
+        },
+        {
+          name: "minBinId";
+          type: "i32";
+        },
+        {
+          name: "maxBinId";
+          type: "i32";
+        },
+        {
+          name: "remainingAccountsInfo";
+          type: {
+            defined: {
+              name: "remainingAccountsInfo";
+            };
+          };
+        }
+      ];
+    },
+    {
+      name: "closeClaimProtocolFeeOperator";
+      discriminator: [8, 41, 87, 35, 80, 48, 121, 26];
+      accounts: [
+        {
+          name: "claimFeeOperator";
+          writable: true;
+        },
+        {
+          name: "rentReceiver";
+          writable: true;
+        },
+        {
+          name: "admin";
+          signer: true;
         }
       ];
       args: [];
@@ -1470,6 +1330,7 @@ export type LbClmm = {
         {
           name: "lbPair";
           writable: true;
+          relations: ["position", "binArrayLower", "binArrayUpper"];
         },
         {
           name: "binArrayLower";
@@ -1489,6 +1350,32 @@ export type LbClmm = {
         },
         {
           name: "eventAuthority";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ];
+              }
+            ];
+          };
         },
         {
           name: "program";
@@ -1497,125 +1384,106 @@ export type LbClmm = {
       args: [];
     },
     {
-      name: "updateBaseFeeParameters";
-      discriminator: [75, 168, 223, 161, 16, 195, 3, 47];
+      name: "closePosition2";
+      discriminator: [174, 90, 35, 115, 186, 40, 147, 226];
       accounts: [
         {
-          name: "lbPair";
+          name: "position";
           writable: true;
         },
         {
-          name: "admin";
+          name: "sender";
           signer: true;
         },
         {
+          name: "rentReceiver";
+          writable: true;
+        },
+        {
           name: "eventAuthority";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ];
+              }
+            ];
+          };
         },
         {
           name: "program";
         }
       ];
-      args: [
-        {
-          name: "feeParameter";
-          type: {
-            defined: {
-              name: "baseFeeParameter";
-            };
-          };
-        }
-      ];
+      args: [];
     },
     {
-      name: "updateDynamicFeeParameters";
-      discriminator: [92, 161, 46, 246, 255, 189, 22, 22];
+      name: "closePositionIfEmpty";
+      discriminator: [59, 124, 212, 118, 91, 152, 110, 157];
       accounts: [
         {
-          name: "lbPair";
+          name: "position";
           writable: true;
         },
         {
-          name: "admin";
+          name: "sender";
           signer: true;
         },
         {
+          name: "rentReceiver";
+          writable: true;
+        },
+        {
           name: "eventAuthority";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ];
+              }
+            ];
+          };
         },
         {
           name: "program";
         }
       ];
-      args: [
-        {
-          name: "feeParameter";
-          type: {
-            defined: {
-              name: "dynamicFeeParameter";
-            };
-          };
-        }
-      ];
-    },
-    {
-      name: "increaseOracleLength";
-      discriminator: [190, 61, 125, 87, 103, 79, 158, 173];
-      accounts: [
-        {
-          name: "oracle";
-          writable: true;
-        },
-        {
-          name: "funder";
-          writable: true;
-          signer: true;
-        },
-        {
-          name: "systemProgram";
-        },
-        {
-          name: "eventAuthority";
-        },
-        {
-          name: "program";
-        }
-      ];
-      args: [
-        {
-          name: "lengthToAdd";
-          type: "u64";
-        }
-      ];
-    },
-    {
-      name: "initializePresetParameter";
-      discriminator: [66, 188, 71, 211, 98, 109, 14, 186];
-      accounts: [
-        {
-          name: "presetParameter";
-          writable: true;
-        },
-        {
-          name: "admin";
-          writable: true;
-          signer: true;
-        },
-        {
-          name: "systemProgram";
-        },
-        {
-          name: "rent";
-        }
-      ];
-      args: [
-        {
-          name: "ix";
-          type: {
-            defined: {
-              name: "initPresetParametersIx";
-            };
-          };
-        }
-      ];
+      args: [];
     },
     {
       name: "closePresetParameter";
@@ -1658,77 +1526,15 @@ export type LbClmm = {
       args: [];
     },
     {
-      name: "removeAllLiquidity";
-      discriminator: [10, 51, 61, 35, 112, 105, 24, 85];
+      name: "closeTokenBadge";
+      discriminator: [108, 146, 86, 110, 179, 254, 10, 104];
       accounts: [
         {
-          name: "position";
+          name: "tokenBadge";
           writable: true;
         },
         {
-          name: "lbPair";
-          writable: true;
-        },
-        {
-          name: "binArrayBitmapExtension";
-          writable: true;
-          optional: true;
-        },
-        {
-          name: "userTokenX";
-          writable: true;
-        },
-        {
-          name: "userTokenY";
-          writable: true;
-        },
-        {
-          name: "reserveX";
-          writable: true;
-        },
-        {
-          name: "reserveY";
-          writable: true;
-        },
-        {
-          name: "tokenXMint";
-        },
-        {
-          name: "tokenYMint";
-        },
-        {
-          name: "binArrayLower";
-          writable: true;
-        },
-        {
-          name: "binArrayUpper";
-          writable: true;
-        },
-        {
-          name: "sender";
-          signer: true;
-        },
-        {
-          name: "tokenXProgram";
-        },
-        {
-          name: "tokenYProgram";
-        },
-        {
-          name: "eventAuthority";
-        },
-        {
-          name: "program";
-        }
-      ];
-      args: [];
-    },
-    {
-      name: "setPairStatus";
-      discriminator: [67, 248, 231, 137, 154, 149, 217, 174];
-      accounts: [
-        {
-          name: "lbPair";
+          name: "rentReceiver";
           writable: true;
         },
         {
@@ -1736,102 +1542,135 @@ export type LbClmm = {
           signer: true;
         }
       ];
-      args: [
-        {
-          name: "status";
-          type: "u8";
-        }
-      ];
+      args: [];
     },
     {
-      name: "migratePosition";
-      discriminator: [15, 132, 59, 50, 199, 6, 251, 46];
+      name: "createClaimProtocolFeeOperator";
+      discriminator: [51, 19, 150, 252, 105, 157, 48, 91];
       accounts: [
         {
-          name: "positionV2";
+          name: "claimFeeOperator";
           writable: true;
-          signer: true;
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [99, 102, 95, 111, 112, 101, 114, 97, 116, 111, 114];
+              },
+              {
+                kind: "account";
+                path: "operator";
+              }
+            ];
+          };
         },
         {
-          name: "positionV1";
-          writable: true;
+          name: "operator";
         },
         {
-          name: "lbPair";
-        },
-        {
-          name: "binArrayLower";
-          writable: true;
-        },
-        {
-          name: "binArrayUpper";
-          writable: true;
-        },
-        {
-          name: "owner";
+          name: "admin";
           writable: true;
           signer: true;
         },
         {
           name: "systemProgram";
-        },
+          address: "11111111111111111111111111111111";
+        }
+      ];
+      args: [];
+    },
+    {
+      name: "decreasePositionLength";
+      discriminator: [194, 219, 136, 32, 25, 96, 105, 37];
+      accounts: [
         {
           name: "rentReceiver";
           writable: true;
         },
         {
-          name: "eventAuthority";
-        },
-        {
-          name: "program";
-        }
-      ];
-      args: [];
-    },
-    {
-      name: "migrateBinArray";
-      discriminator: [17, 23, 159, 211, 101, 184, 41, 241];
-      accounts: [
-        {
-          name: "lbPair";
-        }
-      ];
-      args: [];
-    },
-    {
-      name: "updateFeesAndRewards";
-      discriminator: [154, 230, 250, 13, 236, 209, 75, 223];
-      accounts: [
-        {
           name: "position";
-          writable: true;
-        },
-        {
-          name: "lbPair";
-          writable: true;
-        },
-        {
-          name: "binArrayLower";
-          writable: true;
-        },
-        {
-          name: "binArrayUpper";
           writable: true;
         },
         {
           name: "owner";
           signer: true;
+          relations: ["position"];
+        },
+        {
+          name: "systemProgram";
+          address: "11111111111111111111111111111111";
+        },
+        {
+          name: "eventAuthority";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ];
+              }
+            ];
+          };
+        },
+        {
+          name: "program";
         }
       ];
-      args: [];
+      args: [
+        {
+          name: "lengthToRemove";
+          type: "u16";
+        },
+        {
+          name: "side";
+          type: "u8";
+        }
+      ];
     },
     {
-      name: "withdrawIneligibleReward";
-      discriminator: [148, 206, 42, 195, 247, 49, 103, 8];
+      name: "forIdlTypeGenerationDoNotCall";
+      discriminator: [180, 105, 69, 80, 95, 50, 73, 108];
+      accounts: [
+        {
+          name: "dummyZcAccount";
+        }
+      ];
+      args: [
+        {
+          name: "ix";
+          type: {
+            defined: {
+              name: "dummyIx";
+            };
+          };
+        }
+      ];
+    },
+    {
+      name: "fundReward";
+      discriminator: [188, 50, 249, 165, 93, 151, 38, 63];
       accounts: [
         {
           name: "lbPair";
           writable: true;
+          relations: ["binArray"];
         },
         {
           name: "rewardVault";
@@ -1856,10 +1695,33 @@ export type LbClmm = {
           name: "tokenProgram";
         },
         {
-          name: "memoProgram";
-        },
-        {
           name: "eventAuthority";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ];
+              }
+            ];
+          };
         },
         {
           name: "program";
@@ -1869,6 +1731,2472 @@ export type LbClmm = {
         {
           name: "rewardIndex";
           type: "u64";
+        },
+        {
+          name: "amount";
+          type: "u64";
+        },
+        {
+          name: "carryForward";
+          type: "bool";
+        },
+        {
+          name: "remainingAccountsInfo";
+          type: {
+            defined: {
+              name: "remainingAccountsInfo";
+            };
+          };
+        }
+      ];
+    },
+    {
+      name: "goToABin";
+      discriminator: [146, 72, 174, 224, 40, 253, 84, 174];
+      accounts: [
+        {
+          name: "lbPair";
+          writable: true;
+          relations: ["binArrayBitmapExtension", "fromBinArray", "toBinArray"];
+        },
+        {
+          name: "binArrayBitmapExtension";
+          optional: true;
+        },
+        {
+          name: "fromBinArray";
+          optional: true;
+        },
+        {
+          name: "toBinArray";
+          optional: true;
+        },
+        {
+          name: "eventAuthority";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ];
+              }
+            ];
+          };
+        },
+        {
+          name: "program";
+        }
+      ];
+      args: [
+        {
+          name: "binId";
+          type: "i32";
+        }
+      ];
+    },
+    {
+      name: "increaseOracleLength";
+      discriminator: [190, 61, 125, 87, 103, 79, 158, 173];
+      accounts: [
+        {
+          name: "oracle";
+          writable: true;
+        },
+        {
+          name: "funder";
+          writable: true;
+          signer: true;
+        },
+        {
+          name: "systemProgram";
+          address: "11111111111111111111111111111111";
+        },
+        {
+          name: "eventAuthority";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ];
+              }
+            ];
+          };
+        },
+        {
+          name: "program";
+        }
+      ];
+      args: [
+        {
+          name: "lengthToAdd";
+          type: "u64";
+        }
+      ];
+    },
+    {
+      name: "increasePositionLength";
+      discriminator: [80, 83, 117, 211, 66, 13, 33, 149];
+      accounts: [
+        {
+          name: "funder";
+          writable: true;
+          signer: true;
+        },
+        {
+          name: "lbPair";
+          relations: ["position"];
+        },
+        {
+          name: "position";
+          writable: true;
+        },
+        {
+          name: "owner";
+          signer: true;
+          relations: ["position"];
+        },
+        {
+          name: "systemProgram";
+          address: "11111111111111111111111111111111";
+        },
+        {
+          name: "eventAuthority";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ];
+              }
+            ];
+          };
+        },
+        {
+          name: "program";
+        }
+      ];
+      args: [
+        {
+          name: "lengthToAdd";
+          type: "u16";
+        },
+        {
+          name: "side";
+          type: "u8";
+        }
+      ];
+    },
+    {
+      name: "increasePositionLength2";
+      discriminator: [255, 210, 204, 71, 115, 137, 225, 113];
+      accounts: [
+        {
+          name: "funder";
+          writable: true;
+          signer: true;
+        },
+        {
+          name: "lbPair";
+          relations: ["position"];
+        },
+        {
+          name: "position";
+          writable: true;
+        },
+        {
+          name: "owner";
+          signer: true;
+          relations: ["position"];
+        },
+        {
+          name: "systemProgram";
+          address: "11111111111111111111111111111111";
+        },
+        {
+          name: "eventAuthority";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ];
+              }
+            ];
+          };
+        },
+        {
+          name: "program";
+        }
+      ];
+      args: [
+        {
+          name: "minimumUpperBinId";
+          type: "i32";
+        }
+      ];
+    },
+    {
+      name: "initializeBinArray";
+      discriminator: [35, 86, 19, 185, 78, 212, 75, 211];
+      accounts: [
+        {
+          name: "lbPair";
+        },
+        {
+          name: "binArray";
+          writable: true;
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [98, 105, 110, 95, 97, 114, 114, 97, 121];
+              },
+              {
+                kind: "account";
+                path: "lbPair";
+              },
+              {
+                kind: "arg";
+                path: "index";
+              }
+            ];
+          };
+        },
+        {
+          name: "funder";
+          writable: true;
+          signer: true;
+        },
+        {
+          name: "systemProgram";
+          address: "11111111111111111111111111111111";
+        }
+      ];
+      args: [
+        {
+          name: "index";
+          type: "i64";
+        }
+      ];
+    },
+    {
+      name: "initializeBinArrayBitmapExtension";
+      discriminator: [47, 157, 226, 180, 12, 240, 33, 71];
+      accounts: [
+        {
+          name: "lbPair";
+        },
+        {
+          name: "binArrayBitmapExtension";
+          docs: [
+            "Initialize an account to store if a bin array is initialized."
+          ];
+          writable: true;
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [98, 105, 116, 109, 97, 112];
+              },
+              {
+                kind: "account";
+                path: "lbPair";
+              }
+            ];
+          };
+        },
+        {
+          name: "funder";
+          writable: true;
+          signer: true;
+        },
+        {
+          name: "systemProgram";
+          address: "11111111111111111111111111111111";
+        },
+        {
+          name: "rent";
+          address: "SysvarRent111111111111111111111111111111111";
+        }
+      ];
+      args: [];
+    },
+    {
+      name: "initializeCustomizablePermissionlessLbPair";
+      discriminator: [46, 39, 41, 135, 111, 183, 200, 64];
+      accounts: [
+        {
+          name: "lbPair";
+          writable: true;
+        },
+        {
+          name: "binArrayBitmapExtension";
+          writable: true;
+          optional: true;
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [98, 105, 116, 109, 97, 112];
+              },
+              {
+                kind: "account";
+                path: "lbPair";
+              }
+            ];
+          };
+        },
+        {
+          name: "tokenMintX";
+        },
+        {
+          name: "tokenMintY";
+        },
+        {
+          name: "reserveX";
+          writable: true;
+          pda: {
+            seeds: [
+              {
+                kind: "account";
+                path: "lbPair";
+              },
+              {
+                kind: "account";
+                path: "tokenMintX";
+              }
+            ];
+          };
+        },
+        {
+          name: "reserveY";
+          writable: true;
+          pda: {
+            seeds: [
+              {
+                kind: "account";
+                path: "lbPair";
+              },
+              {
+                kind: "account";
+                path: "tokenMintY";
+              }
+            ];
+          };
+        },
+        {
+          name: "oracle";
+          writable: true;
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [111, 114, 97, 99, 108, 101];
+              },
+              {
+                kind: "account";
+                path: "lbPair";
+              }
+            ];
+          };
+        },
+        {
+          name: "userTokenX";
+        },
+        {
+          name: "funder";
+          writable: true;
+          signer: true;
+        },
+        {
+          name: "tokenProgram";
+          address: "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
+        },
+        {
+          name: "systemProgram";
+          address: "11111111111111111111111111111111";
+        },
+        {
+          name: "userTokenY";
+        },
+        {
+          name: "eventAuthority";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ];
+              }
+            ];
+          };
+        },
+        {
+          name: "program";
+        }
+      ];
+      args: [
+        {
+          name: "params";
+          type: {
+            defined: {
+              name: "customizableParams";
+            };
+          };
+        }
+      ];
+    },
+    {
+      name: "initializeCustomizablePermissionlessLbPair2";
+      discriminator: [243, 73, 129, 126, 51, 19, 241, 107];
+      accounts: [
+        {
+          name: "lbPair";
+          writable: true;
+        },
+        {
+          name: "binArrayBitmapExtension";
+          writable: true;
+          optional: true;
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [98, 105, 116, 109, 97, 112];
+              },
+              {
+                kind: "account";
+                path: "lbPair";
+              }
+            ];
+          };
+        },
+        {
+          name: "tokenMintX";
+        },
+        {
+          name: "tokenMintY";
+        },
+        {
+          name: "reserveX";
+          writable: true;
+          pda: {
+            seeds: [
+              {
+                kind: "account";
+                path: "lbPair";
+              },
+              {
+                kind: "account";
+                path: "tokenMintX";
+              }
+            ];
+          };
+        },
+        {
+          name: "reserveY";
+          writable: true;
+          pda: {
+            seeds: [
+              {
+                kind: "account";
+                path: "lbPair";
+              },
+              {
+                kind: "account";
+                path: "tokenMintY";
+              }
+            ];
+          };
+        },
+        {
+          name: "oracle";
+          writable: true;
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [111, 114, 97, 99, 108, 101];
+              },
+              {
+                kind: "account";
+                path: "lbPair";
+              }
+            ];
+          };
+        },
+        {
+          name: "userTokenX";
+        },
+        {
+          name: "funder";
+          writable: true;
+          signer: true;
+        },
+        {
+          name: "tokenBadgeX";
+          optional: true;
+        },
+        {
+          name: "tokenBadgeY";
+          optional: true;
+        },
+        {
+          name: "tokenProgramX";
+        },
+        {
+          name: "tokenProgramY";
+        },
+        {
+          name: "systemProgram";
+          address: "11111111111111111111111111111111";
+        },
+        {
+          name: "userTokenY";
+        },
+        {
+          name: "eventAuthority";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ];
+              }
+            ];
+          };
+        },
+        {
+          name: "program";
+        }
+      ];
+      args: [
+        {
+          name: "params";
+          type: {
+            defined: {
+              name: "customizableParams";
+            };
+          };
+        }
+      ];
+    },
+    {
+      name: "initializeLbPair";
+      discriminator: [45, 154, 237, 210, 221, 15, 166, 92];
+      accounts: [
+        {
+          name: "lbPair";
+          writable: true;
+        },
+        {
+          name: "binArrayBitmapExtension";
+          writable: true;
+          optional: true;
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [98, 105, 116, 109, 97, 112];
+              },
+              {
+                kind: "account";
+                path: "lbPair";
+              }
+            ];
+          };
+        },
+        {
+          name: "tokenMintX";
+        },
+        {
+          name: "tokenMintY";
+        },
+        {
+          name: "reserveX";
+          writable: true;
+          pda: {
+            seeds: [
+              {
+                kind: "account";
+                path: "lbPair";
+              },
+              {
+                kind: "account";
+                path: "tokenMintX";
+              }
+            ];
+          };
+        },
+        {
+          name: "reserveY";
+          writable: true;
+          pda: {
+            seeds: [
+              {
+                kind: "account";
+                path: "lbPair";
+              },
+              {
+                kind: "account";
+                path: "tokenMintY";
+              }
+            ];
+          };
+        },
+        {
+          name: "oracle";
+          writable: true;
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [111, 114, 97, 99, 108, 101];
+              },
+              {
+                kind: "account";
+                path: "lbPair";
+              }
+            ];
+          };
+        },
+        {
+          name: "presetParameter";
+        },
+        {
+          name: "funder";
+          writable: true;
+          signer: true;
+        },
+        {
+          name: "tokenProgram";
+          address: "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
+        },
+        {
+          name: "systemProgram";
+          address: "11111111111111111111111111111111";
+        },
+        {
+          name: "rent";
+          address: "SysvarRent111111111111111111111111111111111";
+        },
+        {
+          name: "eventAuthority";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ];
+              }
+            ];
+          };
+        },
+        {
+          name: "program";
+        }
+      ];
+      args: [
+        {
+          name: "activeId";
+          type: "i32";
+        },
+        {
+          name: "binStep";
+          type: "u16";
+        }
+      ];
+    },
+    {
+      name: "initializeLbPair2";
+      discriminator: [73, 59, 36, 120, 237, 83, 108, 198];
+      accounts: [
+        {
+          name: "lbPair";
+          writable: true;
+        },
+        {
+          name: "binArrayBitmapExtension";
+          writable: true;
+          optional: true;
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [98, 105, 116, 109, 97, 112];
+              },
+              {
+                kind: "account";
+                path: "lbPair";
+              }
+            ];
+          };
+        },
+        {
+          name: "tokenMintX";
+        },
+        {
+          name: "tokenMintY";
+        },
+        {
+          name: "reserveX";
+          writable: true;
+          pda: {
+            seeds: [
+              {
+                kind: "account";
+                path: "lbPair";
+              },
+              {
+                kind: "account";
+                path: "tokenMintX";
+              }
+            ];
+          };
+        },
+        {
+          name: "reserveY";
+          writable: true;
+          pda: {
+            seeds: [
+              {
+                kind: "account";
+                path: "lbPair";
+              },
+              {
+                kind: "account";
+                path: "tokenMintY";
+              }
+            ];
+          };
+        },
+        {
+          name: "oracle";
+          writable: true;
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [111, 114, 97, 99, 108, 101];
+              },
+              {
+                kind: "account";
+                path: "lbPair";
+              }
+            ];
+          };
+        },
+        {
+          name: "presetParameter";
+        },
+        {
+          name: "funder";
+          writable: true;
+          signer: true;
+        },
+        {
+          name: "tokenBadgeX";
+          optional: true;
+        },
+        {
+          name: "tokenBadgeY";
+          optional: true;
+        },
+        {
+          name: "tokenProgramX";
+        },
+        {
+          name: "tokenProgramY";
+        },
+        {
+          name: "systemProgram";
+          address: "11111111111111111111111111111111";
+        },
+        {
+          name: "eventAuthority";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ];
+              }
+            ];
+          };
+        },
+        {
+          name: "program";
+        }
+      ];
+      args: [
+        {
+          name: "params";
+          type: {
+            defined: {
+              name: "initializeLbPair2Params";
+            };
+          };
+        }
+      ];
+    },
+    {
+      name: "initializePermissionLbPair";
+      discriminator: [108, 102, 213, 85, 251, 3, 53, 21];
+      accounts: [
+        {
+          name: "base";
+          signer: true;
+        },
+        {
+          name: "lbPair";
+          writable: true;
+        },
+        {
+          name: "binArrayBitmapExtension";
+          writable: true;
+          optional: true;
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [98, 105, 116, 109, 97, 112];
+              },
+              {
+                kind: "account";
+                path: "lbPair";
+              }
+            ];
+          };
+        },
+        {
+          name: "tokenMintX";
+        },
+        {
+          name: "tokenMintY";
+        },
+        {
+          name: "reserveX";
+          writable: true;
+          pda: {
+            seeds: [
+              {
+                kind: "account";
+                path: "lbPair";
+              },
+              {
+                kind: "account";
+                path: "tokenMintX";
+              }
+            ];
+          };
+        },
+        {
+          name: "reserveY";
+          writable: true;
+          pda: {
+            seeds: [
+              {
+                kind: "account";
+                path: "lbPair";
+              },
+              {
+                kind: "account";
+                path: "tokenMintY";
+              }
+            ];
+          };
+        },
+        {
+          name: "oracle";
+          writable: true;
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [111, 114, 97, 99, 108, 101];
+              },
+              {
+                kind: "account";
+                path: "lbPair";
+              }
+            ];
+          };
+        },
+        {
+          name: "admin";
+          writable: true;
+          signer: true;
+        },
+        {
+          name: "tokenBadgeX";
+          optional: true;
+        },
+        {
+          name: "tokenBadgeY";
+          optional: true;
+        },
+        {
+          name: "tokenProgramX";
+        },
+        {
+          name: "tokenProgramY";
+        },
+        {
+          name: "systemProgram";
+          address: "11111111111111111111111111111111";
+        },
+        {
+          name: "rent";
+          address: "SysvarRent111111111111111111111111111111111";
+        },
+        {
+          name: "eventAuthority";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ];
+              }
+            ];
+          };
+        },
+        {
+          name: "program";
+        }
+      ];
+      args: [
+        {
+          name: "ixData";
+          type: {
+            defined: {
+              name: "initPermissionPairIx";
+            };
+          };
+        }
+      ];
+    },
+    {
+      name: "initializePosition";
+      discriminator: [219, 192, 234, 71, 190, 191, 102, 80];
+      accounts: [
+        {
+          name: "payer";
+          writable: true;
+          signer: true;
+        },
+        {
+          name: "position";
+          writable: true;
+          signer: true;
+        },
+        {
+          name: "lbPair";
+        },
+        {
+          name: "owner";
+          signer: true;
+        },
+        {
+          name: "systemProgram";
+          address: "11111111111111111111111111111111";
+        },
+        {
+          name: "rent";
+          address: "SysvarRent111111111111111111111111111111111";
+        },
+        {
+          name: "eventAuthority";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ];
+              }
+            ];
+          };
+        },
+        {
+          name: "program";
+        }
+      ];
+      args: [
+        {
+          name: "lowerBinId";
+          type: "i32";
+        },
+        {
+          name: "width";
+          type: "i32";
+        }
+      ];
+    },
+    {
+      name: "initializePosition2";
+      discriminator: [143, 19, 242, 145, 213, 15, 104, 115];
+      accounts: [
+        {
+          name: "payer";
+          writable: true;
+          signer: true;
+        },
+        {
+          name: "position";
+          writable: true;
+          signer: true;
+        },
+        {
+          name: "lbPair";
+        },
+        {
+          name: "owner";
+          signer: true;
+        },
+        {
+          name: "systemProgram";
+          address: "11111111111111111111111111111111";
+        },
+        {
+          name: "eventAuthority";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ];
+              }
+            ];
+          };
+        },
+        {
+          name: "program";
+        }
+      ];
+      args: [
+        {
+          name: "lowerBinId";
+          type: "i32";
+        },
+        {
+          name: "width";
+          type: "i32";
+        }
+      ];
+    },
+    {
+      name: "initializePositionByOperator";
+      discriminator: [251, 189, 190, 244, 117, 254, 35, 148];
+      accounts: [
+        {
+          name: "payer";
+          writable: true;
+          signer: true;
+        },
+        {
+          name: "base";
+          signer: true;
+        },
+        {
+          name: "position";
+          writable: true;
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [112, 111, 115, 105, 116, 105, 111, 110];
+              },
+              {
+                kind: "account";
+                path: "lbPair";
+              },
+              {
+                kind: "account";
+                path: "base";
+              },
+              {
+                kind: "arg";
+                path: "lowerBinId";
+              },
+              {
+                kind: "arg";
+                path: "width";
+              }
+            ];
+          };
+        },
+        {
+          name: "lbPair";
+        },
+        {
+          name: "owner";
+        },
+        {
+          name: "operator";
+          docs: ["operator"];
+          signer: true;
+        },
+        {
+          name: "operatorTokenX";
+        },
+        {
+          name: "ownerTokenX";
+        },
+        {
+          name: "systemProgram";
+          address: "11111111111111111111111111111111";
+        },
+        {
+          name: "eventAuthority";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ];
+              }
+            ];
+          };
+        },
+        {
+          name: "program";
+        }
+      ];
+      args: [
+        {
+          name: "lowerBinId";
+          type: "i32";
+        },
+        {
+          name: "width";
+          type: "i32";
+        },
+        {
+          name: "feeOwner";
+          type: "pubkey";
+        },
+        {
+          name: "lockReleasePoint";
+          type: "u64";
+        }
+      ];
+    },
+    {
+      name: "initializePositionPda";
+      discriminator: [46, 82, 125, 146, 85, 141, 228, 153];
+      accounts: [
+        {
+          name: "payer";
+          writable: true;
+          signer: true;
+        },
+        {
+          name: "base";
+          signer: true;
+        },
+        {
+          name: "position";
+          writable: true;
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [112, 111, 115, 105, 116, 105, 111, 110];
+              },
+              {
+                kind: "account";
+                path: "lbPair";
+              },
+              {
+                kind: "account";
+                path: "base";
+              },
+              {
+                kind: "arg";
+                path: "lowerBinId";
+              },
+              {
+                kind: "arg";
+                path: "width";
+              }
+            ];
+          };
+        },
+        {
+          name: "lbPair";
+        },
+        {
+          name: "owner";
+          docs: ["owner"];
+          signer: true;
+        },
+        {
+          name: "systemProgram";
+          address: "11111111111111111111111111111111";
+        },
+        {
+          name: "rent";
+          address: "SysvarRent111111111111111111111111111111111";
+        },
+        {
+          name: "eventAuthority";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ];
+              }
+            ];
+          };
+        },
+        {
+          name: "program";
+        }
+      ];
+      args: [
+        {
+          name: "lowerBinId";
+          type: "i32";
+        },
+        {
+          name: "width";
+          type: "i32";
+        }
+      ];
+    },
+    {
+      name: "initializePresetParameter";
+      discriminator: [66, 188, 71, 211, 98, 109, 14, 186];
+      accounts: [
+        {
+          name: "presetParameter";
+          writable: true;
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [
+                  112,
+                  114,
+                  101,
+                  115,
+                  101,
+                  116,
+                  95,
+                  112,
+                  97,
+                  114,
+                  97,
+                  109,
+                  101,
+                  116,
+                  101,
+                  114
+                ];
+              },
+              {
+                kind: "arg";
+                path: "ix.bin_step";
+              },
+              {
+                kind: "arg";
+                path: "ix.base_factor";
+              }
+            ];
+          };
+        },
+        {
+          name: "admin";
+          writable: true;
+          signer: true;
+        },
+        {
+          name: "systemProgram";
+          address: "11111111111111111111111111111111";
+        },
+        {
+          name: "rent";
+          address: "SysvarRent111111111111111111111111111111111";
+        }
+      ];
+      args: [
+        {
+          name: "ix";
+          type: {
+            defined: {
+              name: "initPresetParametersIx";
+            };
+          };
+        }
+      ];
+    },
+    {
+      name: "initializePresetParameter2";
+      discriminator: [184, 7, 240, 171, 103, 47, 183, 121];
+      accounts: [
+        {
+          name: "presetParameter";
+          writable: true;
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [
+                  112,
+                  114,
+                  101,
+                  115,
+                  101,
+                  116,
+                  95,
+                  112,
+                  97,
+                  114,
+                  97,
+                  109,
+                  101,
+                  116,
+                  101,
+                  114,
+                  50
+                ];
+              },
+              {
+                kind: "arg";
+                path: "ix.index";
+              }
+            ];
+          };
+        },
+        {
+          name: "admin";
+          writable: true;
+          signer: true;
+        },
+        {
+          name: "systemProgram";
+          address: "11111111111111111111111111111111";
+        }
+      ];
+      args: [
+        {
+          name: "ix";
+          type: {
+            defined: {
+              name: "initPresetParameters2Ix";
+            };
+          };
+        }
+      ];
+    },
+    {
+      name: "initializeReward";
+      discriminator: [95, 135, 192, 196, 242, 129, 230, 68];
+      accounts: [
+        {
+          name: "lbPair";
+          writable: true;
+        },
+        {
+          name: "rewardVault";
+          writable: true;
+          pda: {
+            seeds: [
+              {
+                kind: "account";
+                path: "lbPair";
+              },
+              {
+                kind: "arg";
+                path: "rewardIndex";
+              }
+            ];
+          };
+        },
+        {
+          name: "rewardMint";
+        },
+        {
+          name: "tokenBadge";
+          optional: true;
+        },
+        {
+          name: "admin";
+          writable: true;
+          signer: true;
+        },
+        {
+          name: "tokenProgram";
+        },
+        {
+          name: "systemProgram";
+          address: "11111111111111111111111111111111";
+        },
+        {
+          name: "rent";
+          address: "SysvarRent111111111111111111111111111111111";
+        },
+        {
+          name: "eventAuthority";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ];
+              }
+            ];
+          };
+        },
+        {
+          name: "program";
+        }
+      ];
+      args: [
+        {
+          name: "rewardIndex";
+          type: "u64";
+        },
+        {
+          name: "rewardDuration";
+          type: "u64";
+        },
+        {
+          name: "funder";
+          type: "pubkey";
+        }
+      ];
+    },
+    {
+      name: "initializeTokenBadge";
+      discriminator: [253, 77, 205, 95, 27, 224, 89, 223];
+      accounts: [
+        {
+          name: "tokenMint";
+        },
+        {
+          name: "tokenBadge";
+          writable: true;
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [116, 111, 107, 101, 110, 95, 98, 97, 100, 103, 101];
+              },
+              {
+                kind: "account";
+                path: "tokenMint";
+              }
+            ];
+          };
+        },
+        {
+          name: "admin";
+          writable: true;
+          signer: true;
+        },
+        {
+          name: "systemProgram";
+          address: "11111111111111111111111111111111";
+        }
+      ];
+      args: [];
+    },
+    {
+      name: "migrateBinArray";
+      discriminator: [17, 23, 159, 211, 101, 184, 41, 241];
+      accounts: [
+        {
+          name: "lbPair";
+        }
+      ];
+      args: [];
+    },
+    {
+      name: "migratePosition";
+      discriminator: [15, 132, 59, 50, 199, 6, 251, 46];
+      accounts: [
+        {
+          name: "positionV2";
+          writable: true;
+          signer: true;
+        },
+        {
+          name: "positionV1";
+          writable: true;
+        },
+        {
+          name: "lbPair";
+          relations: ["positionV1", "binArrayLower", "binArrayUpper"];
+        },
+        {
+          name: "binArrayLower";
+          writable: true;
+        },
+        {
+          name: "binArrayUpper";
+          writable: true;
+        },
+        {
+          name: "owner";
+          writable: true;
+          signer: true;
+          relations: ["positionV1"];
+        },
+        {
+          name: "systemProgram";
+          address: "11111111111111111111111111111111";
+        },
+        {
+          name: "rentReceiver";
+          writable: true;
+        },
+        {
+          name: "eventAuthority";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ];
+              }
+            ];
+          };
+        },
+        {
+          name: "program";
+        }
+      ];
+      args: [];
+    },
+    {
+      name: "rebalanceLiquidity";
+      discriminator: [92, 4, 176, 193, 119, 185, 83, 9];
+      accounts: [
+        {
+          name: "position";
+          writable: true;
+        },
+        {
+          name: "lbPair";
+          writable: true;
+          relations: ["position", "binArrayBitmapExtension"];
+        },
+        {
+          name: "binArrayBitmapExtension";
+          writable: true;
+          optional: true;
+        },
+        {
+          name: "userTokenX";
+          writable: true;
+        },
+        {
+          name: "userTokenY";
+          writable: true;
+        },
+        {
+          name: "reserveX";
+          writable: true;
+          relations: ["lbPair"];
+        },
+        {
+          name: "reserveY";
+          writable: true;
+          relations: ["lbPair"];
+        },
+        {
+          name: "tokenXMint";
+          relations: ["lbPair"];
+        },
+        {
+          name: "tokenYMint";
+          relations: ["lbPair"];
+        },
+        {
+          name: "owner";
+          signer: true;
+          relations: ["position"];
+        },
+        {
+          name: "rentPayer";
+          writable: true;
+          signer: true;
+        },
+        {
+          name: "tokenXProgram";
+        },
+        {
+          name: "tokenYProgram";
+        },
+        {
+          name: "memoProgram";
+          address: "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr";
+        },
+        {
+          name: "systemProgram";
+          address: "11111111111111111111111111111111";
+        },
+        {
+          name: "eventAuthority";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ];
+              }
+            ];
+          };
+        },
+        {
+          name: "program";
+        }
+      ];
+      args: [
+        {
+          name: "params";
+          type: {
+            defined: {
+              name: "rebalanceLiquidityParams";
+            };
+          };
+        },
+        {
+          name: "remainingAccountsInfo";
+          type: {
+            defined: {
+              name: "remainingAccountsInfo";
+            };
+          };
+        }
+      ];
+    },
+    {
+      name: "removeAllLiquidity";
+      discriminator: [10, 51, 61, 35, 112, 105, 24, 85];
+      accounts: [
+        {
+          name: "position";
+          writable: true;
+        },
+        {
+          name: "lbPair";
+          writable: true;
+          relations: [
+            "position",
+            "binArrayBitmapExtension",
+            "binArrayLower",
+            "binArrayUpper"
+          ];
+        },
+        {
+          name: "binArrayBitmapExtension";
+          writable: true;
+          optional: true;
+        },
+        {
+          name: "userTokenX";
+          writable: true;
+        },
+        {
+          name: "userTokenY";
+          writable: true;
+        },
+        {
+          name: "reserveX";
+          writable: true;
+          relations: ["lbPair"];
+        },
+        {
+          name: "reserveY";
+          writable: true;
+          relations: ["lbPair"];
+        },
+        {
+          name: "tokenXMint";
+          relations: ["lbPair"];
+        },
+        {
+          name: "tokenYMint";
+          relations: ["lbPair"];
+        },
+        {
+          name: "binArrayLower";
+          writable: true;
+        },
+        {
+          name: "binArrayUpper";
+          writable: true;
+        },
+        {
+          name: "sender";
+          signer: true;
+        },
+        {
+          name: "tokenXProgram";
+          address: "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
+        },
+        {
+          name: "tokenYProgram";
+          address: "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
+        },
+        {
+          name: "eventAuthority";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ];
+              }
+            ];
+          };
+        },
+        {
+          name: "program";
+        }
+      ];
+      args: [];
+    },
+    {
+      name: "removeLiquidity";
+      discriminator: [80, 85, 209, 72, 24, 206, 177, 108];
+      accounts: [
+        {
+          name: "position";
+          writable: true;
+        },
+        {
+          name: "lbPair";
+          writable: true;
+          relations: [
+            "position",
+            "binArrayBitmapExtension",
+            "binArrayLower",
+            "binArrayUpper"
+          ];
+        },
+        {
+          name: "binArrayBitmapExtension";
+          writable: true;
+          optional: true;
+        },
+        {
+          name: "userTokenX";
+          writable: true;
+        },
+        {
+          name: "userTokenY";
+          writable: true;
+        },
+        {
+          name: "reserveX";
+          writable: true;
+          relations: ["lbPair"];
+        },
+        {
+          name: "reserveY";
+          writable: true;
+          relations: ["lbPair"];
+        },
+        {
+          name: "tokenXMint";
+          relations: ["lbPair"];
+        },
+        {
+          name: "tokenYMint";
+          relations: ["lbPair"];
+        },
+        {
+          name: "binArrayLower";
+          writable: true;
+        },
+        {
+          name: "binArrayUpper";
+          writable: true;
+        },
+        {
+          name: "sender";
+          signer: true;
+        },
+        {
+          name: "tokenXProgram";
+          address: "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
+        },
+        {
+          name: "tokenYProgram";
+          address: "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
+        },
+        {
+          name: "eventAuthority";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ];
+              }
+            ];
+          };
+        },
+        {
+          name: "program";
+        }
+      ];
+      args: [
+        {
+          name: "binLiquidityRemoval";
+          type: {
+            vec: {
+              defined: {
+                name: "binLiquidityReduction";
+              };
+            };
+          };
+        }
+      ];
+    },
+    {
+      name: "removeLiquidity2";
+      discriminator: [230, 215, 82, 127, 241, 101, 227, 146];
+      accounts: [
+        {
+          name: "position";
+          writable: true;
+        },
+        {
+          name: "lbPair";
+          writable: true;
+          relations: ["position", "binArrayBitmapExtension"];
+        },
+        {
+          name: "binArrayBitmapExtension";
+          writable: true;
+          optional: true;
+        },
+        {
+          name: "userTokenX";
+          writable: true;
+        },
+        {
+          name: "userTokenY";
+          writable: true;
+        },
+        {
+          name: "reserveX";
+          writable: true;
+          relations: ["lbPair"];
+        },
+        {
+          name: "reserveY";
+          writable: true;
+          relations: ["lbPair"];
+        },
+        {
+          name: "tokenXMint";
+          relations: ["lbPair"];
+        },
+        {
+          name: "tokenYMint";
+          relations: ["lbPair"];
+        },
+        {
+          name: "sender";
+          signer: true;
+        },
+        {
+          name: "tokenXProgram";
+        },
+        {
+          name: "tokenYProgram";
+        },
+        {
+          name: "memoProgram";
+          address: "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr";
+        },
+        {
+          name: "eventAuthority";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ];
+              }
+            ];
+          };
+        },
+        {
+          name: "program";
+        }
+      ];
+      args: [
+        {
+          name: "binLiquidityRemoval";
+          type: {
+            vec: {
+              defined: {
+                name: "binLiquidityReduction";
+              };
+            };
+          };
+        },
+        {
+          name: "remainingAccountsInfo";
+          type: {
+            defined: {
+              name: "remainingAccountsInfo";
+            };
+          };
+        }
+      ];
+    },
+    {
+      name: "removeLiquidityByRange";
+      discriminator: [26, 82, 102, 152, 240, 74, 105, 26];
+      accounts: [
+        {
+          name: "position";
+          writable: true;
+        },
+        {
+          name: "lbPair";
+          writable: true;
+          relations: [
+            "position",
+            "binArrayBitmapExtension",
+            "binArrayLower",
+            "binArrayUpper"
+          ];
+        },
+        {
+          name: "binArrayBitmapExtension";
+          writable: true;
+          optional: true;
+        },
+        {
+          name: "userTokenX";
+          writable: true;
+        },
+        {
+          name: "userTokenY";
+          writable: true;
+        },
+        {
+          name: "reserveX";
+          writable: true;
+          relations: ["lbPair"];
+        },
+        {
+          name: "reserveY";
+          writable: true;
+          relations: ["lbPair"];
+        },
+        {
+          name: "tokenXMint";
+          relations: ["lbPair"];
+        },
+        {
+          name: "tokenYMint";
+          relations: ["lbPair"];
+        },
+        {
+          name: "binArrayLower";
+          writable: true;
+        },
+        {
+          name: "binArrayUpper";
+          writable: true;
+        },
+        {
+          name: "sender";
+          signer: true;
+        },
+        {
+          name: "tokenXProgram";
+          address: "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
+        },
+        {
+          name: "tokenYProgram";
+          address: "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
+        },
+        {
+          name: "eventAuthority";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ];
+              }
+            ];
+          };
+        },
+        {
+          name: "program";
+        }
+      ];
+      args: [
+        {
+          name: "fromBinId";
+          type: "i32";
+        },
+        {
+          name: "toBinId";
+          type: "i32";
+        },
+        {
+          name: "bpsToRemove";
+          type: "u16";
+        }
+      ];
+    },
+    {
+      name: "removeLiquidityByRange2";
+      discriminator: [204, 2, 195, 145, 53, 145, 145, 205];
+      accounts: [
+        {
+          name: "position";
+          writable: true;
+        },
+        {
+          name: "lbPair";
+          writable: true;
+          relations: ["position", "binArrayBitmapExtension"];
+        },
+        {
+          name: "binArrayBitmapExtension";
+          writable: true;
+          optional: true;
+        },
+        {
+          name: "userTokenX";
+          writable: true;
+        },
+        {
+          name: "userTokenY";
+          writable: true;
+        },
+        {
+          name: "reserveX";
+          writable: true;
+          relations: ["lbPair"];
+        },
+        {
+          name: "reserveY";
+          writable: true;
+          relations: ["lbPair"];
+        },
+        {
+          name: "tokenXMint";
+          relations: ["lbPair"];
+        },
+        {
+          name: "tokenYMint";
+          relations: ["lbPair"];
+        },
+        {
+          name: "sender";
+          signer: true;
+        },
+        {
+          name: "tokenXProgram";
+        },
+        {
+          name: "tokenYProgram";
+        },
+        {
+          name: "memoProgram";
+          address: "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr";
+        },
+        {
+          name: "eventAuthority";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ];
+              }
+            ];
+          };
+        },
+        {
+          name: "program";
+        }
+      ];
+      args: [
+        {
+          name: "fromBinId";
+          type: "i32";
+        },
+        {
+          name: "toBinId";
+          type: "i32";
+        },
+        {
+          name: "bpsToRemove";
+          type: "u16";
         },
         {
           name: "remainingAccountsInfo";
@@ -1902,176 +4230,43 @@ export type LbClmm = {
       ];
     },
     {
-      name: "removeLiquidityByRange";
-      discriminator: [26, 82, 102, 152, 240, 74, 105, 26];
+      name: "setPairStatus";
+      discriminator: [67, 248, 231, 137, 154, 149, 217, 174];
       accounts: [
-        {
-          name: "position";
-          writable: true;
-        },
         {
           name: "lbPair";
           writable: true;
         },
         {
-          name: "binArrayBitmapExtension";
-          writable: true;
-          optional: true;
-        },
-        {
-          name: "userTokenX";
-          writable: true;
-        },
-        {
-          name: "userTokenY";
-          writable: true;
-        },
-        {
-          name: "reserveX";
-          writable: true;
-        },
-        {
-          name: "reserveY";
-          writable: true;
-        },
-        {
-          name: "tokenXMint";
-        },
-        {
-          name: "tokenYMint";
-        },
-        {
-          name: "binArrayLower";
-          writable: true;
-        },
-        {
-          name: "binArrayUpper";
-          writable: true;
-        },
-        {
-          name: "sender";
+          name: "admin";
           signer: true;
-        },
-        {
-          name: "tokenXProgram";
-        },
-        {
-          name: "tokenYProgram";
-        },
-        {
-          name: "eventAuthority";
-        },
-        {
-          name: "program";
         }
       ];
       args: [
         {
-          name: "fromBinId";
-          type: "i32";
-        },
-        {
-          name: "toBinId";
-          type: "i32";
-        },
-        {
-          name: "bpsToRemove";
-          type: "u16";
+          name: "status";
+          type: "u8";
         }
       ];
     },
     {
-      name: "addLiquidityOneSidePrecise";
-      discriminator: [161, 194, 103, 84, 171, 71, 250, 154];
+      name: "setPairStatusPermissionless";
+      discriminator: [78, 59, 152, 211, 70, 183, 46, 208];
       accounts: [
-        {
-          name: "position";
-          writable: true;
-        },
         {
           name: "lbPair";
           writable: true;
         },
         {
-          name: "binArrayBitmapExtension";
-          writable: true;
-          optional: true;
-        },
-        {
-          name: "userToken";
-          writable: true;
-        },
-        {
-          name: "reserve";
-          writable: true;
-        },
-        {
-          name: "tokenMint";
-        },
-        {
-          name: "binArrayLower";
-          writable: true;
-        },
-        {
-          name: "binArrayUpper";
-          writable: true;
-        },
-        {
-          name: "sender";
+          name: "creator";
           signer: true;
-        },
-        {
-          name: "tokenProgram";
-        },
-        {
-          name: "eventAuthority";
-        },
-        {
-          name: "program";
+          relations: ["lbPair"];
         }
       ];
       args: [
         {
-          name: "parameter";
-          type: {
-            defined: {
-              name: "addLiquiditySingleSidePreciseParameter";
-            };
-          };
-        }
-      ];
-    },
-    {
-      name: "goToABin";
-      discriminator: [146, 72, 174, 224, 40, 253, 84, 174];
-      accounts: [
-        {
-          name: "lbPair";
-          writable: true;
-        },
-        {
-          name: "binArrayBitmapExtension";
-          optional: true;
-        },
-        {
-          name: "fromBinArray";
-          optional: true;
-        },
-        {
-          name: "toBinArray";
-          optional: true;
-        },
-        {
-          name: "eventAuthority";
-        },
-        {
-          name: "program";
-        }
-      ];
-      args: [
-        {
-          name: "binId";
-          type: "i32";
+          name: "status";
+          type: "u8";
         }
       ];
     },
@@ -2086,6 +4281,7 @@ export type LbClmm = {
         {
           name: "creator";
           signer: true;
+          relations: ["lbPair"];
         }
       ];
       args: [
@@ -2106,6 +4302,7 @@ export type LbClmm = {
         {
           name: "creator";
           signer: true;
+          relations: ["lbPair"];
         }
       ];
       args: [
@@ -2116,783 +4313,13 @@ export type LbClmm = {
       ];
     },
     {
-      name: "setPairStatusPermissionless";
-      discriminator: [78, 59, 152, 211, 70, 183, 46, 208];
+      name: "swap";
+      discriminator: [248, 198, 158, 145, 225, 117, 135, 200];
       accounts: [
         {
           name: "lbPair";
           writable: true;
-        },
-        {
-          name: "creator";
-          signer: true;
-        }
-      ];
-      args: [
-        {
-          name: "status";
-          type: "u8";
-        }
-      ];
-    },
-    {
-      name: "initializeTokenBadge";
-      discriminator: [253, 77, 205, 95, 27, 224, 89, 223];
-      accounts: [
-        {
-          name: "tokenMint";
-        },
-        {
-          name: "tokenBadge";
-          writable: true;
-        },
-        {
-          name: "admin";
-          writable: true;
-          signer: true;
-        },
-        {
-          name: "systemProgram";
-        }
-      ];
-      args: [];
-    },
-    {
-      name: "createClaimProtocolFeeOperator";
-      discriminator: [51, 19, 150, 252, 105, 157, 48, 91];
-      accounts: [
-        {
-          name: "claimFeeOperator";
-          writable: true;
-        },
-        {
-          name: "operator";
-        },
-        {
-          name: "admin";
-          writable: true;
-          signer: true;
-        },
-        {
-          name: "systemProgram";
-        }
-      ];
-      args: [];
-    },
-    {
-      name: "closeClaimProtocolFeeOperator";
-      discriminator: [8, 41, 87, 35, 80, 48, 121, 26];
-      accounts: [
-        {
-          name: "claimFeeOperator";
-          writable: true;
-        },
-        {
-          name: "rentReceiver";
-          writable: true;
-        },
-        {
-          name: "admin";
-          signer: true;
-        }
-      ];
-      args: [];
-    },
-    {
-      name: "initializePresetParameter2";
-      discriminator: [184, 7, 240, 171, 103, 47, 183, 121];
-      accounts: [
-        {
-          name: "presetParameter";
-          writable: true;
-        },
-        {
-          name: "admin";
-          writable: true;
-          signer: true;
-        },
-        {
-          name: "systemProgram";
-        }
-      ];
-      args: [
-        {
-          name: "ix";
-          type: {
-            defined: {
-              name: "initPresetParameters2Ix";
-            };
-          };
-        }
-      ];
-    },
-    {
-      name: "initializeLbPair2";
-      discriminator: [73, 59, 36, 120, 237, 83, 108, 198];
-      accounts: [
-        {
-          name: "lbPair";
-          writable: true;
-        },
-        {
-          name: "binArrayBitmapExtension";
-          writable: true;
-          optional: true;
-        },
-        {
-          name: "tokenMintX";
-        },
-        {
-          name: "tokenMintY";
-        },
-        {
-          name: "reserveX";
-          writable: true;
-        },
-        {
-          name: "reserveY";
-          writable: true;
-        },
-        {
-          name: "oracle";
-          writable: true;
-        },
-        {
-          name: "presetParameter";
-        },
-        {
-          name: "funder";
-          writable: true;
-          signer: true;
-        },
-        {
-          name: "tokenBadgeX";
-          optional: true;
-        },
-        {
-          name: "tokenBadgeY";
-          optional: true;
-        },
-        {
-          name: "tokenProgramX";
-        },
-        {
-          name: "tokenProgramY";
-        },
-        {
-          name: "systemProgram";
-        },
-        {
-          name: "eventAuthority";
-        },
-        {
-          name: "program";
-        }
-      ];
-      args: [
-        {
-          name: "params";
-          type: {
-            defined: {
-              name: "initializeLbPair2Params";
-            };
-          };
-        }
-      ];
-    },
-    {
-      name: "initializeCustomizablePermissionlessLbPair2";
-      discriminator: [243, 73, 129, 126, 51, 19, 241, 107];
-      accounts: [
-        {
-          name: "lbPair";
-          writable: true;
-        },
-        {
-          name: "binArrayBitmapExtension";
-          writable: true;
-          optional: true;
-        },
-        {
-          name: "tokenMintX";
-        },
-        {
-          name: "tokenMintY";
-        },
-        {
-          name: "reserveX";
-          writable: true;
-        },
-        {
-          name: "reserveY";
-          writable: true;
-        },
-        {
-          name: "oracle";
-          writable: true;
-        },
-        {
-          name: "userTokenX";
-        },
-        {
-          name: "funder";
-          writable: true;
-          signer: true;
-        },
-        {
-          name: "tokenBadgeX";
-          optional: true;
-        },
-        {
-          name: "tokenBadgeY";
-          optional: true;
-        },
-        {
-          name: "tokenProgramX";
-        },
-        {
-          name: "tokenProgramY";
-        },
-        {
-          name: "systemProgram";
-        },
-        {
-          name: "userTokenY";
-        },
-        {
-          name: "eventAuthority";
-        },
-        {
-          name: "program";
-        }
-      ];
-      args: [
-        {
-          name: "params";
-          type: {
-            defined: {
-              name: "customizableParams";
-            };
-          };
-        }
-      ];
-    },
-    {
-      name: "claimFee2";
-      discriminator: [112, 191, 101, 171, 28, 144, 127, 187];
-      accounts: [
-        {
-          name: "lbPair";
-          writable: true;
-        },
-        {
-          name: "position";
-          writable: true;
-        },
-        {
-          name: "sender";
-          signer: true;
-        },
-        {
-          name: "reserveX";
-          writable: true;
-        },
-        {
-          name: "reserveY";
-          writable: true;
-        },
-        {
-          name: "userTokenX";
-          writable: true;
-        },
-        {
-          name: "userTokenY";
-          writable: true;
-        },
-        {
-          name: "tokenXMint";
-        },
-        {
-          name: "tokenYMint";
-        },
-        {
-          name: "tokenProgramX";
-        },
-        {
-          name: "tokenProgramY";
-        },
-        {
-          name: "memoProgram";
-        },
-        {
-          name: "eventAuthority";
-        },
-        {
-          name: "program";
-        }
-      ];
-      args: [
-        {
-          name: "minBinId";
-          type: "i32";
-        },
-        {
-          name: "maxBinId";
-          type: "i32";
-        },
-        {
-          name: "remainingAccountsInfo";
-          type: {
-            defined: {
-              name: "remainingAccountsInfo";
-            };
-          };
-        }
-      ];
-    },
-    {
-      name: "claimReward2";
-      discriminator: [190, 3, 127, 119, 178, 87, 157, 183];
-      accounts: [
-        {
-          name: "lbPair";
-          writable: true;
-        },
-        {
-          name: "position";
-          writable: true;
-        },
-        {
-          name: "sender";
-          signer: true;
-        },
-        {
-          name: "rewardVault";
-          writable: true;
-        },
-        {
-          name: "rewardMint";
-        },
-        {
-          name: "userTokenAccount";
-          writable: true;
-        },
-        {
-          name: "tokenProgram";
-        },
-        {
-          name: "memoProgram";
-        },
-        {
-          name: "eventAuthority";
-        },
-        {
-          name: "program";
-        }
-      ];
-      args: [
-        {
-          name: "rewardIndex";
-          type: "u64";
-        },
-        {
-          name: "minBinId";
-          type: "i32";
-        },
-        {
-          name: "maxBinId";
-          type: "i32";
-        },
-        {
-          name: "remainingAccountsInfo";
-          type: {
-            defined: {
-              name: "remainingAccountsInfo";
-            };
-          };
-        }
-      ];
-    },
-    {
-      name: "addLiquidity2";
-      discriminator: [228, 162, 78, 28, 70, 219, 116, 115];
-      accounts: [
-        {
-          name: "position";
-          writable: true;
-        },
-        {
-          name: "lbPair";
-          writable: true;
-        },
-        {
-          name: "binArrayBitmapExtension";
-          writable: true;
-          optional: true;
-        },
-        {
-          name: "userTokenX";
-          writable: true;
-        },
-        {
-          name: "userTokenY";
-          writable: true;
-        },
-        {
-          name: "reserveX";
-          writable: true;
-        },
-        {
-          name: "reserveY";
-          writable: true;
-        },
-        {
-          name: "tokenXMint";
-        },
-        {
-          name: "tokenYMint";
-        },
-        {
-          name: "sender";
-          signer: true;
-        },
-        {
-          name: "tokenXProgram";
-        },
-        {
-          name: "tokenYProgram";
-        },
-        {
-          name: "eventAuthority";
-        },
-        {
-          name: "program";
-        }
-      ];
-      args: [
-        {
-          name: "liquidityParameter";
-          type: {
-            defined: {
-              name: "liquidityParameter";
-            };
-          };
-        },
-        {
-          name: "remainingAccountsInfo";
-          type: {
-            defined: {
-              name: "remainingAccountsInfo";
-            };
-          };
-        }
-      ];
-    },
-    {
-      name: "addLiquidityByStrategy2";
-      discriminator: [3, 221, 149, 218, 111, 141, 118, 213];
-      accounts: [
-        {
-          name: "position";
-          writable: true;
-        },
-        {
-          name: "lbPair";
-          writable: true;
-        },
-        {
-          name: "binArrayBitmapExtension";
-          writable: true;
-          optional: true;
-        },
-        {
-          name: "userTokenX";
-          writable: true;
-        },
-        {
-          name: "userTokenY";
-          writable: true;
-        },
-        {
-          name: "reserveX";
-          writable: true;
-        },
-        {
-          name: "reserveY";
-          writable: true;
-        },
-        {
-          name: "tokenXMint";
-        },
-        {
-          name: "tokenYMint";
-        },
-        {
-          name: "sender";
-          signer: true;
-        },
-        {
-          name: "tokenXProgram";
-        },
-        {
-          name: "tokenYProgram";
-        },
-        {
-          name: "eventAuthority";
-        },
-        {
-          name: "program";
-        }
-      ];
-      args: [
-        {
-          name: "liquidityParameter";
-          type: {
-            defined: {
-              name: "liquidityParameterByStrategy";
-            };
-          };
-        },
-        {
-          name: "remainingAccountsInfo";
-          type: {
-            defined: {
-              name: "remainingAccountsInfo";
-            };
-          };
-        }
-      ];
-    },
-    {
-      name: "addLiquidityOneSidePrecise2";
-      discriminator: [33, 51, 163, 201, 117, 98, 125, 231];
-      accounts: [
-        {
-          name: "position";
-          writable: true;
-        },
-        {
-          name: "lbPair";
-          writable: true;
-        },
-        {
-          name: "binArrayBitmapExtension";
-          writable: true;
-          optional: true;
-        },
-        {
-          name: "userToken";
-          writable: true;
-        },
-        {
-          name: "reserve";
-          writable: true;
-        },
-        {
-          name: "tokenMint";
-        },
-        {
-          name: "sender";
-          signer: true;
-        },
-        {
-          name: "tokenProgram";
-        },
-        {
-          name: "eventAuthority";
-        },
-        {
-          name: "program";
-        }
-      ];
-      args: [
-        {
-          name: "liquidityParameter";
-          type: {
-            defined: {
-              name: "addLiquiditySingleSidePreciseParameter2";
-            };
-          };
-        },
-        {
-          name: "remainingAccountsInfo";
-          type: {
-            defined: {
-              name: "remainingAccountsInfo";
-            };
-          };
-        }
-      ];
-    },
-    {
-      name: "removeLiquidity2";
-      discriminator: [230, 215, 82, 127, 241, 101, 227, 146];
-      accounts: [
-        {
-          name: "position";
-          writable: true;
-        },
-        {
-          name: "lbPair";
-          writable: true;
-        },
-        {
-          name: "binArrayBitmapExtension";
-          writable: true;
-          optional: true;
-        },
-        {
-          name: "userTokenX";
-          writable: true;
-        },
-        {
-          name: "userTokenY";
-          writable: true;
-        },
-        {
-          name: "reserveX";
-          writable: true;
-        },
-        {
-          name: "reserveY";
-          writable: true;
-        },
-        {
-          name: "tokenXMint";
-        },
-        {
-          name: "tokenYMint";
-        },
-        {
-          name: "sender";
-          signer: true;
-        },
-        {
-          name: "tokenXProgram";
-        },
-        {
-          name: "tokenYProgram";
-        },
-        {
-          name: "memoProgram";
-        },
-        {
-          name: "eventAuthority";
-        },
-        {
-          name: "program";
-        }
-      ];
-      args: [
-        {
-          name: "binLiquidityRemoval";
-          type: {
-            vec: {
-              defined: {
-                name: "binLiquidityReduction";
-              };
-            };
-          };
-        },
-        {
-          name: "remainingAccountsInfo";
-          type: {
-            defined: {
-              name: "remainingAccountsInfo";
-            };
-          };
-        }
-      ];
-    },
-    {
-      name: "removeLiquidityByRange2";
-      discriminator: [204, 2, 195, 145, 53, 145, 145, 205];
-      accounts: [
-        {
-          name: "position";
-          writable: true;
-        },
-        {
-          name: "lbPair";
-          writable: true;
-        },
-        {
-          name: "binArrayBitmapExtension";
-          writable: true;
-          optional: true;
-        },
-        {
-          name: "userTokenX";
-          writable: true;
-        },
-        {
-          name: "userTokenY";
-          writable: true;
-        },
-        {
-          name: "reserveX";
-          writable: true;
-        },
-        {
-          name: "reserveY";
-          writable: true;
-        },
-        {
-          name: "tokenXMint";
-        },
-        {
-          name: "tokenYMint";
-        },
-        {
-          name: "sender";
-          signer: true;
-        },
-        {
-          name: "tokenXProgram";
-        },
-        {
-          name: "tokenYProgram";
-        },
-        {
-          name: "memoProgram";
-        },
-        {
-          name: "eventAuthority";
-        },
-        {
-          name: "program";
-        }
-      ];
-      args: [
-        {
-          name: "fromBinId";
-          type: "i32";
-        },
-        {
-          name: "toBinId";
-          type: "i32";
-        },
-        {
-          name: "bpsToRemove";
-          type: "u16";
-        },
-        {
-          name: "remainingAccountsInfo";
-          type: {
-            defined: {
-              name: "remainingAccountsInfo";
-            };
-          };
-        }
-      ];
-    },
-    {
-      name: "swap2";
-      discriminator: [65, 75, 63, 76, 235, 91, 91, 136];
-      accounts: [
-        {
-          name: "lbPair";
-          writable: true;
+          relations: ["binArrayBitmapExtension"];
         },
         {
           name: "binArrayBitmapExtension";
@@ -2901,10 +4328,12 @@ export type LbClmm = {
         {
           name: "reserveX";
           writable: true;
+          relations: ["lbPair"];
         },
         {
           name: "reserveY";
           writable: true;
+          relations: ["lbPair"];
         },
         {
           name: "userTokenIn";
@@ -2916,13 +4345,121 @@ export type LbClmm = {
         },
         {
           name: "tokenXMint";
+          relations: ["lbPair"];
         },
         {
           name: "tokenYMint";
+          relations: ["lbPair"];
         },
         {
           name: "oracle";
           writable: true;
+          relations: ["lbPair"];
+        },
+        {
+          name: "hostFeeIn";
+          writable: true;
+          optional: true;
+        },
+        {
+          name: "user";
+          signer: true;
+        },
+        {
+          name: "tokenXProgram";
+          address: "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
+        },
+        {
+          name: "tokenYProgram";
+          address: "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
+        },
+        {
+          name: "eventAuthority";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ];
+              }
+            ];
+          };
+        },
+        {
+          name: "program";
+        }
+      ];
+      args: [
+        {
+          name: "amountIn";
+          type: "u64";
+        },
+        {
+          name: "minAmountOut";
+          type: "u64";
+        }
+      ];
+    },
+    {
+      name: "swap2";
+      discriminator: [65, 75, 63, 76, 235, 91, 91, 136];
+      accounts: [
+        {
+          name: "lbPair";
+          writable: true;
+          relations: ["binArrayBitmapExtension"];
+        },
+        {
+          name: "binArrayBitmapExtension";
+          optional: true;
+        },
+        {
+          name: "reserveX";
+          writable: true;
+          relations: ["lbPair"];
+        },
+        {
+          name: "reserveY";
+          writable: true;
+          relations: ["lbPair"];
+        },
+        {
+          name: "userTokenIn";
+          writable: true;
+        },
+        {
+          name: "userTokenOut";
+          writable: true;
+        },
+        {
+          name: "tokenXMint";
+          relations: ["lbPair"];
+        },
+        {
+          name: "tokenYMint";
+          relations: ["lbPair"];
+        },
+        {
+          name: "oracle";
+          writable: true;
+          relations: ["lbPair"];
         },
         {
           name: "hostFeeIn";
@@ -2941,9 +4478,36 @@ export type LbClmm = {
         },
         {
           name: "memoProgram";
+          address: "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr";
         },
         {
           name: "eventAuthority";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ];
+              }
+            ];
+          };
         },
         {
           name: "program";
@@ -2969,12 +4533,13 @@ export type LbClmm = {
       ];
     },
     {
-      name: "swapExactOut2";
-      discriminator: [43, 215, 247, 132, 137, 60, 243, 81];
+      name: "swapExactOut";
+      discriminator: [250, 73, 101, 33, 38, 207, 75, 184];
       accounts: [
         {
           name: "lbPair";
           writable: true;
+          relations: ["binArrayBitmapExtension"];
         },
         {
           name: "binArrayBitmapExtension";
@@ -2983,10 +4548,12 @@ export type LbClmm = {
         {
           name: "reserveX";
           writable: true;
+          relations: ["lbPair"];
         },
         {
           name: "reserveY";
           writable: true;
+          relations: ["lbPair"];
         },
         {
           name: "userTokenIn";
@@ -2998,13 +4565,121 @@ export type LbClmm = {
         },
         {
           name: "tokenXMint";
+          relations: ["lbPair"];
         },
         {
           name: "tokenYMint";
+          relations: ["lbPair"];
         },
         {
           name: "oracle";
           writable: true;
+          relations: ["lbPair"];
+        },
+        {
+          name: "hostFeeIn";
+          writable: true;
+          optional: true;
+        },
+        {
+          name: "user";
+          signer: true;
+        },
+        {
+          name: "tokenXProgram";
+          address: "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
+        },
+        {
+          name: "tokenYProgram";
+          address: "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
+        },
+        {
+          name: "eventAuthority";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ];
+              }
+            ];
+          };
+        },
+        {
+          name: "program";
+        }
+      ];
+      args: [
+        {
+          name: "maxInAmount";
+          type: "u64";
+        },
+        {
+          name: "outAmount";
+          type: "u64";
+        }
+      ];
+    },
+    {
+      name: "swapExactOut2";
+      discriminator: [43, 215, 247, 132, 137, 60, 243, 81];
+      accounts: [
+        {
+          name: "lbPair";
+          writable: true;
+          relations: ["binArrayBitmapExtension"];
+        },
+        {
+          name: "binArrayBitmapExtension";
+          optional: true;
+        },
+        {
+          name: "reserveX";
+          writable: true;
+          relations: ["lbPair"];
+        },
+        {
+          name: "reserveY";
+          writable: true;
+          relations: ["lbPair"];
+        },
+        {
+          name: "userTokenIn";
+          writable: true;
+        },
+        {
+          name: "userTokenOut";
+          writable: true;
+        },
+        {
+          name: "tokenXMint";
+          relations: ["lbPair"];
+        },
+        {
+          name: "tokenYMint";
+          relations: ["lbPair"];
+        },
+        {
+          name: "oracle";
+          writable: true;
+          relations: ["lbPair"];
         },
         {
           name: "hostFeeIn";
@@ -3023,9 +4698,36 @@ export type LbClmm = {
         },
         {
           name: "memoProgram";
+          address: "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr";
         },
         {
           name: "eventAuthority";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ];
+              }
+            ];
+          };
         },
         {
           name: "program";
@@ -3051,12 +4753,13 @@ export type LbClmm = {
       ];
     },
     {
-      name: "swapWithPriceImpact2";
-      discriminator: [74, 98, 192, 214, 177, 51, 75, 51];
+      name: "swapWithPriceImpact";
+      discriminator: [56, 173, 230, 208, 173, 228, 156, 205];
       accounts: [
         {
           name: "lbPair";
           writable: true;
+          relations: ["binArrayBitmapExtension"];
         },
         {
           name: "binArrayBitmapExtension";
@@ -3065,10 +4768,12 @@ export type LbClmm = {
         {
           name: "reserveX";
           writable: true;
+          relations: ["lbPair"];
         },
         {
           name: "reserveY";
           writable: true;
+          relations: ["lbPair"];
         },
         {
           name: "userTokenIn";
@@ -3080,13 +4785,127 @@ export type LbClmm = {
         },
         {
           name: "tokenXMint";
+          relations: ["lbPair"];
         },
         {
           name: "tokenYMint";
+          relations: ["lbPair"];
         },
         {
           name: "oracle";
           writable: true;
+          relations: ["lbPair"];
+        },
+        {
+          name: "hostFeeIn";
+          writable: true;
+          optional: true;
+        },
+        {
+          name: "user";
+          signer: true;
+        },
+        {
+          name: "tokenXProgram";
+          address: "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
+        },
+        {
+          name: "tokenYProgram";
+          address: "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
+        },
+        {
+          name: "eventAuthority";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ];
+              }
+            ];
+          };
+        },
+        {
+          name: "program";
+        }
+      ];
+      args: [
+        {
+          name: "amountIn";
+          type: "u64";
+        },
+        {
+          name: "activeId";
+          type: {
+            option: "i32";
+          };
+        },
+        {
+          name: "maxPriceImpactBps";
+          type: "u16";
+        }
+      ];
+    },
+    {
+      name: "swapWithPriceImpact2";
+      discriminator: [74, 98, 192, 214, 177, 51, 75, 51];
+      accounts: [
+        {
+          name: "lbPair";
+          writable: true;
+          relations: ["binArrayBitmapExtension"];
+        },
+        {
+          name: "binArrayBitmapExtension";
+          optional: true;
+        },
+        {
+          name: "reserveX";
+          writable: true;
+          relations: ["lbPair"];
+        },
+        {
+          name: "reserveY";
+          writable: true;
+          relations: ["lbPair"];
+        },
+        {
+          name: "userTokenIn";
+          writable: true;
+        },
+        {
+          name: "userTokenOut";
+          writable: true;
+        },
+        {
+          name: "tokenXMint";
+          relations: ["lbPair"];
+        },
+        {
+          name: "tokenYMint";
+          relations: ["lbPair"];
+        },
+        {
+          name: "oracle";
+          writable: true;
+          relations: ["lbPair"];
         },
         {
           name: "hostFeeIn";
@@ -3105,9 +4924,36 @@ export type LbClmm = {
         },
         {
           name: "memoProgram";
+          address: "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr";
         },
         {
           name: "eventAuthority";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ];
+              }
+            ];
+          };
         },
         {
           name: "program";
@@ -3139,29 +4985,116 @@ export type LbClmm = {
       ];
     },
     {
-      name: "closePosition2";
-      discriminator: [174, 90, 35, 115, 186, 40, 147, 226];
+      name: "updateBaseFeeParameters";
+      discriminator: [75, 168, 223, 161, 16, 195, 3, 47];
       accounts: [
         {
-          name: "position";
+          name: "lbPair";
           writable: true;
         },
         {
-          name: "sender";
+          name: "admin";
           signer: true;
         },
         {
-          name: "rentReceiver";
-          writable: true;
-        },
-        {
           name: "eventAuthority";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ];
+              }
+            ];
+          };
         },
         {
           name: "program";
         }
       ];
-      args: [];
+      args: [
+        {
+          name: "feeParameter";
+          type: {
+            defined: {
+              name: "baseFeeParameter";
+            };
+          };
+        }
+      ];
+    },
+    {
+      name: "updateDynamicFeeParameters";
+      discriminator: [92, 161, 46, 246, 255, 189, 22, 22];
+      accounts: [
+        {
+          name: "lbPair";
+          writable: true;
+        },
+        {
+          name: "admin";
+          signer: true;
+        },
+        {
+          name: "eventAuthority";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ];
+              }
+            ];
+          };
+        },
+        {
+          name: "program";
+        }
+      ];
+      args: [
+        {
+          name: "feeParameter";
+          type: {
+            defined: {
+              name: "dynamicFeeParameter";
+            };
+          };
+        }
+      ];
     },
     {
       name: "updateFeesAndReward2";
@@ -3174,6 +5107,7 @@ export type LbClmm = {
         {
           name: "lbPair";
           writable: true;
+          relations: ["position"];
         },
         {
           name: "owner";
@@ -3192,32 +5126,537 @@ export type LbClmm = {
       ];
     },
     {
-      name: "closePositionIfEmpty";
-      discriminator: [59, 124, 212, 118, 91, 152, 110, 157];
+      name: "updateFeesAndRewards";
+      discriminator: [154, 230, 250, 13, 236, 209, 75, 223];
       accounts: [
         {
           name: "position";
           writable: true;
         },
         {
-          name: "sender";
-          signer: true;
+          name: "lbPair";
+          writable: true;
+          relations: ["position", "binArrayLower", "binArrayUpper"];
         },
         {
-          name: "rentReceiver";
+          name: "binArrayLower";
           writable: true;
         },
         {
+          name: "binArrayUpper";
+          writable: true;
+        },
+        {
+          name: "owner";
+          signer: true;
+        }
+      ];
+      args: [];
+    },
+    {
+      name: "updatePositionOperator";
+      discriminator: [202, 184, 103, 143, 180, 191, 116, 217];
+      accounts: [
+        {
+          name: "position";
+          writable: true;
+        },
+        {
+          name: "owner";
+          signer: true;
+          relations: ["position"];
+        },
+        {
           name: "eventAuthority";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ];
+              }
+            ];
+          };
         },
         {
           name: "program";
         }
       ];
-      args: [];
+      args: [
+        {
+          name: "operator";
+          type: "pubkey";
+        }
+      ];
+    },
+    {
+      name: "updateRewardDuration";
+      discriminator: [138, 174, 196, 169, 213, 235, 254, 107];
+      accounts: [
+        {
+          name: "lbPair";
+          writable: true;
+          relations: ["binArray"];
+        },
+        {
+          name: "admin";
+          signer: true;
+        },
+        {
+          name: "binArray";
+          writable: true;
+        },
+        {
+          name: "eventAuthority";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ];
+              }
+            ];
+          };
+        },
+        {
+          name: "program";
+        }
+      ];
+      args: [
+        {
+          name: "rewardIndex";
+          type: "u64";
+        },
+        {
+          name: "newDuration";
+          type: "u64";
+        }
+      ];
+    },
+    {
+      name: "updateRewardFunder";
+      discriminator: [211, 28, 48, 32, 215, 160, 35, 23];
+      accounts: [
+        {
+          name: "lbPair";
+          writable: true;
+        },
+        {
+          name: "admin";
+          signer: true;
+        },
+        {
+          name: "eventAuthority";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ];
+              }
+            ];
+          };
+        },
+        {
+          name: "program";
+        }
+      ];
+      args: [
+        {
+          name: "rewardIndex";
+          type: "u64";
+        },
+        {
+          name: "newFunder";
+          type: "pubkey";
+        }
+      ];
+    },
+    {
+      name: "withdrawIneligibleReward";
+      discriminator: [148, 206, 42, 195, 247, 49, 103, 8];
+      accounts: [
+        {
+          name: "lbPair";
+          writable: true;
+          relations: ["binArray"];
+        },
+        {
+          name: "rewardVault";
+          writable: true;
+        },
+        {
+          name: "rewardMint";
+        },
+        {
+          name: "funderTokenAccount";
+          writable: true;
+        },
+        {
+          name: "funder";
+          signer: true;
+        },
+        {
+          name: "binArray";
+          writable: true;
+        },
+        {
+          name: "tokenProgram";
+        },
+        {
+          name: "memoProgram";
+          address: "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr";
+        },
+        {
+          name: "eventAuthority";
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ];
+              }
+            ];
+          };
+        },
+        {
+          name: "program";
+        }
+      ];
+      args: [
+        {
+          name: "rewardIndex";
+          type: "u64";
+        },
+        {
+          name: "remainingAccountsInfo";
+          type: {
+            defined: {
+              name: "remainingAccountsInfo";
+            };
+          };
+        }
+      ];
+    },
+    {
+      name: "withdrawProtocolFee";
+      discriminator: [158, 201, 158, 189, 33, 93, 162, 103];
+      accounts: [
+        {
+          name: "lbPair";
+          writable: true;
+        },
+        {
+          name: "reserveX";
+          writable: true;
+          relations: ["lbPair"];
+        },
+        {
+          name: "reserveY";
+          writable: true;
+          relations: ["lbPair"];
+        },
+        {
+          name: "tokenXMint";
+          relations: ["lbPair"];
+        },
+        {
+          name: "tokenYMint";
+          relations: ["lbPair"];
+        },
+        {
+          name: "receiverTokenX";
+          writable: true;
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [
+                  48,
+                  9,
+                  89,
+                  123,
+                  106,
+                  114,
+                  131,
+                  251,
+                  50,
+                  173,
+                  254,
+                  250,
+                  10,
+                  80,
+                  160,
+                  84,
+                  143,
+                  100,
+                  81,
+                  249,
+                  134,
+                  112,
+                  30,
+                  213,
+                  50,
+                  166,
+                  239,
+                  78,
+                  53,
+                  175,
+                  188,
+                  85
+                ];
+              },
+              {
+                kind: "account";
+                path: "tokenXProgram";
+              },
+              {
+                kind: "account";
+                path: "tokenXMint";
+              }
+            ];
+            program: {
+              kind: "const";
+              value: [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ];
+            };
+          };
+        },
+        {
+          name: "receiverTokenY";
+          writable: true;
+          pda: {
+            seeds: [
+              {
+                kind: "const";
+                value: [
+                  48,
+                  9,
+                  89,
+                  123,
+                  106,
+                  114,
+                  131,
+                  251,
+                  50,
+                  173,
+                  254,
+                  250,
+                  10,
+                  80,
+                  160,
+                  84,
+                  143,
+                  100,
+                  81,
+                  249,
+                  134,
+                  112,
+                  30,
+                  213,
+                  50,
+                  166,
+                  239,
+                  78,
+                  53,
+                  175,
+                  188,
+                  85
+                ];
+              },
+              {
+                kind: "account";
+                path: "tokenYProgram";
+              },
+              {
+                kind: "account";
+                path: "tokenYMint";
+              }
+            ];
+            program: {
+              kind: "const";
+              value: [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ];
+            };
+          };
+        },
+        {
+          name: "claimFeeOperator";
+        },
+        {
+          name: "operator";
+          docs: ["operator"];
+          signer: true;
+          relations: ["claimFeeOperator"];
+        },
+        {
+          name: "tokenXProgram";
+        },
+        {
+          name: "tokenYProgram";
+        },
+        {
+          name: "memoProgram";
+          address: "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr";
+        }
+      ];
+      args: [
+        {
+          name: "maxAmountX";
+          type: "u64";
+        },
+        {
+          name: "maxAmountY";
+          type: "u64";
+        },
+        {
+          name: "remainingAccountsInfo";
+          type: {
+            defined: {
+              name: "remainingAccountsInfo";
+            };
+          };
+        }
+      ];
     }
   ];
   accounts: [
+    {
+      name: "binArray";
+      discriminator: [92, 142, 92, 220, 5, 148, 70, 181];
+    },
     {
       name: "binArrayBitmapExtension";
       discriminator: [80, 111, 124, 113, 55, 237, 18, 5];
@@ -3225,6 +5664,10 @@ export type LbClmm = {
     {
       name: "claimFeeOperator";
       discriminator: [166, 48, 134, 86, 34, 200, 188, 150];
+    },
+    {
+      name: "dummyZcAccount";
+      discriminator: [94, 107, 238, 80, 208, 48, 180, 8];
     },
     {
       name: "lbPair";
@@ -3235,12 +5678,20 @@ export type LbClmm = {
       discriminator: [139, 194, 131, 179, 140, 179, 229, 244];
     },
     {
-      name: "presetParameter2";
-      discriminator: [171, 236, 148, 115, 162, 113, 222, 174];
+      name: "position";
+      discriminator: [170, 188, 143, 228, 122, 64, 247, 208];
+    },
+    {
+      name: "positionV2";
+      discriminator: [117, 176, 212, 199, 245, 180, 133, 182];
     },
     {
       name: "presetParameter";
       discriminator: [242, 62, 244, 34, 181, 112, 58, 170];
+    },
+    {
+      name: "presetParameter2";
+      discriminator: [171, 236, 148, 115, 162, 113, 222, 174];
     },
     {
       name: "tokenBadge";
@@ -3249,12 +5700,76 @@ export type LbClmm = {
   ];
   events: [
     {
+      name: "addLiquidity";
+      discriminator: [31, 94, 125, 90, 227, 52, 61, 186];
+    },
+    {
+      name: "claimFee";
+      discriminator: [75, 122, 154, 48, 140, 74, 123, 163];
+    },
+    {
+      name: "claimFee2";
+      discriminator: [232, 171, 242, 97, 58, 77, 35, 45];
+    },
+    {
+      name: "claimReward";
+      discriminator: [148, 116, 134, 204, 22, 171, 85, 95];
+    },
+    {
+      name: "claimReward2";
+      discriminator: [27, 143, 244, 33, 80, 43, 110, 146];
+    },
+    {
       name: "compositionFee";
       discriminator: [128, 151, 123, 106, 17, 102, 113, 142];
     },
     {
-      name: "addLiquidity";
-      discriminator: [31, 94, 125, 90, 227, 52, 61, 186];
+      name: "decreasePositionLength";
+      discriminator: [52, 118, 235, 85, 172, 169, 15, 128];
+    },
+    {
+      name: "dynamicFeeParameterUpdate";
+      discriminator: [88, 88, 178, 135, 194, 146, 91, 243];
+    },
+    {
+      name: "feeParameterUpdate";
+      discriminator: [48, 76, 241, 117, 144, 215, 242, 44];
+    },
+    {
+      name: "fundReward";
+      discriminator: [246, 228, 58, 130, 145, 170, 79, 204];
+    },
+    {
+      name: "goToABin";
+      discriminator: [59, 138, 76, 68, 138, 131, 176, 67];
+    },
+    {
+      name: "increaseObservation";
+      discriminator: [99, 249, 17, 121, 166, 156, 207, 215];
+    },
+    {
+      name: "increasePositionLength";
+      discriminator: [157, 239, 42, 204, 30, 56, 223, 46];
+    },
+    {
+      name: "initializeReward";
+      discriminator: [211, 153, 88, 62, 149, 60, 177, 70];
+    },
+    {
+      name: "lbPairCreate";
+      discriminator: [185, 74, 252, 125, 27, 215, 188, 111];
+    },
+    {
+      name: "positionClose";
+      discriminator: [255, 196, 16, 107, 28, 202, 53, 128];
+    },
+    {
+      name: "positionCreate";
+      discriminator: [144, 142, 252, 84, 157, 53, 37, 121];
+    },
+    {
+      name: "rebalancing";
+      discriminator: [0, 109, 117, 179, 61, 91, 199, 200];
     },
     {
       name: "removeLiquidity";
@@ -3265,16 +5780,12 @@ export type LbClmm = {
       discriminator: [81, 108, 227, 190, 205, 208, 10, 196];
     },
     {
-      name: "claimReward";
-      discriminator: [148, 116, 134, 204, 22, 171, 85, 95];
+      name: "updatePositionLockReleasePoint";
+      discriminator: [133, 214, 66, 224, 64, 12, 7, 191];
     },
     {
-      name: "fundReward";
-      discriminator: [246, 228, 58, 130, 145, 170, 79, 204];
-    },
-    {
-      name: "initializeReward";
-      discriminator: [211, 153, 88, 62, 149, 60, 177, 70];
+      name: "updatePositionOperator";
+      discriminator: [39, 115, 48, 204, 246, 47, 66, 57];
     },
     {
       name: "updateRewardDuration";
@@ -3285,56 +5796,8 @@ export type LbClmm = {
       discriminator: [224, 178, 174, 74, 252, 165, 85, 180];
     },
     {
-      name: "positionClose";
-      discriminator: [255, 196, 16, 107, 28, 202, 53, 128];
-    },
-    {
-      name: "claimFee";
-      discriminator: [75, 122, 154, 48, 140, 74, 123, 163];
-    },
-    {
-      name: "lbPairCreate";
-      discriminator: [185, 74, 252, 125, 27, 215, 188, 111];
-    },
-    {
-      name: "positionCreate";
-      discriminator: [144, 142, 252, 84, 157, 53, 37, 121];
-    },
-    {
-      name: "increasePositionLength";
-      discriminator: [157, 239, 42, 204, 30, 56, 223, 46];
-    },
-    {
-      name: "decreasePositionLength";
-      discriminator: [52, 118, 235, 85, 172, 169, 15, 128];
-    },
-    {
-      name: "feeParameterUpdate";
-      discriminator: [48, 76, 241, 117, 144, 215, 242, 44];
-    },
-    {
-      name: "dynamicFeeParameterUpdate";
-      discriminator: [88, 88, 178, 135, 194, 146, 91, 243];
-    },
-    {
-      name: "increaseObservation";
-      discriminator: [99, 249, 17, 121, 166, 156, 207, 215];
-    },
-    {
       name: "withdrawIneligibleReward";
       discriminator: [231, 189, 65, 149, 102, 215, 154, 244];
-    },
-    {
-      name: "updatePositionOperator";
-      discriminator: [39, 115, 48, 204, 246, 47, 66, 57];
-    },
-    {
-      name: "updatePositionLockReleasePoint";
-      discriminator: [133, 214, 66, 224, 64, 12, 7, 191];
-    },
-    {
-      name: "goToABin";
-      discriminator: [59, 138, 76, 68, 138, 131, 176, 67];
     }
   ];
   errors: [
@@ -3752,9 +6215,1072 @@ export type LbClmm = {
       code: 6082;
       name: "notSupportAtTheMoment";
       msg: "Not support at the moment";
+    },
+    {
+      code: 6083;
+      name: "invalidRebalanceParameters";
+      msg: "Invalid rebalance parameters";
+    },
+    {
+      code: 6084;
+      name: "invalidRewardAccounts";
+      msg: "Invalid reward accounts";
+    },
+    {
+      code: 6085;
+      name: "undeterminedError";
+      msg: "Undetermined error";
+    },
+    {
+      code: 6086;
+      name: "reallocExceedMaxLengthPerInstruction";
+      msg: "Realloc exceed max length per instruction";
+    },
+    {
+      code: 6087;
+      name: "invalidBaseFeeMantissa";
+      msg: "Mantissa cannot more than two significant digits";
+    },
+    {
+      code: 6088;
+      name: "invalidPositionOwner";
+      msg: "Invalid position owner";
+    },
+    {
+      code: 6089;
+      name: "invalidPoolAddress";
+      msg: "Invalid pool address";
     }
   ];
   types: [
+    {
+      name: "accountsType";
+      type: {
+        kind: "enum";
+        variants: [
+          {
+            name: "transferHookX";
+          },
+          {
+            name: "transferHookY";
+          },
+          {
+            name: "transferHookReward";
+          },
+          {
+            name: "transferHookMultiReward";
+            fields: ["u8"];
+          }
+        ];
+      };
+    },
+    {
+      name: "activationType";
+      docs: ["Type of the activation"];
+      repr: {
+        kind: "rust";
+      };
+      type: {
+        kind: "enum";
+        variants: [
+          {
+            name: "slot";
+          },
+          {
+            name: "timestamp";
+          }
+        ];
+      };
+    },
+    {
+      name: "addLiquidity";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "lbPair";
+            type: "pubkey";
+          },
+          {
+            name: "from";
+            type: "pubkey";
+          },
+          {
+            name: "position";
+            type: "pubkey";
+          },
+          {
+            name: "amounts";
+            type: {
+              array: ["u64", 2];
+            };
+          },
+          {
+            name: "activeBinId";
+            type: "i32";
+          }
+        ];
+      };
+    },
+    {
+      name: "addLiquidityParams";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "minDeltaId";
+            type: "i32";
+          },
+          {
+            name: "maxDeltaId";
+            type: "i32";
+          },
+          {
+            name: "x0";
+            type: "u64";
+          },
+          {
+            name: "y0";
+            type: "u64";
+          },
+          {
+            name: "deltaX";
+            type: "u64";
+          },
+          {
+            name: "deltaY";
+            type: "u64";
+          },
+          {
+            name: "bitFlag";
+            type: "u8";
+          },
+          {
+            name: "favorXInActiveId";
+            type: "bool";
+          },
+          {
+            name: "padding";
+            type: {
+              array: ["u8", 16];
+            };
+          }
+        ];
+      };
+    },
+    {
+      name: "addLiquiditySingleSidePreciseParameter";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "bins";
+            type: {
+              vec: {
+                defined: {
+                  name: "compressedBinDepositAmount";
+                };
+              };
+            };
+          },
+          {
+            name: "decompressMultiplier";
+            type: "u64";
+          }
+        ];
+      };
+    },
+    {
+      name: "addLiquiditySingleSidePreciseParameter2";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "bins";
+            type: {
+              vec: {
+                defined: {
+                  name: "compressedBinDepositAmount";
+                };
+              };
+            };
+          },
+          {
+            name: "decompressMultiplier";
+            type: "u64";
+          },
+          {
+            name: "maxAmount";
+            type: "u64";
+          }
+        ];
+      };
+    },
+    {
+      name: "baseFeeParameter";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "protocolShare";
+            docs: [
+              "Portion of swap fees retained by the protocol by controlling protocol_share parameter. protocol_swap_fee = protocol_share * total_swap_fee"
+            ];
+            type: "u16";
+          },
+          {
+            name: "baseFactor";
+            docs: ["Base factor for base fee rate"];
+            type: "u16";
+          },
+          {
+            name: "baseFeePowerFactor";
+            docs: ["Base fee power factor"];
+            type: "u8";
+          }
+        ];
+      };
+    },
+    {
+      name: "bin";
+      serialization: "bytemuck";
+      repr: {
+        kind: "c";
+      };
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "amountX";
+            docs: [
+              "Amount of token X in the bin. This already excluded protocol fees."
+            ];
+            type: "u64";
+          },
+          {
+            name: "amountY";
+            docs: [
+              "Amount of token Y in the bin. This already excluded protocol fees."
+            ];
+            type: "u64";
+          },
+          {
+            name: "price";
+            docs: ["Bin price"];
+            type: "u128";
+          },
+          {
+            name: "liquiditySupply";
+            docs: [
+              "Liquidities of the bin. This is the same as LP mint supply. q-number"
+            ];
+            type: "u128";
+          },
+          {
+            name: "rewardPerTokenStored";
+            docs: ["reward_a_per_token_stored"];
+            type: {
+              array: ["u128", 2];
+            };
+          },
+          {
+            name: "feeAmountXPerTokenStored";
+            docs: ["Swap fee amount of token X per liquidity deposited."];
+            type: "u128";
+          },
+          {
+            name: "feeAmountYPerTokenStored";
+            docs: ["Swap fee amount of token Y per liquidity deposited."];
+            type: "u128";
+          },
+          {
+            name: "amountXIn";
+            docs: [
+              "Total token X swap into the bin. Only used for tracking purpose."
+            ];
+            type: "u128";
+          },
+          {
+            name: "amountYIn";
+            docs: [
+              "Total token Y swap into he bin. Only used for tracking purpose."
+            ];
+            type: "u128";
+          }
+        ];
+      };
+    },
+    {
+      name: "binArray";
+      docs: [
+        "An account to contain a range of bin. For example: Bin 100 <-> 200.",
+        "For example:",
+        "BinArray index: 0 contains bin 0 <-> 599",
+        "index: 2 contains bin 600 <-> 1199, ..."
+      ];
+      serialization: "bytemuck";
+      repr: {
+        kind: "c";
+      };
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "index";
+            type: "i64";
+          },
+          {
+            name: "version";
+            docs: ["Version of binArray"];
+            type: "u8";
+          },
+          {
+            name: "padding";
+            type: {
+              array: ["u8", 7];
+            };
+          },
+          {
+            name: "lbPair";
+            type: "pubkey";
+          },
+          {
+            name: "bins";
+            type: {
+              array: [
+                {
+                  defined: {
+                    name: "bin";
+                  };
+                },
+                70
+              ];
+            };
+          }
+        ];
+      };
+    },
+    {
+      name: "binArrayBitmapExtension";
+      serialization: "bytemuck";
+      repr: {
+        kind: "c";
+      };
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "lbPair";
+            type: "pubkey";
+          },
+          {
+            name: "positiveBinArrayBitmap";
+            docs: [
+              "Packed initialized bin array state for start_bin_index is positive"
+            ];
+            type: {
+              array: [
+                {
+                  array: ["u64", 8];
+                },
+                12
+              ];
+            };
+          },
+          {
+            name: "negativeBinArrayBitmap";
+            docs: [
+              "Packed initialized bin array state for start_bin_index is negative"
+            ];
+            type: {
+              array: [
+                {
+                  array: ["u64", 8];
+                },
+                12
+              ];
+            };
+          }
+        ];
+      };
+    },
+    {
+      name: "binLiquidityDistribution";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "binId";
+            docs: ["Define the bin ID wish to deposit to."];
+            type: "i32";
+          },
+          {
+            name: "distributionX";
+            docs: [
+              "DistributionX (or distributionY) is the percentages of amountX (or amountY) you want to add to each bin."
+            ];
+            type: "u16";
+          },
+          {
+            name: "distributionY";
+            docs: [
+              "DistributionX (or distributionY) is the percentages of amountX (or amountY) you want to add to each bin."
+            ];
+            type: "u16";
+          }
+        ];
+      };
+    },
+    {
+      name: "binLiquidityDistributionByWeight";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "binId";
+            docs: ["Define the bin ID wish to deposit to."];
+            type: "i32";
+          },
+          {
+            name: "weight";
+            docs: ["weight of liquidity distributed for this bin id"];
+            type: "u16";
+          }
+        ];
+      };
+    },
+    {
+      name: "binLiquidityReduction";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "binId";
+            type: "i32";
+          },
+          {
+            name: "bpsToRemove";
+            type: "u16";
+          }
+        ];
+      };
+    },
+    {
+      name: "claimFee";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "lbPair";
+            type: "pubkey";
+          },
+          {
+            name: "position";
+            type: "pubkey";
+          },
+          {
+            name: "owner";
+            type: "pubkey";
+          },
+          {
+            name: "feeX";
+            type: "u64";
+          },
+          {
+            name: "feeY";
+            type: "u64";
+          }
+        ];
+      };
+    },
+    {
+      name: "claimFee2";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "lbPair";
+            type: "pubkey";
+          },
+          {
+            name: "position";
+            type: "pubkey";
+          },
+          {
+            name: "owner";
+            type: "pubkey";
+          },
+          {
+            name: "feeX";
+            type: "u64";
+          },
+          {
+            name: "feeY";
+            type: "u64";
+          },
+          {
+            name: "activeBinId";
+            type: "i32";
+          }
+        ];
+      };
+    },
+    {
+      name: "claimFeeOperator";
+      docs: ["Parameter that set by the protocol"];
+      serialization: "bytemuck";
+      repr: {
+        kind: "c";
+      };
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "operator";
+            docs: ["operator"];
+            type: "pubkey";
+          },
+          {
+            name: "padding";
+            docs: ["Reserve"];
+            type: {
+              array: ["u8", 128];
+            };
+          }
+        ];
+      };
+    },
+    {
+      name: "claimReward";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "lbPair";
+            type: "pubkey";
+          },
+          {
+            name: "position";
+            type: "pubkey";
+          },
+          {
+            name: "owner";
+            type: "pubkey";
+          },
+          {
+            name: "rewardIndex";
+            type: "u64";
+          },
+          {
+            name: "totalReward";
+            type: "u64";
+          }
+        ];
+      };
+    },
+    {
+      name: "claimReward2";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "lbPair";
+            type: "pubkey";
+          },
+          {
+            name: "position";
+            type: "pubkey";
+          },
+          {
+            name: "owner";
+            type: "pubkey";
+          },
+          {
+            name: "rewardIndex";
+            type: "u64";
+          },
+          {
+            name: "totalReward";
+            type: "u64";
+          },
+          {
+            name: "activeBinId";
+            type: "i32";
+          }
+        ];
+      };
+    },
+    {
+      name: "compositionFee";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "from";
+            type: "pubkey";
+          },
+          {
+            name: "binId";
+            type: "i16";
+          },
+          {
+            name: "tokenXFeeAmount";
+            type: "u64";
+          },
+          {
+            name: "tokenYFeeAmount";
+            type: "u64";
+          },
+          {
+            name: "protocolTokenXFeeAmount";
+            type: "u64";
+          },
+          {
+            name: "protocolTokenYFeeAmount";
+            type: "u64";
+          }
+        ];
+      };
+    },
+    {
+      name: "compressedBinDepositAmount";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "binId";
+            type: "i32";
+          },
+          {
+            name: "amount";
+            type: "u32";
+          }
+        ];
+      };
+    },
+    {
+      name: "customizableParams";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "activeId";
+            docs: ["Pool price"];
+            type: "i32";
+          },
+          {
+            name: "binStep";
+            docs: ["Bin step"];
+            type: "u16";
+          },
+          {
+            name: "baseFactor";
+            docs: ["Base factor"];
+            type: "u16";
+          },
+          {
+            name: "activationType";
+            docs: [
+              "Activation type. 0 = Slot, 1 = Time. Check ActivationType enum"
+            ];
+            type: "u8";
+          },
+          {
+            name: "hasAlphaVault";
+            docs: ["Whether the pool has an alpha vault"];
+            type: "bool";
+          },
+          {
+            name: "activationPoint";
+            docs: ["Decide when does the pool start trade. None = Now"];
+            type: {
+              option: "u64";
+            };
+          },
+          {
+            name: "creatorPoolOnOffControl";
+            docs: [
+              "Pool creator have permission to enable/disable pool with restricted program validation. Only applicable for customizable permissionless pool."
+            ];
+            type: "bool";
+          },
+          {
+            name: "baseFeePowerFactor";
+            docs: ["Base fee power factor"];
+            type: "u8";
+          },
+          {
+            name: "padding";
+            docs: ["Padding, for future use"];
+            type: {
+              array: ["u8", 62];
+            };
+          }
+        ];
+      };
+    },
+    {
+      name: "decreasePositionLength";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "lbPair";
+            type: "pubkey";
+          },
+          {
+            name: "position";
+            type: "pubkey";
+          },
+          {
+            name: "owner";
+            type: "pubkey";
+          },
+          {
+            name: "lengthToRemove";
+            type: "u16";
+          },
+          {
+            name: "side";
+            type: "u8";
+          }
+        ];
+      };
+    },
+    {
+      name: "dummyIx";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "pairStatus";
+            type: {
+              defined: {
+                name: "pairStatus";
+              };
+            };
+          },
+          {
+            name: "pairType";
+            type: {
+              defined: {
+                name: "pairType";
+              };
+            };
+          },
+          {
+            name: "activationType";
+            type: {
+              defined: {
+                name: "activationType";
+              };
+            };
+          },
+          {
+            name: "tokenProgramFlag";
+            type: {
+              defined: {
+                name: "tokenProgramFlags";
+              };
+            };
+          },
+          {
+            name: "resizeSide";
+            type: {
+              defined: {
+                name: "resizeSide";
+              };
+            };
+          },
+          {
+            name: "rounding";
+            type: {
+              defined: {
+                name: "rounding";
+              };
+            };
+          }
+        ];
+      };
+    },
+    {
+      name: "dummyZcAccount";
+      serialization: "bytemuck";
+      repr: {
+        kind: "c";
+      };
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "positionBinData";
+            type: {
+              defined: {
+                name: "positionBinData";
+              };
+            };
+          }
+        ];
+      };
+    },
+    {
+      name: "dynamicFeeParameter";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "filterPeriod";
+            docs: [
+              "Filter period determine high frequency trading time window."
+            ];
+            type: "u16";
+          },
+          {
+            name: "decayPeriod";
+            docs: [
+              "Decay period determine when the volatile fee start decay / decrease."
+            ];
+            type: "u16";
+          },
+          {
+            name: "reductionFactor";
+            docs: [
+              "Reduction factor controls the volatile fee rate decrement rate."
+            ];
+            type: "u16";
+          },
+          {
+            name: "variableFeeControl";
+            docs: [
+              "Used to scale the variable fee component depending on the dynamic of the market"
+            ];
+            type: "u32";
+          },
+          {
+            name: "maxVolatilityAccumulator";
+            docs: [
+              "Maximum number of bin crossed can be accumulated. Used to cap volatile fee rate."
+            ];
+            type: "u32";
+          }
+        ];
+      };
+    },
+    {
+      name: "dynamicFeeParameterUpdate";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "lbPair";
+            type: "pubkey";
+          },
+          {
+            name: "filterPeriod";
+            docs: [
+              "Filter period determine high frequency trading time window."
+            ];
+            type: "u16";
+          },
+          {
+            name: "decayPeriod";
+            docs: [
+              "Decay period determine when the volatile fee start decay / decrease."
+            ];
+            type: "u16";
+          },
+          {
+            name: "reductionFactor";
+            docs: [
+              "Reduction factor controls the volatile fee rate decrement rate."
+            ];
+            type: "u16";
+          },
+          {
+            name: "variableFeeControl";
+            docs: [
+              "Used to scale the variable fee component depending on the dynamic of the market"
+            ];
+            type: "u32";
+          },
+          {
+            name: "maxVolatilityAccumulator";
+            docs: [
+              "Maximum number of bin crossed can be accumulated. Used to cap volatile fee rate."
+            ];
+            type: "u32";
+          }
+        ];
+      };
+    },
+    {
+      name: "feeInfo";
+      serialization: "bytemuck";
+      repr: {
+        kind: "c";
+      };
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "feeXPerTokenComplete";
+            type: "u128";
+          },
+          {
+            name: "feeYPerTokenComplete";
+            type: "u128";
+          },
+          {
+            name: "feeXPending";
+            type: "u64";
+          },
+          {
+            name: "feeYPending";
+            type: "u64";
+          }
+        ];
+      };
+    },
+    {
+      name: "feeParameterUpdate";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "lbPair";
+            type: "pubkey";
+          },
+          {
+            name: "protocolShare";
+            type: "u16";
+          },
+          {
+            name: "baseFactor";
+            type: "u16";
+          }
+        ];
+      };
+    },
+    {
+      name: "fundReward";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "lbPair";
+            type: "pubkey";
+          },
+          {
+            name: "funder";
+            type: "pubkey";
+          },
+          {
+            name: "rewardIndex";
+            type: "u64";
+          },
+          {
+            name: "amount";
+            type: "u64";
+          }
+        ];
+      };
+    },
+    {
+      name: "goToABin";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "lbPair";
+            type: "pubkey";
+          },
+          {
+            name: "fromBinId";
+            type: "i32";
+          },
+          {
+            name: "toBinId";
+            type: "i32";
+          }
+        ];
+      };
+    },
+    {
+      name: "increaseObservation";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "oracle";
+            type: "pubkey";
+          },
+          {
+            name: "newObservationLength";
+            type: "u64";
+          }
+        ];
+      };
+    },
+    {
+      name: "increasePositionLength";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "lbPair";
+            type: "pubkey";
+          },
+          {
+            name: "position";
+            type: "pubkey";
+          },
+          {
+            name: "owner";
+            type: "pubkey";
+          },
+          {
+            name: "lengthToAdd";
+            type: "u16";
+          },
+          {
+            name: "side";
+            type: "u8";
+          }
+        ];
+      };
+    },
+    {
+      name: "initPermissionPairIx";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "activeId";
+            type: "i32";
+          },
+          {
+            name: "binStep";
+            type: "u16";
+          },
+          {
+            name: "baseFactor";
+            type: "u16";
+          },
+          {
+            name: "baseFeePowerFactor";
+            type: "u8";
+          },
+          {
+            name: "activationType";
+            type: "u8";
+          },
+          {
+            name: "protocolShare";
+            type: "u16";
+          }
+        ];
+      };
+    },
     {
       name: "initPresetParameters2Ix";
       type: {
@@ -3889,497 +7415,6 @@ export type LbClmm = {
       };
     },
     {
-      name: "baseFeeParameter";
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "protocolShare";
-            docs: [
-              "Portion of swap fees retained by the protocol by controlling protocol_share parameter. protocol_swap_fee = protocol_share * total_swap_fee"
-            ];
-            type: "u16";
-          },
-          {
-            name: "baseFactor";
-            docs: ["Base factor for base fee rate"];
-            type: "u16";
-          },
-          {
-            name: "baseFeePowerFactor";
-            docs: ["Base fee power factor"];
-            type: "u8";
-          }
-        ];
-      };
-    },
-    {
-      name: "dynamicFeeParameter";
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "filterPeriod";
-            docs: [
-              "Filter period determine high frequency trading time window."
-            ];
-            type: "u16";
-          },
-          {
-            name: "decayPeriod";
-            docs: [
-              "Decay period determine when the volatile fee start decay / decrease."
-            ];
-            type: "u16";
-          },
-          {
-            name: "reductionFactor";
-            docs: [
-              "Reduction factor controls the volatile fee rate decrement rate."
-            ];
-            type: "u16";
-          },
-          {
-            name: "variableFeeControl";
-            docs: [
-              "Used to scale the variable fee component depending on the dynamic of the market"
-            ];
-            type: "u32";
-          },
-          {
-            name: "maxVolatilityAccumulator";
-            docs: [
-              "Maximum number of bin crossed can be accumulated. Used to cap volatile fee rate."
-            ];
-            type: "u32";
-          }
-        ];
-      };
-    },
-    {
-      name: "liquidityParameterByStrategyOneSide";
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "amount";
-            docs: ["Amount of X token or Y token to deposit"];
-            type: "u64";
-          },
-          {
-            name: "activeId";
-            docs: ["Active bin that integrator observe off-chain"];
-            type: "i32";
-          },
-          {
-            name: "maxActiveBinSlippage";
-            docs: ["max active bin slippage allowed"];
-            type: "i32";
-          },
-          {
-            name: "strategyParameters";
-            docs: ["strategy parameters"];
-            type: {
-              defined: {
-                name: "strategyParameters";
-              };
-            };
-          }
-        ];
-      };
-    },
-    {
-      name: "liquidityParameterByStrategy";
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "amountX";
-            docs: ["Amount of X token to deposit"];
-            type: "u64";
-          },
-          {
-            name: "amountY";
-            docs: ["Amount of Y token to deposit"];
-            type: "u64";
-          },
-          {
-            name: "activeId";
-            docs: ["Active bin that integrator observe off-chain"];
-            type: "i32";
-          },
-          {
-            name: "maxActiveBinSlippage";
-            docs: ["max active bin slippage allowed"];
-            type: "i32";
-          },
-          {
-            name: "strategyParameters";
-            docs: ["strategy parameters"];
-            type: {
-              defined: {
-                name: "strategyParameters";
-              };
-            };
-          }
-        ];
-      };
-    },
-    {
-      name: "strategyParameters";
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "minBinId";
-            docs: ["min bin id"];
-            type: "i32";
-          },
-          {
-            name: "maxBinId";
-            docs: ["max bin id"];
-            type: "i32";
-          },
-          {
-            name: "strategyType";
-            docs: ["strategy type"];
-            type: {
-              defined: {
-                name: "strategyType";
-              };
-            };
-          },
-          {
-            name: "parameteres";
-            docs: ["parameters"];
-            type: {
-              array: ["u8", 64];
-            };
-          }
-        ];
-      };
-    },
-    {
-      name: "liquidityOneSideParameter";
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "amount";
-            docs: ["Amount of X token or Y token to deposit"];
-            type: "u64";
-          },
-          {
-            name: "activeId";
-            docs: ["Active bin that integrator observe off-chain"];
-            type: "i32";
-          },
-          {
-            name: "maxActiveBinSlippage";
-            docs: ["max active bin slippage allowed"];
-            type: "i32";
-          },
-          {
-            name: "binLiquidityDist";
-            docs: ["Liquidity distribution to each bins"];
-            type: {
-              vec: {
-                defined: {
-                  name: "binLiquidityDistributionByWeight";
-                };
-              };
-            };
-          }
-        ];
-      };
-    },
-    {
-      name: "binLiquidityDistributionByWeight";
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "binId";
-            docs: ["Define the bin ID wish to deposit to."];
-            type: "i32";
-          },
-          {
-            name: "weight";
-            docs: ["weight of liquidity distributed for this bin id"];
-            type: "u16";
-          }
-        ];
-      };
-    },
-    {
-      name: "liquidityParameterByWeight";
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "amountX";
-            docs: ["Amount of X token to deposit"];
-            type: "u64";
-          },
-          {
-            name: "amountY";
-            docs: ["Amount of Y token to deposit"];
-            type: "u64";
-          },
-          {
-            name: "activeId";
-            docs: ["Active bin that integrator observe off-chain"];
-            type: "i32";
-          },
-          {
-            name: "maxActiveBinSlippage";
-            docs: ["max active bin slippage allowed"];
-            type: "i32";
-          },
-          {
-            name: "binLiquidityDist";
-            docs: ["Liquidity distribution to each bins"];
-            type: {
-              vec: {
-                defined: {
-                  name: "binLiquidityDistributionByWeight";
-                };
-              };
-            };
-          }
-        ];
-      };
-    },
-    {
-      name: "addLiquiditySingleSidePreciseParameter";
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "bins";
-            type: {
-              vec: {
-                defined: {
-                  name: "compressedBinDepositAmount";
-                };
-              };
-            };
-          },
-          {
-            name: "decompressMultiplier";
-            type: "u64";
-          }
-        ];
-      };
-    },
-    {
-      name: "compressedBinDepositAmount";
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "binId";
-            type: "i32";
-          },
-          {
-            name: "amount";
-            type: "u32";
-          }
-        ];
-      };
-    },
-    {
-      name: "binLiquidityDistribution";
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "binId";
-            docs: ["Define the bin ID wish to deposit to."];
-            type: "i32";
-          },
-          {
-            name: "distributionX";
-            docs: [
-              "DistributionX (or distributionY) is the percentages of amountX (or amountY) you want to add to each bin."
-            ];
-            type: "u16";
-          },
-          {
-            name: "distributionY";
-            docs: [
-              "DistributionX (or distributionY) is the percentages of amountX (or amountY) you want to add to each bin."
-            ];
-            type: "u16";
-          }
-        ];
-      };
-    },
-    {
-      name: "liquidityParameter";
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "amountX";
-            docs: ["Amount of X token to deposit"];
-            type: "u64";
-          },
-          {
-            name: "amountY";
-            docs: ["Amount of Y token to deposit"];
-            type: "u64";
-          },
-          {
-            name: "binLiquidityDist";
-            docs: ["Liquidity distribution to each bins"];
-            type: {
-              vec: {
-                defined: {
-                  name: "binLiquidityDistribution";
-                };
-              };
-            };
-          }
-        ];
-      };
-    },
-    {
-      name: "customizableParams";
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "activeId";
-            docs: ["Pool price"];
-            type: "i32";
-          },
-          {
-            name: "binStep";
-            docs: ["Bin step"];
-            type: "u16";
-          },
-          {
-            name: "baseFactor";
-            docs: ["Base factor"];
-            type: "u16";
-          },
-          {
-            name: "activationType";
-            docs: [
-              "Activation type. 0 = Slot, 1 = Time. Check ActivationType enum"
-            ];
-            type: "u8";
-          },
-          {
-            name: "hasAlphaVault";
-            docs: ["Whether the pool has an alpha vault"];
-            type: "bool";
-          },
-          {
-            name: "activationPoint";
-            docs: ["Decide when does the pool start trade. None = Now"];
-            type: {
-              option: "u64";
-            };
-          },
-          {
-            name: "creatorPoolOnOffControl";
-            docs: [
-              "Pool creator have permission to enable/disable pool with restricted program validation. Only applicable for customizable permissionless pool."
-            ];
-            type: "bool";
-          },
-          {
-            name: "baseFeePowerFactor";
-            docs: ["Base fee power factor"];
-            type: "u8";
-          },
-          {
-            name: "padding";
-            docs: ["Padding, for future use"];
-            type: {
-              array: ["u8", 62];
-            };
-          }
-        ];
-      };
-    },
-    {
-      name: "initPermissionPairIx";
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "activeId";
-            type: "i32";
-          },
-          {
-            name: "binStep";
-            type: "u16";
-          },
-          {
-            name: "baseFactor";
-            type: "u16";
-          },
-          {
-            name: "baseFeePowerFactor";
-            type: "u8";
-          },
-          {
-            name: "activationType";
-            type: "u8";
-          },
-          {
-            name: "protocolShare";
-            type: "u16";
-          }
-        ];
-      };
-    },
-    {
-      name: "addLiquiditySingleSidePreciseParameter2";
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "bins";
-            type: {
-              vec: {
-                defined: {
-                  name: "compressedBinDepositAmount";
-                };
-              };
-            };
-          },
-          {
-            name: "decompressMultiplier";
-            type: "u64";
-          },
-          {
-            name: "maxAmount";
-            type: "u64";
-          }
-        ];
-      };
-    },
-    {
-      name: "compressedBinDepositAmount2";
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "binId";
-            type: "i32";
-          },
-          {
-            name: "amount";
-            type: "u32";
-          }
-        ];
-      };
-    },
-    {
       name: "initializeLbPair2Params";
       type: {
         kind: "struct";
@@ -4400,649 +7435,39 @@ export type LbClmm = {
       };
     },
     {
-      name: "binLiquidityReduction";
+      name: "initializeReward";
       type: {
         kind: "struct";
         fields: [
           {
-            name: "binId";
-            type: "i32";
-          },
-          {
-            name: "bpsToRemove";
-            type: "u16";
-          }
-        ];
-      };
-    },
-    {
-      name: "bin";
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "amountX";
-            docs: [
-              "Amount of token X in the bin. This already excluded protocol fees."
-            ];
-            type: "u64";
-          },
-          {
-            name: "amountY";
-            docs: [
-              "Amount of token Y in the bin. This already excluded protocol fees."
-            ];
-            type: "u64";
-          },
-          {
-            name: "price";
-            docs: ["Bin price"];
-            type: "u128";
-          },
-          {
-            name: "liquiditySupply";
-            docs: [
-              "Liquidities of the bin. This is the same as LP mint supply. q-number"
-            ];
-            type: "u128";
-          },
-          {
-            name: "rewardPerTokenStored";
-            docs: ["reward_a_per_token_stored"];
-            type: {
-              array: ["u128", 2];
-            };
-          },
-          {
-            name: "feeAmountXPerTokenStored";
-            docs: ["Swap fee amount of token X per liquidity deposited."];
-            type: "u128";
-          },
-          {
-            name: "feeAmountYPerTokenStored";
-            docs: ["Swap fee amount of token Y per liquidity deposited."];
-            type: "u128";
-          },
-          {
-            name: "amountXIn";
-            docs: [
-              "Total token X swap into the bin. Only used for tracking purpose."
-            ];
-            type: "u128";
-          },
-          {
-            name: "amountYIn";
-            docs: [
-              "Total token Y swap into he bin. Only used for tracking purpose."
-            ];
-            type: "u128";
-          }
-        ];
-      };
-    },
-    {
-      name: "protocolFee";
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "amountX";
-            type: "u64";
-          },
-          {
-            name: "amountY";
-            type: "u64";
-          }
-        ];
-      };
-    },
-    {
-      name: "rewardInfo";
-      docs: ["Stores the state relevant for tracking liquidity mining rewards"];
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "mint";
-            docs: ["Reward token mint."];
+            name: "lbPair";
             type: "pubkey";
           },
           {
-            name: "vault";
-            docs: ["Reward vault token account."];
+            name: "rewardMint";
             type: "pubkey";
           },
           {
             name: "funder";
-            docs: ["Authority account that allows to fund rewards"];
             type: "pubkey";
+          },
+          {
+            name: "rewardIndex";
+            type: "u64";
           },
           {
             name: "rewardDuration";
-            docs: ["TODO check whether we need to store it in pool"];
             type: "u64";
-          },
-          {
-            name: "rewardDurationEnd";
-            docs: ["TODO check whether we need to store it in pool"];
-            type: "u64";
-          },
-          {
-            name: "rewardRate";
-            docs: ["TODO check whether we need to store it in pool"];
-            type: "u128";
-          },
-          {
-            name: "lastUpdateTime";
-            docs: ["The last time reward states were updated."];
-            type: "u64";
-          },
-          {
-            name: "cumulativeSecondsWithEmptyLiquidityReward";
-            docs: [
-              "Accumulated seconds where when farm distribute rewards, but the bin is empty. The reward will be accumulated for next reward time window."
-            ];
-            type: "u64";
-          }
-        ];
-      };
-    },
-    {
-      name: "observation";
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "cumulativeActiveBinId";
-            docs: ["Cumulative active bin ID"];
-            type: "i128";
-          },
-          {
-            name: "createdAt";
-            docs: ["Observation sample created timestamp"];
-            type: "i64";
-          },
-          {
-            name: "lastUpdatedAt";
-            docs: ["Observation sample last updated timestamp"];
-            type: "i64";
-          }
-        ];
-      };
-    },
-    {
-      name: "staticParameters";
-      docs: ["Parameter that set by the protocol"];
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "baseFactor";
-            docs: [
-              "Used for base fee calculation. base_fee_rate = base_factor * bin_step * 10 * 10^base_fee_power_factor"
-            ];
-            type: "u16";
-          },
-          {
-            name: "filterPeriod";
-            docs: [
-              "Filter period determine high frequency trading time window."
-            ];
-            type: "u16";
-          },
-          {
-            name: "decayPeriod";
-            docs: [
-              "Decay period determine when the volatile fee start decay / decrease."
-            ];
-            type: "u16";
-          },
-          {
-            name: "reductionFactor";
-            docs: [
-              "Reduction factor controls the volatile fee rate decrement rate."
-            ];
-            type: "u16";
-          },
-          {
-            name: "variableFeeControl";
-            docs: [
-              "Used to scale the variable fee component depending on the dynamic of the market"
-            ];
-            type: "u32";
-          },
-          {
-            name: "maxVolatilityAccumulator";
-            docs: [
-              "Maximum number of bin crossed can be accumulated. Used to cap volatile fee rate."
-            ];
-            type: "u32";
-          },
-          {
-            name: "minBinId";
-            docs: [
-              "Min bin id supported by the pool based on the configured bin step."
-            ];
-            type: "i32";
-          },
-          {
-            name: "maxBinId";
-            docs: [
-              "Max bin id supported by the pool based on the configured bin step."
-            ];
-            type: "i32";
-          },
-          {
-            name: "protocolShare";
-            docs: [
-              "Portion of swap fees retained by the protocol by controlling protocol_share parameter. protocol_swap_fee = protocol_share * total_swap_fee"
-            ];
-            type: "u16";
-          },
-          {
-            name: "baseFeePowerFactor";
-            docs: ["Base fee power factor"];
-            type: "u8";
-          },
-          {
-            name: "padding";
-            docs: ["Padding for bytemuck safe alignment"];
-            type: {
-              array: ["u8", 5];
-            };
-          }
-        ];
-      };
-    },
-    {
-      name: "variableParameters";
-      docs: ["Parameters that changes based on dynamic of the market"];
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "volatilityAccumulator";
-            docs: [
-              "Volatility accumulator measure the number of bin crossed since reference bin ID. Normally (without filter period taken into consideration), reference bin ID is the active bin of last swap.",
-              "It affects the variable fee rate"
-            ];
-            type: "u32";
-          },
-          {
-            name: "volatilityReference";
-            docs: [
-              "Volatility reference is decayed volatility accumulator. It is always <= volatility_accumulator"
-            ];
-            type: "u32";
-          },
-          {
-            name: "indexReference";
-            docs: ["Active bin id of last swap."];
-            type: "i32";
-          },
-          {
-            name: "padding";
-            docs: ["Padding for bytemuck safe alignment"];
-            type: {
-              array: ["u8", 4];
-            };
-          },
-          {
-            name: "lastUpdateTimestamp";
-            docs: ["Last timestamp the variable parameters was updated"];
-            type: "i64";
-          },
-          {
-            name: "padding1";
-            docs: ["Padding for bytemuck safe alignment"];
-            type: {
-              array: ["u8", 8];
-            };
-          }
-        ];
-      };
-    },
-    {
-      name: "feeInfo";
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "feeXPerTokenComplete";
-            type: "u128";
-          },
-          {
-            name: "feeYPerTokenComplete";
-            type: "u128";
-          },
-          {
-            name: "feeXPending";
-            type: "u64";
-          },
-          {
-            name: "feeYPending";
-            type: "u64";
-          }
-        ];
-      };
-    },
-    {
-      name: "userRewardInfo";
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "rewardPerTokenCompletes";
-            type: {
-              array: ["u128", 2];
-            };
-          },
-          {
-            name: "rewardPendings";
-            type: {
-              array: ["u64", 2];
-            };
-          }
-        ];
-      };
-    },
-    {
-      name: "remainingAccountsSlice";
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "accountsType";
-            type: {
-              defined: {
-                name: "accountsType";
-              };
-            };
-          },
-          {
-            name: "length";
-            type: "u8";
-          }
-        ];
-      };
-    },
-    {
-      name: "remainingAccountsInfo";
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "slices";
-            type: {
-              vec: {
-                defined: {
-                  name: "remainingAccountsSlice";
-                };
-              };
-            };
-          }
-        ];
-      };
-    },
-    {
-      name: "strategyType";
-      type: {
-        kind: "enum";
-        variants: [
-          {
-            name: "spotOneSide";
-          },
-          {
-            name: "curveOneSide";
-          },
-          {
-            name: "bidAskOneSide";
-          },
-          {
-            name: "spotBalanced";
-          },
-          {
-            name: "curveBalanced";
-          },
-          {
-            name: "bidAskBalanced";
-          },
-          {
-            name: "spotImBalanced";
-          },
-          {
-            name: "curveImBalanced";
-          },
-          {
-            name: "bidAskImBalanced";
-          }
-        ];
-      };
-    },
-    {
-      name: "rounding";
-      type: {
-        kind: "enum";
-        variants: [
-          {
-            name: "up";
-          },
-          {
-            name: "down";
-          }
-        ];
-      };
-    },
-    {
-      name: "activationType";
-      docs: ["Type of the activation"];
-      type: {
-        kind: "enum";
-        variants: [
-          {
-            name: "slot";
-          },
-          {
-            name: "timestamp";
-          }
-        ];
-      };
-    },
-    {
-      name: "layoutVersion";
-      docs: ["Layout version"];
-      type: {
-        kind: "enum";
-        variants: [
-          {
-            name: "v0";
-          },
-          {
-            name: "v1";
-          }
-        ];
-      };
-    },
-    {
-      name: "pairType";
-      docs: [
-        "Type of the Pair. 0 = Permissionless, 1 = Permission, 2 = CustomizablePermissionless. Putting 0 as permissionless for backward compatibility."
-      ];
-      type: {
-        kind: "enum";
-        variants: [
-          {
-            name: "permissionless";
-          },
-          {
-            name: "permission";
-          },
-          {
-            name: "customizablePermissionless";
-          },
-          {
-            name: "permissionlessV2";
-          }
-        ];
-      };
-    },
-    {
-      name: "pairStatus";
-      docs: [
-        "Pair status. 0 = Enabled, 1 = Disabled. Putting 0 as enabled for backward compatibility."
-      ];
-      type: {
-        kind: "enum";
-        variants: [
-          {
-            name: "enabled";
-          },
-          {
-            name: "disabled";
-          }
-        ];
-      };
-    },
-    {
-      name: "tokenProgramFlags";
-      type: {
-        kind: "enum";
-        variants: [
-          {
-            name: "tokenProgram";
-          },
-          {
-            name: "tokenProgram2022";
-          }
-        ];
-      };
-    },
-    {
-      name: "accountsType";
-      type: {
-        kind: "enum";
-        variants: [
-          {
-            name: "transferHookX";
-          },
-          {
-            name: "transferHookY";
-          },
-          {
-            name: "transferHookReward";
-          }
-        ];
-      };
-    },
-    {
-      name: "binArrayBitmapExtension";
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "lbPair";
-            type: "pubkey";
-          },
-          {
-            name: "positiveBinArrayBitmap";
-            docs: [
-              "Packed initialized bin array state for start_bin_index is positive"
-            ];
-            type: {
-              array: [
-                {
-                  array: ["u64", 8];
-                },
-                12
-              ];
-            };
-          },
-          {
-            name: "negativeBinArrayBitmap";
-            docs: [
-              "Packed initialized bin array state for start_bin_index is negative"
-            ];
-            type: {
-              array: [
-                {
-                  array: ["u64", 8];
-                },
-                12
-              ];
-            };
-          }
-        ];
-      };
-    },
-    {
-      name: "binArray";
-      docs: [
-        "An account to contain a range of bin. For example: Bin 100 <-> 200.",
-        "For example:",
-        "BinArray index: 0 contains bin 0 <-> 599",
-        "index: 2 contains bin 600 <-> 1199, ..."
-      ];
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "index";
-            type: "i64";
-          },
-          {
-            name: "version";
-            docs: ["Version of binArray"];
-            type: "u8";
-          },
-          {
-            name: "padding";
-            type: {
-              array: ["u8", 7];
-            };
-          },
-          {
-            name: "lbPair";
-            type: "pubkey";
-          },
-          {
-            name: "bins";
-            type: {
-              array: [
-                {
-                  defined: {
-                    name: "bin";
-                  };
-                },
-                70
-              ];
-            };
-          }
-        ];
-      };
-    },
-    {
-      name: "claimFeeOperator";
-      docs: ["Parameter that set by the protocol"];
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "operator";
-            docs: ["operator"];
-            type: "pubkey";
-          },
-          {
-            name: "padding";
-            docs: ["Reserve"];
-            type: {
-              array: ["u8", 128];
-            };
           }
         ];
       };
     },
     {
       name: "lbPair";
+      serialization: "bytemuck";
+      repr: {
+        kind: "c";
+      };
       type: {
         kind: "struct";
         fields: [
@@ -5265,7 +7690,206 @@ export type LbClmm = {
       };
     },
     {
+      name: "lbPairCreate";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "lbPair";
+            type: "pubkey";
+          },
+          {
+            name: "binStep";
+            type: "u16";
+          },
+          {
+            name: "tokenX";
+            type: "pubkey";
+          },
+          {
+            name: "tokenY";
+            type: "pubkey";
+          }
+        ];
+      };
+    },
+    {
+      name: "liquidityOneSideParameter";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "amount";
+            docs: ["Amount of X token or Y token to deposit"];
+            type: "u64";
+          },
+          {
+            name: "activeId";
+            docs: ["Active bin that integrator observe off-chain"];
+            type: "i32";
+          },
+          {
+            name: "maxActiveBinSlippage";
+            docs: ["max active bin slippage allowed"];
+            type: "i32";
+          },
+          {
+            name: "binLiquidityDist";
+            docs: ["Liquidity distribution to each bins"];
+            type: {
+              vec: {
+                defined: {
+                  name: "binLiquidityDistributionByWeight";
+                };
+              };
+            };
+          }
+        ];
+      };
+    },
+    {
+      name: "liquidityParameter";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "amountX";
+            docs: ["Amount of X token to deposit"];
+            type: "u64";
+          },
+          {
+            name: "amountY";
+            docs: ["Amount of Y token to deposit"];
+            type: "u64";
+          },
+          {
+            name: "binLiquidityDist";
+            docs: ["Liquidity distribution to each bins"];
+            type: {
+              vec: {
+                defined: {
+                  name: "binLiquidityDistribution";
+                };
+              };
+            };
+          }
+        ];
+      };
+    },
+    {
+      name: "liquidityParameterByStrategy";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "amountX";
+            docs: ["Amount of X token to deposit"];
+            type: "u64";
+          },
+          {
+            name: "amountY";
+            docs: ["Amount of Y token to deposit"];
+            type: "u64";
+          },
+          {
+            name: "activeId";
+            docs: ["Active bin that integrator observe off-chain"];
+            type: "i32";
+          },
+          {
+            name: "maxActiveBinSlippage";
+            docs: ["max active bin slippage allowed"];
+            type: "i32";
+          },
+          {
+            name: "strategyParameters";
+            docs: ["strategy parameters"];
+            type: {
+              defined: {
+                name: "strategyParameters";
+              };
+            };
+          }
+        ];
+      };
+    },
+    {
+      name: "liquidityParameterByStrategyOneSide";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "amount";
+            docs: ["Amount of X token or Y token to deposit"];
+            type: "u64";
+          },
+          {
+            name: "activeId";
+            docs: ["Active bin that integrator observe off-chain"];
+            type: "i32";
+          },
+          {
+            name: "maxActiveBinSlippage";
+            docs: ["max active bin slippage allowed"];
+            type: "i32";
+          },
+          {
+            name: "strategyParameters";
+            docs: ["strategy parameters"];
+            type: {
+              defined: {
+                name: "strategyParameters";
+              };
+            };
+          }
+        ];
+      };
+    },
+    {
+      name: "liquidityParameterByWeight";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "amountX";
+            docs: ["Amount of X token to deposit"];
+            type: "u64";
+          },
+          {
+            name: "amountY";
+            docs: ["Amount of Y token to deposit"];
+            type: "u64";
+          },
+          {
+            name: "activeId";
+            docs: ["Active bin that integrator observe off-chain"];
+            type: "i32";
+          },
+          {
+            name: "maxActiveBinSlippage";
+            docs: ["max active bin slippage allowed"];
+            type: "i32";
+          },
+          {
+            name: "binLiquidityDist";
+            docs: ["Liquidity distribution to each bins"];
+            type: {
+              vec: {
+                defined: {
+                  name: "binLiquidityDistributionByWeight";
+                };
+              };
+            };
+          }
+        ];
+      };
+    },
+    {
       name: "oracle";
+      serialization: "bytemuck";
+      repr: {
+        kind: "c";
+      };
       type: {
         kind: "struct";
         fields: [
@@ -5290,7 +7914,57 @@ export type LbClmm = {
       };
     },
     {
+      name: "pairStatus";
+      docs: [
+        "Pair status. 0 = Enabled, 1 = Disabled. Putting 0 as enabled for backward compatibility."
+      ];
+      repr: {
+        kind: "rust";
+      };
+      type: {
+        kind: "enum";
+        variants: [
+          {
+            name: "enabled";
+          },
+          {
+            name: "disabled";
+          }
+        ];
+      };
+    },
+    {
+      name: "pairType";
+      docs: [
+        "Type of the Pair. 0 = Permissionless, 1 = Permission, 2 = CustomizablePermissionless. Putting 0 as permissionless for backward compatibility."
+      ];
+      repr: {
+        kind: "rust";
+      };
+      type: {
+        kind: "enum";
+        variants: [
+          {
+            name: "permissionless";
+          },
+          {
+            name: "permission";
+          },
+          {
+            name: "customizablePermissionless";
+          },
+          {
+            name: "permissionlessV2";
+          }
+        ];
+      };
+    },
+    {
       name: "position";
+      serialization: "bytemuck";
+      repr: {
+        kind: "c";
+      };
       type: {
         kind: "struct";
         fields: [
@@ -5386,7 +8060,79 @@ export type LbClmm = {
       };
     },
     {
+      name: "positionBinData";
+      serialization: "bytemuck";
+      repr: {
+        kind: "c";
+      };
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "liquidityShare";
+            type: "u128";
+          },
+          {
+            name: "rewardInfo";
+            type: {
+              defined: {
+                name: "userRewardInfo";
+              };
+            };
+          },
+          {
+            name: "feeInfo";
+            type: {
+              defined: {
+                name: "feeInfo";
+              };
+            };
+          }
+        ];
+      };
+    },
+    {
+      name: "positionClose";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "position";
+            type: "pubkey";
+          },
+          {
+            name: "owner";
+            type: "pubkey";
+          }
+        ];
+      };
+    },
+    {
+      name: "positionCreate";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "lbPair";
+            type: "pubkey";
+          },
+          {
+            name: "position";
+            type: "pubkey";
+          },
+          {
+            name: "owner";
+            type: "pubkey";
+          }
+        ];
+      };
+    },
+    {
       name: "positionV2";
+      serialization: "bytemuck";
+      repr: {
+        kind: "c";
+      };
       type: {
         kind: "struct";
         fields: [
@@ -5506,7 +8252,87 @@ export type LbClmm = {
       };
     },
     {
+      name: "presetParameter";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "binStep";
+            docs: ["Bin step. Represent the price increment / decrement."];
+            type: "u16";
+          },
+          {
+            name: "baseFactor";
+            docs: [
+              "Used for base fee calculation. base_fee_rate = base_factor * bin_step * 10 * 10^base_fee_power_factor"
+            ];
+            type: "u16";
+          },
+          {
+            name: "filterPeriod";
+            docs: [
+              "Filter period determine high frequency trading time window."
+            ];
+            type: "u16";
+          },
+          {
+            name: "decayPeriod";
+            docs: [
+              "Decay period determine when the volatile fee start decay / decrease."
+            ];
+            type: "u16";
+          },
+          {
+            name: "reductionFactor";
+            docs: [
+              "Reduction factor controls the volatile fee rate decrement rate."
+            ];
+            type: "u16";
+          },
+          {
+            name: "variableFeeControl";
+            docs: [
+              "Used to scale the variable fee component depending on the dynamic of the market"
+            ];
+            type: "u32";
+          },
+          {
+            name: "maxVolatilityAccumulator";
+            docs: [
+              "Maximum number of bin crossed can be accumulated. Used to cap volatile fee rate."
+            ];
+            type: "u32";
+          },
+          {
+            name: "minBinId";
+            docs: [
+              "Min bin id supported by the pool based on the configured bin step."
+            ];
+            type: "i32";
+          },
+          {
+            name: "maxBinId";
+            docs: [
+              "Max bin id supported by the pool based on the configured bin step."
+            ];
+            type: "i32";
+          },
+          {
+            name: "protocolShare";
+            docs: [
+              "Portion of swap fees retained by the protocol by controlling protocol_share parameter. protocol_swap_fee = protocol_share * total_swap_fee"
+            ];
+            type: "u16";
+          }
+        ];
+      };
+    },
+    {
       name: "presetParameter2";
+      serialization: "bytemuck";
+      repr: {
+        kind: "c";
+      };
       type: {
         kind: "struct";
         fields: [
@@ -5590,15 +8416,374 @@ export type LbClmm = {
       };
     },
     {
-      name: "presetParameter";
+      name: "protocolFee";
+      serialization: "bytemuck";
+      repr: {
+        kind: "c";
+      };
       type: {
         kind: "struct";
         fields: [
           {
-            name: "binStep";
-            docs: ["Bin step. Represent the price increment / decrement."];
+            name: "amountX";
+            type: "u64";
+          },
+          {
+            name: "amountY";
+            type: "u64";
+          }
+        ];
+      };
+    },
+    {
+      name: "rebalanceLiquidityParams";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "activeId";
+            docs: ["active id"];
+            type: "i32";
+          },
+          {
+            name: "maxActiveBinSlippage";
+            docs: ["max active bin slippage allowed"];
             type: "u16";
           },
+          {
+            name: "shouldClaimFee";
+            docs: ["a flag to indicate that whether fee should be harvested"];
+            type: "bool";
+          },
+          {
+            name: "shouldClaimReward";
+            docs: [
+              "a flag to indicate that whether rewards should be harvested"
+            ];
+            type: "bool";
+          },
+          {
+            name: "minWithdrawXAmount";
+            docs: ["threshold for withdraw token x"];
+            type: "u64";
+          },
+          {
+            name: "maxDepositXAmount";
+            docs: ["threshold for deposit token x"];
+            type: "u64";
+          },
+          {
+            name: "minWithdrawYAmount";
+            docs: ["threshold for withdraw token y"];
+            type: "u64";
+          },
+          {
+            name: "maxDepositYAmount";
+            docs: ["threshold for deposit token y"];
+            type: "u64";
+          },
+          {
+            name: "shrinkMode";
+            docs: ["shrink mode"];
+            type: "u8";
+          },
+          {
+            name: "padding";
+            docs: ["padding 32 bytes for future usage"];
+            type: {
+              array: ["u8", 31];
+            };
+          },
+          {
+            name: "removes";
+            docs: ["removes"];
+            type: {
+              vec: {
+                defined: {
+                  name: "removeLiquidityParams";
+                };
+              };
+            };
+          },
+          {
+            name: "adds";
+            docs: ["adds"];
+            type: {
+              vec: {
+                defined: {
+                  name: "addLiquidityParams";
+                };
+              };
+            };
+          }
+        ];
+      };
+    },
+    {
+      name: "rebalancing";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "lbPair";
+            type: "pubkey";
+          },
+          {
+            name: "position";
+            type: "pubkey";
+          },
+          {
+            name: "owner";
+            type: "pubkey";
+          },
+          {
+            name: "activeBinId";
+            type: "i32";
+          },
+          {
+            name: "xWithdrawnAmount";
+            type: "u64";
+          },
+          {
+            name: "xAddedAmount";
+            type: "u64";
+          },
+          {
+            name: "yWithdrawnAmount";
+            type: "u64";
+          },
+          {
+            name: "yAddedAmount";
+            type: "u64";
+          },
+          {
+            name: "xFeeAmount";
+            type: "u64";
+          },
+          {
+            name: "yFeeAmount";
+            type: "u64";
+          },
+          {
+            name: "oldMinId";
+            type: "i32";
+          },
+          {
+            name: "oldMaxId";
+            type: "i32";
+          },
+          {
+            name: "newMinId";
+            type: "i32";
+          },
+          {
+            name: "newMaxId";
+            type: "i32";
+          },
+          {
+            name: "rewards";
+            type: {
+              array: ["u64", 2];
+            };
+          }
+        ];
+      };
+    },
+    {
+      name: "remainingAccountsInfo";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "slices";
+            type: {
+              vec: {
+                defined: {
+                  name: "remainingAccountsSlice";
+                };
+              };
+            };
+          }
+        ];
+      };
+    },
+    {
+      name: "remainingAccountsSlice";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "accountsType";
+            type: {
+              defined: {
+                name: "accountsType";
+              };
+            };
+          },
+          {
+            name: "length";
+            type: "u8";
+          }
+        ];
+      };
+    },
+    {
+      name: "removeLiquidity";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "lbPair";
+            type: "pubkey";
+          },
+          {
+            name: "from";
+            type: "pubkey";
+          },
+          {
+            name: "position";
+            type: "pubkey";
+          },
+          {
+            name: "amounts";
+            type: {
+              array: ["u64", 2];
+            };
+          },
+          {
+            name: "activeBinId";
+            type: "i32";
+          }
+        ];
+      };
+    },
+    {
+      name: "removeLiquidityParams";
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "minBinId";
+            type: {
+              option: "i32";
+            };
+          },
+          {
+            name: "maxBinId";
+            type: {
+              option: "i32";
+            };
+          },
+          {
+            name: "bps";
+            type: "u16";
+          },
+          {
+            name: "padding";
+            type: {
+              array: ["u8", 16];
+            };
+          }
+        ];
+      };
+    },
+    {
+      name: "resizeSide";
+      docs: ["Side of resize, 0 for lower and 1 for upper"];
+      repr: {
+        kind: "rust";
+      };
+      type: {
+        kind: "enum";
+        variants: [
+          {
+            name: "lower";
+          },
+          {
+            name: "upper";
+          }
+        ];
+      };
+    },
+    {
+      name: "rewardInfo";
+      docs: ["Stores the state relevant for tracking liquidity mining rewards"];
+      serialization: "bytemuck";
+      repr: {
+        kind: "c";
+      };
+      type: {
+        kind: "struct";
+        fields: [
+          {
+            name: "mint";
+            docs: ["Reward token mint."];
+            type: "pubkey";
+          },
+          {
+            name: "vault";
+            docs: ["Reward vault token account."];
+            type: "pubkey";
+          },
+          {
+            name: "funder";
+            docs: ["Authority account that allows to fund rewards"];
+            type: "pubkey";
+          },
+          {
+            name: "rewardDuration";
+            docs: ["LM reward duration in seconds."];
+            type: "u64";
+          },
+          {
+            name: "rewardDurationEnd";
+            docs: ["LM reward duration end time."];
+            type: "u64";
+          },
+          {
+            name: "rewardRate";
+            docs: ["LM reward rate"];
+            type: "u128";
+          },
+          {
+            name: "lastUpdateTime";
+            docs: ["The last time reward states were updated."];
+            type: "u64";
+          },
+          {
+            name: "cumulativeSecondsWithEmptyLiquidityReward";
+            docs: [
+              "Accumulated seconds where when farm distribute rewards, but the bin is empty. The reward will be accumulated for next reward time window."
+            ];
+            type: "u64";
+          }
+        ];
+      };
+    },
+    {
+      name: "rounding";
+      type: {
+        kind: "enum";
+        variants: [
+          {
+            name: "up";
+          },
+          {
+            name: "down";
+          }
+        ];
+      };
+    },
+    {
+      name: "staticParameters";
+      docs: ["Parameter that set by the protocol"];
+      serialization: "bytemuck";
+      repr: {
+        kind: "c";
+      };
+      type: {
+        kind: "struct";
+        fields: [
           {
             name: "baseFactor";
             docs: [
@@ -5661,119 +8846,87 @@ export type LbClmm = {
               "Portion of swap fees retained by the protocol by controlling protocol_share parameter. protocol_swap_fee = protocol_share * total_swap_fee"
             ];
             type: "u16";
-          }
-        ];
-      };
-    },
-    {
-      name: "tokenBadge";
-      docs: ["Parameter that set by the protocol"];
-      type: {
-        kind: "struct";
-        fields: [
+          },
           {
-            name: "tokenMint";
-            docs: ["token mint"];
-            type: "pubkey";
+            name: "baseFeePowerFactor";
+            docs: ["Base fee power factor"];
+            type: "u8";
           },
           {
             name: "padding";
-            docs: ["Reserve"];
+            docs: ["Padding for bytemuck safe alignment"];
             type: {
-              array: ["u8", 128];
+              array: ["u8", 5];
             };
           }
         ];
       };
     },
     {
-      name: "compositionFee";
+      name: "strategyParameters";
       type: {
         kind: "struct";
         fields: [
           {
-            name: "from";
-            type: "pubkey";
-          },
-          {
-            name: "binId";
-            type: "i16";
-          },
-          {
-            name: "tokenXFeeAmount";
-            type: "u64";
-          },
-          {
-            name: "tokenYFeeAmount";
-            type: "u64";
-          },
-          {
-            name: "protocolTokenXFeeAmount";
-            type: "u64";
-          },
-          {
-            name: "protocolTokenYFeeAmount";
-            type: "u64";
-          }
-        ];
-      };
-    },
-    {
-      name: "addLiquidity";
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "lbPair";
-            type: "pubkey";
-          },
-          {
-            name: "from";
-            type: "pubkey";
-          },
-          {
-            name: "position";
-            type: "pubkey";
-          },
-          {
-            name: "amounts";
-            type: {
-              array: ["u64", 2];
-            };
-          },
-          {
-            name: "activeBinId";
+            name: "minBinId";
+            docs: ["min bin id"];
             type: "i32";
+          },
+          {
+            name: "maxBinId";
+            docs: ["max bin id"];
+            type: "i32";
+          },
+          {
+            name: "strategyType";
+            docs: ["strategy type"];
+            type: {
+              defined: {
+                name: "strategyType";
+              };
+            };
+          },
+          {
+            name: "parameteres";
+            docs: ["parameters"];
+            type: {
+              array: ["u8", 64];
+            };
           }
         ];
       };
     },
     {
-      name: "removeLiquidity";
+      name: "strategyType";
       type: {
-        kind: "struct";
-        fields: [
+        kind: "enum";
+        variants: [
           {
-            name: "lbPair";
-            type: "pubkey";
+            name: "spotOneSide";
           },
           {
-            name: "from";
-            type: "pubkey";
+            name: "curveOneSide";
           },
           {
-            name: "position";
-            type: "pubkey";
+            name: "bidAskOneSide";
           },
           {
-            name: "amounts";
-            type: {
-              array: ["u64", 2];
-            };
+            name: "spotBalanced";
           },
           {
-            name: "activeBinId";
-            type: "i32";
+            name: "curveBalanced";
+          },
+          {
+            name: "bidAskBalanced";
+          },
+          {
+            name: "spotImBalanced";
+          },
+          {
+            name: "curveImBalanced";
+          },
+          {
+            name: "bidAskImBalanced";
           }
         ];
       };
@@ -5831,81 +8984,91 @@ export type LbClmm = {
       };
     },
     {
-      name: "claimReward";
+      name: "tokenBadge";
+      docs: ["Parameter that set by the protocol"];
+      serialization: "bytemuck";
+      repr: {
+        kind: "c";
+      };
       type: {
         kind: "struct";
         fields: [
           {
-            name: "lbPair";
+            name: "tokenMint";
+            docs: ["token mint"];
             type: "pubkey";
           },
+          {
+            name: "padding";
+            docs: ["Reserve"];
+            type: {
+              array: ["u8", 128];
+            };
+          }
+        ];
+      };
+    },
+    {
+      name: "tokenProgramFlags";
+      repr: {
+        kind: "rust";
+      };
+      type: {
+        kind: "enum";
+        variants: [
+          {
+            name: "tokenProgram";
+          },
+          {
+            name: "tokenProgram2022";
+          }
+        ];
+      };
+    },
+    {
+      name: "updatePositionLockReleasePoint";
+      type: {
+        kind: "struct";
+        fields: [
           {
             name: "position";
             type: "pubkey";
           },
           {
-            name: "owner";
+            name: "currentPoint";
+            type: "u64";
+          },
+          {
+            name: "newLockReleasePoint";
+            type: "u64";
+          },
+          {
+            name: "oldLockReleasePoint";
+            type: "u64";
+          },
+          {
+            name: "sender";
             type: "pubkey";
-          },
-          {
-            name: "rewardIndex";
-            type: "u64";
-          },
-          {
-            name: "totalReward";
-            type: "u64";
           }
         ];
       };
     },
     {
-      name: "fundReward";
+      name: "updatePositionOperator";
       type: {
         kind: "struct";
         fields: [
           {
-            name: "lbPair";
+            name: "position";
             type: "pubkey";
           },
           {
-            name: "funder";
+            name: "oldOperator";
             type: "pubkey";
           },
           {
-            name: "rewardIndex";
-            type: "u64";
-          },
-          {
-            name: "amount";
-            type: "u64";
-          }
-        ];
-      };
-    },
-    {
-      name: "initializeReward";
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "lbPair";
+            name: "newOperator";
             type: "pubkey";
-          },
-          {
-            name: "rewardMint";
-            type: "pubkey";
-          },
-          {
-            name: "funder";
-            type: "pubkey";
-          },
-          {
-            name: "rewardIndex";
-            type: "u64";
-          },
-          {
-            name: "rewardDuration";
-            type: "u64";
           }
         ];
       };
@@ -5959,213 +9122,77 @@ export type LbClmm = {
       };
     },
     {
-      name: "positionClose";
+      name: "userRewardInfo";
+      serialization: "bytemuck";
+      repr: {
+        kind: "c";
+      };
       type: {
         kind: "struct";
         fields: [
           {
-            name: "position";
-            type: "pubkey";
+            name: "rewardPerTokenCompletes";
+            type: {
+              array: ["u128", 2];
+            };
           },
           {
-            name: "owner";
-            type: "pubkey";
+            name: "rewardPendings";
+            type: {
+              array: ["u64", 2];
+            };
           }
         ];
       };
     },
     {
-      name: "claimFee";
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "lbPair";
-            type: "pubkey";
-          },
-          {
-            name: "position";
-            type: "pubkey";
-          },
-          {
-            name: "owner";
-            type: "pubkey";
-          },
-          {
-            name: "feeX";
-            type: "u64";
-          },
-          {
-            name: "feeY";
-            type: "u64";
-          }
-        ];
+      name: "variableParameters";
+      docs: ["Parameters that changes based on dynamic of the market"];
+      serialization: "bytemuck";
+      repr: {
+        kind: "c";
       };
-    },
-    {
-      name: "lbPairCreate";
       type: {
         kind: "struct";
         fields: [
           {
-            name: "lbPair";
-            type: "pubkey";
-          },
-          {
-            name: "binStep";
-            type: "u16";
-          },
-          {
-            name: "tokenX";
-            type: "pubkey";
-          },
-          {
-            name: "tokenY";
-            type: "pubkey";
-          }
-        ];
-      };
-    },
-    {
-      name: "positionCreate";
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "lbPair";
-            type: "pubkey";
-          },
-          {
-            name: "position";
-            type: "pubkey";
-          },
-          {
-            name: "owner";
-            type: "pubkey";
-          }
-        ];
-      };
-    },
-    {
-      name: "increasePositionLength";
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "lbPair";
-            type: "pubkey";
-          },
-          {
-            name: "position";
-            type: "pubkey";
-          },
-          {
-            name: "owner";
-            type: "pubkey";
-          },
-          {
-            name: "lengthToAdd";
-            type: "u16";
-          },
-          {
-            name: "side";
-            type: "u8";
-          }
-        ];
-      };
-    },
-    {
-      name: "decreasePositionLength";
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "lbPair";
-            type: "pubkey";
-          },
-          {
-            name: "position";
-            type: "pubkey";
-          },
-          {
-            name: "owner";
-            type: "pubkey";
-          },
-          {
-            name: "lengthToRemove";
-            type: "u16";
-          },
-          {
-            name: "side";
-            type: "u8";
-          }
-        ];
-      };
-    },
-    {
-      name: "feeParameterUpdate";
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "lbPair";
-            type: "pubkey";
-          },
-          {
-            name: "protocolShare";
-            type: "u16";
-          },
-          {
-            name: "baseFactor";
-            type: "u16";
-          }
-        ];
-      };
-    },
-    {
-      name: "dynamicFeeParameterUpdate";
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "lbPair";
-            type: "pubkey";
-          },
-          {
-            name: "filterPeriod";
-            type: "u16";
-          },
-          {
-            name: "decayPeriod";
-            type: "u16";
-          },
-          {
-            name: "reductionFactor";
-            type: "u16";
-          },
-          {
-            name: "variableFeeControl";
+            name: "volatilityAccumulator";
+            docs: [
+              "Volatility accumulator measure the number of bin crossed since reference bin ID. Normally (without filter period taken into consideration), reference bin ID is the active bin of last swap.",
+              "It affects the variable fee rate"
+            ];
             type: "u32";
           },
           {
-            name: "maxVolatilityAccumulator";
+            name: "volatilityReference";
+            docs: [
+              "Volatility reference is decayed volatility accumulator. It is always <= volatility_accumulator"
+            ];
             type: "u32";
-          }
-        ];
-      };
-    },
-    {
-      name: "increaseObservation";
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "oracle";
-            type: "pubkey";
           },
           {
-            name: "newObservationLength";
-            type: "u64";
+            name: "indexReference";
+            docs: ["Active bin id of last swap."];
+            type: "i32";
+          },
+          {
+            name: "padding";
+            docs: ["Padding for bytemuck safe alignment"];
+            type: {
+              array: ["u8", 4];
+            };
+          },
+          {
+            name: "lastUpdateTimestamp";
+            docs: ["Last timestamp the variable parameters was updated"];
+            type: "i64";
+          },
+          {
+            name: "padding1";
+            docs: ["Padding for bytemuck safe alignment"];
+            type: {
+              array: ["u8", 8];
+            };
           }
         ];
       };
@@ -6189,74 +9216,6 @@ export type LbClmm = {
           }
         ];
       };
-    },
-    {
-      name: "updatePositionOperator";
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "position";
-            type: "pubkey";
-          },
-          {
-            name: "oldOperator";
-            type: "pubkey";
-          },
-          {
-            name: "newOperator";
-            type: "pubkey";
-          }
-        ];
-      };
-    },
-    {
-      name: "updatePositionLockReleasePoint";
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "position";
-            type: "pubkey";
-          },
-          {
-            name: "currentPoint";
-            type: "u64";
-          },
-          {
-            name: "newLockReleasePoint";
-            type: "u64";
-          },
-          {
-            name: "oldLockReleasePoint";
-            type: "u64";
-          },
-          {
-            name: "sender";
-            type: "pubkey";
-          }
-        ];
-      };
-    },
-    {
-      name: "goToABin";
-      type: {
-        kind: "struct";
-        fields: [
-          {
-            name: "lbPair";
-            type: "pubkey";
-          },
-          {
-            name: "fromBinId";
-            type: "i32";
-          },
-          {
-            name: "toBinId";
-            type: "i32";
-          }
-        ];
-      };
     }
   ];
   constants: [
@@ -6266,98 +9225,14 @@ export type LbClmm = {
       value: "10000";
     },
     {
-      name: "maxBinPerArray";
-      type: {
-        defined: {
-          name: "usize";
-        };
-      };
-      value: "70";
+      name: "binArray";
+      type: "bytes";
+      value: "[98, 105, 110, 95, 97, 114, 114, 97, 121]";
     },
     {
-      name: "maxBinPerPosition";
-      type: {
-        defined: {
-          name: "usize";
-        };
-      };
-      value: "70";
-    },
-    {
-      name: "maxResizeLength";
-      type: {
-        defined: {
-          name: "usize";
-        };
-      };
-      value: "70";
-    },
-    {
-      name: "positionMaxLength";
-      type: {
-        defined: {
-          name: "usize";
-        };
-      };
-      value: "1400";
-    },
-    {
-      name: "minBinId";
-      type: "i32";
-      value: "- 443636";
-    },
-    {
-      name: "maxBinId";
-      type: "i32";
-      value: "443636";
-    },
-    {
-      name: "maxFeeRate";
-      type: "u64";
-      value: "100000000";
-    },
-    {
-      name: "feePrecision";
-      type: "u64";
-      value: "1000000000";
-    },
-    {
-      name: "maxProtocolShare";
-      type: "u16";
-      value: "2500";
-    },
-    {
-      name: "hostFeeBps";
-      type: "u16";
-      value: "2000";
-    },
-    {
-      name: "numRewards";
-      type: {
-        defined: {
-          name: "usize";
-        };
-      };
-      value: "2";
-    },
-    {
-      name: "minRewardDuration";
-      type: "u64";
-      value: "1";
-    },
-    {
-      name: "maxRewardDuration";
-      type: "u64";
-      value: "31536000";
-    },
-    {
-      name: "extensionBinarrayBitmapSize";
-      type: {
-        defined: {
-          name: "usize";
-        };
-      };
-      value: "12";
+      name: "binArrayBitmapSeed";
+      type: "bytes";
+      value: "[98, 105, 116, 109, 97, 112]";
     },
     {
       name: "binArrayBitmapSize";
@@ -6365,13 +9240,30 @@ export type LbClmm = {
       value: "512";
     },
     {
-      name: "maxRewardBinSplit";
-      type: {
-        defined: {
-          name: "usize";
-        };
-      };
-      value: "15";
+      name: "claimProtocolFeeOperator";
+      type: "bytes";
+      value: "[99, 102, 95, 111, 112, 101, 114, 97, 116, 111, 114]";
+    },
+    {
+      name: "defaultBinPerPosition";
+      type: "u64";
+      value: "70";
+    },
+    {
+      name: "extensionBinarrayBitmapSize";
+      type: "u64";
+      value: "12";
+    },
+    {
+      name: "feePrecision";
+      type: "u64";
+      value: "1000000000";
+    },
+    {
+      name: "hostFeeBps";
+      docs: ["Host fee. 20%"];
+      type: "u16";
+      value: "2000";
     },
     {
       name: "ilmProtocolShare";
@@ -6379,24 +9271,54 @@ export type LbClmm = {
       value: "2000";
     },
     {
-      name: "protocolShare";
-      type: "u16";
-      value: "500";
-    },
-    {
-      name: "maxBinStep";
-      type: "u16";
-      value: "400";
-    },
-    {
       name: "maxBaseFee";
+      docs: ["Maximum base fee, base_fee / 10^9 = fee_in_percentage"];
       type: "u128";
       value: "100000000";
     },
     {
-      name: "minBaseFee";
-      type: "u128";
-      value: "100000";
+      name: "maxBinId";
+      docs: ["Maximum bin ID supported. Computed based on 1 bps."];
+      type: "i32";
+      value: "443636";
+    },
+    {
+      name: "maxBinPerArray";
+      type: "u64";
+      value: "70";
+    },
+    {
+      name: "maxBinStep";
+      docs: ["Maximum bin step"];
+      type: "u16";
+      value: "400";
+    },
+    {
+      name: "maxFeeRate";
+      docs: ["Maximum fee rate. 10%"];
+      type: "u64";
+      value: "100000000";
+    },
+    {
+      name: "maxProtocolShare";
+      docs: ["Maximum protocol share of the fee. 25%"];
+      type: "u16";
+      value: "2500";
+    },
+    {
+      name: "maxResizeLength";
+      type: "u64";
+      value: "91";
+    },
+    {
+      name: "maxRewardBinSplit";
+      type: "u64";
+      value: "15";
+    },
+    {
+      name: "maxRewardDuration";
+      type: "u64";
+      value: "31536000";
     },
     {
       name: "minimumLiquidity";
@@ -6404,9 +9326,26 @@ export type LbClmm = {
       value: "1000000";
     },
     {
-      name: "binArray";
-      type: "bytes";
-      value: "[98, 105, 110, 95, 97, 114, 114, 97, 121]";
+      name: "minBaseFee";
+      docs: ["Minimum base fee"];
+      type: "u128";
+      value: "100000";
+    },
+    {
+      name: "minBinId";
+      docs: ["Minimum bin ID supported. Computed based on 1 bps."];
+      type: "i32";
+      value: "-443636";
+    },
+    {
+      name: "minRewardDuration";
+      type: "u64";
+      value: "1";
+    },
+    {
+      name: "numRewards";
+      type: "u64";
+      value: "2";
     },
     {
       name: "oracle";
@@ -6414,9 +9353,14 @@ export type LbClmm = {
       value: "[111, 114, 97, 99, 108, 101]";
     },
     {
-      name: "binArrayBitmapSeed";
+      name: "position";
       type: "bytes";
-      value: "[98, 105, 116, 109, 97, 112]";
+      value: "[112, 111, 115, 105, 116, 105, 111, 110]";
+    },
+    {
+      name: "positionMaxLength";
+      type: "u64";
+      value: "1400";
     },
     {
       name: "presetParameter";
@@ -6429,14 +9373,9 @@ export type LbClmm = {
       value: "[112, 114, 101, 115, 101, 116, 95, 112, 97, 114, 97, 109, 101, 116, 101, 114, 50]";
     },
     {
-      name: "position";
-      type: "bytes";
-      value: "[112, 111, 115, 105, 116, 105, 111, 110]";
-    },
-    {
-      name: "claimProtocolFeeOperator";
-      type: "bytes";
-      value: "[99, 102, 95, 111, 112, 101, 114, 97, 116, 111, 114]";
+      name: "protocolShare";
+      type: "u16";
+      value: "500";
     }
   ];
 };

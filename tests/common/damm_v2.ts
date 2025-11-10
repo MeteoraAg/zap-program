@@ -2,6 +2,7 @@ import {
   AnchorProvider,
   BN,
   IdlAccounts,
+  IdlTypes,
   Program,
   Wallet,
 } from "@coral-xyz/anchor";
@@ -166,7 +167,8 @@ export async function createDammV2Pool(
   tokenAMint: PublicKey,
   tokenBMint: PublicKey,
   amountA?: BN,
-  amountB?: BN
+  amountB?: BN,
+  baseFeeParams?: any
 ): Promise<PublicKey> {
   const program = createDammV2Program();
 
@@ -198,17 +200,6 @@ export async function createDammV2Pool(
     tokenBProgram
   );
 
-  const poolFees = {
-    baseFee: {
-      cliffFeeNumerator: new BN(2_500_000),
-      firstFactor: 0,
-      secondFactor: Array.from(new BN(0).toArrayLike(Buffer, "le", 8)),
-      thirdFactor: new BN(0),
-      baseFeeMode: 0,
-    },
-    padding: [],
-    dynamicFee: null,
-  };
   let liquidityDelta = LIQUIDITY_DELTA;
   if (amountA && amountB) {
     const liquidityFromA = getLiquidityDeltaFromAmountA(
@@ -228,14 +219,24 @@ export async function createDammV2Pool(
 
   const transaction = await program.methods
     .initializeCustomizablePool({
-      poolFees,
+      poolFees: {
+        baseFee: baseFeeParams ?? {
+          cliffFeeNumerator: new BN(2_500_000),
+          firstFactor: 0,
+          secondFactor: Array.from(new BN(0).toArrayLike(Buffer, "le", 8)),
+          thirdFactor: new BN(0),
+          baseFeeMode: 0,
+        },
+        padding: [],
+        dynamicFee: null,
+      },
       sqrtMinPrice: MIN_SQRT_PRICE,
       sqrtMaxPrice: MAX_SQRT_PRICE,
       hasAlphaVault: false,
       liquidity: liquidityDelta,
       sqrtPrice: INIT_PRICE,
       activationType: 0,
-      collectFeeMode: 0,
+      collectFeeMode: 1,
       activationPoint: null,
     })
     .accountsPartial({
@@ -507,4 +508,14 @@ export async function swap(params: {
       ]
     )
     .transaction();
+}
+
+export function convertToRateLimiterSecondFactor(
+  maxLimiterDuration: BN,
+  maxFeeBps: BN
+): number[] {
+  const buffer1 = maxLimiterDuration.toArrayLike(Buffer, "le", 4);
+  const buffer2 = maxFeeBps.toArrayLike(Buffer, "le", 4);
+  const buffer = Buffer.concat([buffer1, buffer2]);
+  return Array.from(buffer);
 }

@@ -16,16 +16,14 @@ import {
   getTokenBalance,
   zapInDammv2,
   closeLedgerAccount,
+  warpSlotBy,
+  TOKEN_DECIMALS,
 } from "../common";
-import {
-  getAmountAFromLiquidityDelta,
-  getAmountBFromLiquidityDelta,
-  Rounding,
-} from "@meteora-ag/cp-amm-sdk";
 
 import ZapIDL from "../../target/idl/zap.json";
 import DAMMV2IDL from "../../idls/damm_v2.json";
 import {
+  convertToRateLimiterSecondFactor,
   createDammV2Pool,
   createDammV2Position,
   swap,
@@ -34,6 +32,7 @@ import { getAssociatedTokenAddressSync } from "@solana/spl-token";
 import { BN } from "@coral-xyz/anchor";
 import { getDammV2Pool, getDammV2Position } from "../common/pda";
 import { expect } from "chai";
+import fs from "fs";
 
 describe("Zap In damm V2", () => {
   let zapProgram: ZapProgram;
@@ -80,7 +79,7 @@ describe("Zap In damm V2", () => {
 
     const amountTokenA = new BN(LAMPORTS_PER_SOL);
     const amountSwap = amountTokenA.divn(2);
-    const result = await zapInFullFlow({
+    await zapInFullFlow({
       svm,
       user,
       pool,
@@ -91,41 +90,92 @@ describe("Zap In damm V2", () => {
       totalAmount: amountTokenA,
       amountSwap,
     });
+  });
 
-    if (result instanceof TransactionMetadata) {
-      // console.log(result.logs());
-      console.log(
-        "computeUnitsConsumed: ",
-        result.computeUnitsConsumed().toString()
-      );
-      // fs.writeFileSync("./logs.json", JSON.stringify(result.logs()));
-    } else {
-      console.log(result.meta().logs());
-    }
+  it("zap in with pool has fee scheduler", async () => {
+    const baseFee = {
+      cliffFeeNumerator: new BN(500_000_000), // 50 %
+      firstFactor: 100, // 100 periods
+      secondFactor: Array.from(new BN(1).toArrayLike(Buffer, "le", 8)),
+      thirdFactor: new BN(4875000),
+      baseFeeMode: 0, // fee scheduler Linear mode
+    };
 
-    // check position after add liquidity
-    const positionState = getDammV2Position(svm, position);
-    const poolState = getDammV2Pool(svm, pool);
+    warpSlotBy(svm, new BN(10));
 
-    expect(positionState.unlockedLiquidity.gt(new BN(0))).to.be.true;
-
-    const tokenAAmount = getAmountAFromLiquidityDelta(
-      poolState.sqrtPrice,
-      poolState.sqrtMaxPrice,
-      positionState.unlockedLiquidity,
-      Rounding.Down
+    const pool = await createDammV2Pool(
+      svm,
+      admin,
+      tokenAMint,
+      tokenBMint,
+      undefined,
+      undefined,
+      baseFee
     );
 
-    const tokenBAmount = getAmountBFromLiquidityDelta(
-      poolState.sqrtMinPrice,
-      poolState.sqrtPrice,
-      positionState.unlockedLiquidity,
-      Rounding.Down
+    const { position, positionNftAccount } = await createDammV2Position(
+      svm,
+      user,
+      pool
     );
 
-    console.log({
-      tokenAAmount: tokenAAmount.toString(),
-      tokenBAmount: tokenBAmount.toString(),
+    const amountTokenA = new BN(LAMPORTS_PER_SOL);
+    const amountSwap = amountTokenA.divn(2);
+    await zapInFullFlow({
+      svm,
+      user,
+      pool,
+      position,
+      positionNftAccount,
+      inputTokenMint: tokenAMint,
+      outputTokenMint: tokenBMint,
+      totalAmount: amountTokenA,
+      amountSwap,
+    });
+  });
+
+  it("zap in with pool has rate limiter", async () => {
+    let maxRateLimiterDuration = new BN(10);
+    let maxFeeBps = new BN(5000);
+    const baseFee = {
+      cliffFeeNumerator: new BN(10_000_000), // 100bps
+      firstFactor: 10, // 10 bps
+      secondFactor: convertToRateLimiterSecondFactor(
+        maxRateLimiterDuration,
+        maxFeeBps
+      ),
+      thirdFactor: new BN(LAMPORTS_PER_SOL), // 1 SOL,
+      baseFeeMode: 2, // rate limiter mode
+    };
+
+    const pool = await createDammV2Pool(
+      svm,
+      admin,
+      tokenAMint,
+      tokenBMint,
+      undefined,
+      undefined,
+      baseFee
+    );
+
+    const { position, positionNftAccount } = await createDammV2Position(
+      svm,
+      user,
+      pool
+    );
+
+    const amountTokenA = new BN(5 * LAMPORTS_PER_SOL); // 5 SOL
+    const amountSwap = amountTokenA.divn(2);
+    await zapInFullFlow({
+      svm,
+      user,
+      pool,
+      position,
+      positionNftAccount,
+      inputTokenMint: tokenAMint,
+      outputTokenMint: tokenBMint,
+      totalAmount: amountTokenA,
+      amountSwap,
     });
   });
 
@@ -147,7 +197,7 @@ describe("Zap In damm V2", () => {
 
     const amountTokenA = new BN(LAMPORTS_PER_SOL);
     const amountSwap = amountTokenA.divn(2);
-    const result = await zapInFullFlow({
+    await zapInFullFlow({
       svm,
       user,
       pool,
@@ -157,42 +207,6 @@ describe("Zap In damm V2", () => {
       outputTokenMint: tokenBMint,
       totalAmount: amountTokenA,
       amountSwap,
-    });
-
-    if (result instanceof TransactionMetadata) {
-      // console.log(result.logs());
-      console.log(
-        "computeUnitsConsumed: ",
-        result.computeUnitsConsumed().toString()
-      );
-      // fs.writeFileSync("./logs.json", JSON.stringify(result.logs()));
-    } else {
-      console.log(result.meta().logs());
-    }
-
-    // check position after add liquidity
-    const positionState = getDammV2Position(svm, position);
-    const poolState = getDammV2Pool(svm, pool);
-
-    expect(positionState.unlockedLiquidity.gt(new BN(0))).to.be.true;
-
-    const tokenAAmount = getAmountAFromLiquidityDelta(
-      poolState.sqrtPrice,
-      poolState.sqrtMaxPrice,
-      positionState.unlockedLiquidity,
-      Rounding.Down
-    );
-
-    const tokenBAmount = getAmountBFromLiquidityDelta(
-      poolState.sqrtMinPrice,
-      poolState.sqrtPrice,
-      positionState.unlockedLiquidity,
-      Rounding.Down
-    );
-
-    console.log({
-      tokenAAmount: tokenAAmount.toString(),
-      tokenBAmount: tokenBAmount.toString(),
     });
   });
 });
@@ -220,7 +234,7 @@ async function zapInFullFlow(params: {
     totalAmount,
   } = params;
 
-  const poolState = getDammV2Pool(svm, pool);
+  let poolState = getDammV2Pool(svm, pool);
   const swapTx = await swap({
     svm,
     user: user.publicKey,
@@ -238,18 +252,23 @@ async function zapInFullFlow(params: {
     inputTokenMint.equals(poolState.tokenAMint)
   );
 
-  // update balance after swapxww
+  const tokenAAccount = getAssociatedTokenAddressSync(
+    inputTokenMint,
+    user.publicKey
+  );
+
   const tokenBAccount = getAssociatedTokenAddressSync(
     outputTokenMint,
     user.publicKey
   );
 
-  const preBalance = getTokenBalance(svm, tokenBAccount);
+  const preTokenABalance = getTokenBalance(svm, tokenAAccount);
+  const preTokenBBalance = getTokenBalance(svm, tokenBAccount);
 
   const updateLedgerBalanceAfterSwapTx = await updateLedgerBalanceAfterSwap(
     user.publicKey,
     tokenBAccount,
-    preBalance,
+    preTokenBBalance,
     amountSwap,
     outputTokenMint.equals(poolState.tokenAMint)
   );
@@ -280,5 +299,30 @@ async function zapInFullFlow(params: {
   finalTx.recentBlockhash = svm.latestBlockhash();
   finalTx.sign(user);
 
-  return svm.sendTransaction(finalTx);
+  const result = svm.sendTransaction(finalTx);
+  if (result instanceof TransactionMetadata) {
+    console.log(result.logs());
+  }
+  expect(result).instanceOf(TransactionMetadata);
+
+  // check position after add liquidity
+  const positionState = getDammV2Position(svm, position);
+  poolState = getDammV2Pool(svm, pool);
+
+  expect(positionState.unlockedLiquidity.gt(new BN(0))).to.be.true;
+
+  const postTokenABalance = getTokenBalance(svm, tokenAAccount);
+  const postTokenBBalance = getTokenBalance(svm, tokenBAccount);
+
+  const remainingTokenA = totalAmount
+    .add(postTokenABalance)
+    .sub(preTokenABalance);
+
+  const remainingTokenB = postTokenBBalance.sub(preTokenBBalance);
+
+  const remainAmountAPercent =
+    remainingTokenA.toNumber() / totalAmount.toNumber();
+
+  expect(remainAmountAPercent < 0.001); // 0.1%
+  expect(remainingTokenB.toNumber() < 0.0001 * 10 ** TOKEN_DECIMALS); // 0.0001 token
 }

@@ -32,7 +32,7 @@ import {
   DLMM_PROGRAM_ID_LOCAL,
   dlmmCreatePositionAndAddLiquidityRadius,
   initializeTokenBadge,
-  MAX_BIN_PER_POSITION,
+  DEFAULT_BIN_PER_POSITION,
   removeAllLiquidity,
 } from "../common/dlmm";
 import { BN } from "@coral-xyz/anchor";
@@ -52,9 +52,10 @@ describe("Zap out dlmm with transfer hook", () => {
   const activeId = new BN(5660);
   // 5 = Create 5 lower bin arrays, and 5 upper bin arrays surrounding the active bin arrays. Total bins = 600 * 11
   const binArrayDelta = 5;
-  const lowerBinId = activeId.toNumber() - MAX_BIN_PER_POSITION.toNumber() / 2;
+  const lowerBinId =
+    activeId.toNumber() - DEFAULT_BIN_PER_POSITION.toNumber() / 2;
 
-  const upperBinId = MAX_BIN_PER_POSITION.toNumber() + lowerBinId - 1;
+  const upperBinId = DEFAULT_BIN_PER_POSITION.toNumber() + lowerBinId - 1;
 
   const admin = Keypair.fromSecretKey(
     new Uint8Array([

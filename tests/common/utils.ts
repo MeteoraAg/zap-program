@@ -248,3 +248,8 @@ export function convertAccountTypeToNumber(accountType: object): number {
     return 2;
   }
 }
+
+export function warpSlotBy(svm: LiteSVM, slots: BN) {
+  const clock = svm.getClock();
+  svm.warpToSlot(clock.slot + BigInt(slots.toString()));
+}

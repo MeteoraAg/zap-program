@@ -1,15 +1,22 @@
 import { BN } from "@coral-xyz/anchor";
 import { LiteSVM } from "litesvm";
-import { PublicKey, Transaction } from "@solana/web3.js";
+import { PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
 import { DAMM_V2_PROGRAM_ID } from "../damm_v2";
 import {
   deriveDammV2EventAuthority,
   deriveDammV2PoolAuthority,
+  deriveDlmmEventAuthority,
   deriveLedgerAccount,
   getDammV2Pool,
 } from "../pda";
 import { createZapProgram } from "./zapOut";
 import { getAssociatedTokenAddressSync } from "@solana/spl-token";
+import {
+  DLMM_PROGRAM_ID_LOCAL,
+  getLbPairState,
+  MEMO_PROGRAM_ID,
+  StrategyType,
+} from "../dlmm";
 
 export async function zapInDammv2(params: {
   svm: LiteSVM;
@@ -72,6 +79,169 @@ export async function zapInDammv2(params: {
       tokenBProgram,
       dammProgram: DAMM_V2_PROGRAM_ID,
       dammEventAuthority: deriveDammV2EventAuthority(),
+    })
+    .transaction();
+}
+
+export async function zapInDlmmforInitializedPosition(params: {
+  svm: LiteSVM;
+  owner: PublicKey;
+  lbPair: PublicKey;
+  position: PublicKey;
+  activeId: number;
+  minDeltaId: number;
+  maxDeltaId: number;
+  maxActiveBinSlippage: number;
+  favorXInActiveId: boolean;
+  strategy: any;
+  remainingAccountInfo: any;
+  binArrayBitmapExtension: PublicKey;
+}): Promise<Transaction> {
+  const program = createZapProgram();
+
+  const {
+    svm,
+    owner,
+    lbPair,
+    position,
+    activeId,
+    minDeltaId,
+    maxActiveBinSlippage,
+    maxDeltaId,
+    favorXInActiveId,
+    strategy,
+    remainingAccountInfo,
+    binArrayBitmapExtension,
+  } = params;
+
+  const lbPairState = getLbPairState(svm, lbPair);
+  const { tokenXMint, tokenYMint, reserveX, reserveY } = lbPairState;
+
+  const tokenXProgram = svm.getAccount(tokenXMint).owner;
+  const tokenYProgram = svm.getAccount(tokenYMint).owner;
+
+  const userTokenX = getAssociatedTokenAddressSync(
+    tokenXMint,
+    owner,
+    true,
+    tokenXProgram
+  );
+
+  const userTokenY = getAssociatedTokenAddressSync(
+    tokenYMint,
+    owner,
+    true,
+    tokenYProgram
+  );
+  return await program.methods
+    .zapInDlmmForInitializedPosition(
+      activeId,
+      minDeltaId,
+      maxDeltaId,
+      maxActiveBinSlippage,
+      favorXInActiveId,
+      strategy,
+      remainingAccountInfo
+    )
+    .accountsPartial({
+      ledger: deriveLedgerAccount(owner),
+      lbPair,
+      position,
+      binArrayBitmapExtension: binArrayBitmapExtension,
+      userTokenX,
+      userTokenY,
+      reserveX,
+      reserveY,
+      tokenXMint,
+      tokenYMint,
+      tokenXProgram,
+      tokenYProgram,
+      dlmmProgram: DLMM_PROGRAM_ID_LOCAL,
+      owner,
+      rentPayer: owner,
+      memoProgram: MEMO_PROGRAM_ID,
+      dlmmEventAuthority: deriveDlmmEventAuthority(),
+      systemProgram: SystemProgram.programId,
+    })
+    .transaction();
+}
+
+export async function zapInDlmmforUnInitializedPosition(params: {
+  svm: LiteSVM;
+  owner: PublicKey;
+  lbPair: PublicKey;
+  position: PublicKey;
+  activeId: number;
+  binDelta: number;
+  maxActiveBinSlippage: number;
+  favorXInActiveId: boolean;
+  strategy: any;
+  remainingAccountInfo: any;
+  binArrayBitmapExtension?: PublicKey;
+}): Promise<Transaction> {
+  const program = createZapProgram();
+
+  const {
+    svm,
+    owner,
+    lbPair,
+    position,
+    activeId,
+    binDelta,
+    maxActiveBinSlippage,
+    favorXInActiveId,
+    strategy,
+    remainingAccountInfo,
+    binArrayBitmapExtension,
+  } = params;
+
+  const lbPairState = getLbPairState(svm, lbPair);
+  const { tokenXMint, tokenYMint, reserveX, reserveY } = lbPairState;
+
+  const tokenXProgram = svm.getAccount(tokenXMint).owner;
+  const tokenYProgram = svm.getAccount(tokenYMint).owner;
+
+  const userTokenX = getAssociatedTokenAddressSync(
+    tokenXMint,
+    owner,
+    true,
+    tokenXProgram
+  );
+
+  const userTokenY = getAssociatedTokenAddressSync(
+    tokenYMint,
+    owner,
+    true,
+    tokenYProgram
+  );
+  return await program.methods
+    .zapInDlmmForUninitializedPosition(
+      binDelta,
+      activeId,
+      maxActiveBinSlippage,
+      favorXInActiveId,
+      strategy,
+      remainingAccountInfo
+    )
+    .accountsPartial({
+      ledger: deriveLedgerAccount(owner),
+      lbPair,
+      position,
+      binArrayBitmapExtension: binArrayBitmapExtension ?? DLMM_PROGRAM_ID_LOCAL,
+      userTokenX,
+      userTokenY,
+      reserveX,
+      reserveY,
+      tokenXMint,
+      tokenYMint,
+      tokenXProgram,
+      tokenYProgram,
+      dlmmProgram: DLMM_PROGRAM_ID_LOCAL,
+      owner,
+      rentPayer: owner,
+      memoProgram: MEMO_PROGRAM_ID,
+      dlmmEventAuthority: deriveDlmmEventAuthority(),
+      systemProgram: SystemProgram.programId,
     })
     .transaction();
 }

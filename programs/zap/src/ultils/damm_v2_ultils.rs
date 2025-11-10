@@ -1,4 +1,4 @@
-use anchor_lang::prelude::*;
+use anchor_lang::{prelude::*, solana_program::log::sol_log_compute_units};
 use damm_v2::{
     base_fee::{BaseFeeHandler, FeeRateLimiter},
     constants::fee::get_max_fee_numerator,
@@ -338,8 +338,17 @@ pub fn calculate_swap_amount(
 
     // max 20 loops
     // need to test for compute unit
-    for _i in 0..20 {
+    for i in 0..20 {
+        #[cfg(feature = "local")]
+        msg!("iterator: {}", i);
+
         let amount_in = max_swap_amount.safe_add(min_swap_amount)?.safe_div(2)?;
+
+        #[cfg(feature = "local")]
+        {
+            msg!("Remain CUs before calculate swap result");
+            sol_log_compute_units();
+        }
         if let Ok(swap_result) = calculate_swap_result(
             pool,
             current_point,
@@ -348,6 +357,11 @@ pub fn calculate_swap_amount(
             &fee_handler,
             &fee_mode,
         ) {
+            #[cfg(feature = "local")]
+            {
+                msg!("Remain CUs before validate swap result");
+                sol_log_compute_units();
+            }
             // update swap amount
             swap_amount = amount_in;
             if let Ok(status) = validate_swap_result(
@@ -357,6 +371,11 @@ pub fn calculate_swap_amount(
                 pool_amount_b,
                 trade_direction,
             ) {
+                #[cfg(feature = "local")]
+                {
+                    msg!("Remain CUs end of validate swap result");
+                    sol_log_compute_units();
+                }
                 match status {
                     SwapResultStatus::Done => {
                         #[cfg(test)]
