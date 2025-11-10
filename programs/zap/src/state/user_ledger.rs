@@ -10,8 +10,8 @@ use damm_v2::{params::swap::TradeDirection, token::calculate_transfer_fee_exclud
 #[derive(InitSpace, Debug, Default)]
 pub struct UserLedger {
     pub owner: Pubkey,
-    pub amount_a: u64,
-    pub amount_b: u64,
+    pub amount_a: u64, // amount_x in DLMM
+    pub amount_b: u64, // amount_y in DLMM
 }
 
 impl UserLedger {
@@ -32,6 +32,7 @@ impl UserLedger {
             .safe_sub(pre_amount_b)?;
         Ok(())
     }
+    // only needed for damm v2 function
     pub fn get_liquidity_from_amounts_and_trade_direction<'info>(
         &self,
         token_a_mint: &InterfaceAccount<'info, Mint>,

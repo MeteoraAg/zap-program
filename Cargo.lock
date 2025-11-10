@@ -846,6 +846,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "dlmm"
+version = "0.10.1"
+dependencies = [
+ "anchor-lang",
+ "bytemuck",
+]
+
+[[package]]
 name = "either"
 version = "1.15.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3512,6 +3520,7 @@ dependencies = [
  "anchor-spl",
  "bytemuck",
  "cp-amm",
+ "dlmm",
  "ruint",
 ]
 

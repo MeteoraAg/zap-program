@@ -12,14 +12,13 @@ pub mod state;
 pub mod tests;
 pub use state::*;
 pub mod ultils;
+use dlmm::types::RemainingAccountsInfo;
 pub use ultils::*;
-
 declare_id!("zapvX9M3uf5pvy4wRPAbQgdQsM1xmuiFnkfHKPvwMiz");
 
 #[program]
 pub mod zap {
     use super::*;
-
     pub fn zap_out<'c: 'info, 'info>(
         ctx: Context<'_, '_, 'c, 'info, ZapOutCtx<'info>>,
         params: ZapOutParameters,
@@ -63,5 +62,47 @@ pub mod zap {
         max_sqrt_price_change_bps: u32,
     ) -> Result<()> {
         instructions::handle_zap_in_damm_v2(ctx, pre_sqrt_price, max_sqrt_price_change_bps)
+    }
+
+    pub fn zap_in_dlmm_for_initialized_position<'c: 'info, 'info>(
+        ctx: Context<'_, '_, 'c, 'info, ZapInDlmmForInitializedPositionCtx<'info>>,
+        active_id: i32,
+        min_delta_id: i32,
+        max_delta_id: i32,
+        max_active_bin_slippage: u16,
+        favor_x_in_active_id: bool,
+        strategy: StrategyType,
+        remaining_accounts_info: RemainingAccountsInfo,
+    ) -> Result<()> {
+        instructions::handle_zap_in_dlmm_for_initialized_position(
+            ctx,
+            active_id,
+            max_active_bin_slippage,
+            min_delta_id,
+            max_delta_id,
+            favor_x_in_active_id,
+            strategy,
+            remaining_accounts_info,
+        )
+    }
+
+    pub fn zap_in_dlmm_for_uninitialized_position<'c: 'info, 'info>(
+        ctx: Context<'_, '_, 'c, 'info, ZapInDlmmForUnintializedPositionCtx<'info>>,
+        bin_delta: u8,
+        active_id: i32,
+        max_active_bin_slippage: u16,
+        favor_x_in_active_id: bool,
+        strategy: StrategyType,
+        remaining_accounts_info: RemainingAccountsInfo,
+    ) -> Result<()> {
+        instructions::handle_zap_in_dlmm_for_uninitialized_position(
+            ctx,
+            bin_delta,
+            active_id,
+            max_active_bin_slippage,
+            favor_x_in_active_id,
+            strategy,
+            remaining_accounts_info,
+        )
     }
 }
