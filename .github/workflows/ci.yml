@@ -5,7 +5,7 @@ on:
     branches:
       - main
       - release_0.2.0
-      - zap_in_dammv2
+      - zap_in
 
 env:
   SOLANA_CLI_VERSION: 2.1.0
