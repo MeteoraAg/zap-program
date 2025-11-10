@@ -35,7 +35,7 @@ import { BN } from "@coral-xyz/anchor";
 import { getDammV2Pool, getDammV2Position } from "../common/pda";
 import { expect } from "chai";
 
-describe.only("Zap In damm V2", () => {
+describe("Zap In damm V2", () => {
   let zapProgram: ZapProgram;
   let svm: LiteSVM;
   let tokenMint: PublicKey;
