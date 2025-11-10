@@ -263,7 +263,7 @@ async function zapInFullFlow(params: {
     position,
     positionNftAccount,
     preSqrtPrice: poolState.sqrtPrice,
-    maxSqrtPriceChangeBps: 10,
+    maxSqrtPriceChangeBps: 5000,
   });
 
   // close ledge
