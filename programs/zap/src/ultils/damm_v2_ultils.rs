@@ -128,7 +128,7 @@ fn calculate_swap_result(
             amount_in,
             trade_fee_numerator,
             fee_mode.has_referral,
-            pool.has_partner(),
+            false,
         )?;
 
         amount

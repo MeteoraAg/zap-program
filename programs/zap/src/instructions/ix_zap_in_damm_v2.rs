@@ -146,6 +146,8 @@ pub fn handle_zap_in_damm_v2(
     max_sqrt_price_change_bps: u32, // max sqrt price change after swap
 ) -> Result<()> {
     let mut ledger = ctx.accounts.ledger.load_mut()?;
+    let max_deposit_a_amount = ledger.amount_a;
+    let max_deposit_b_amount = ledger.amount_b;
     // 1. we add liquidity firstly, so later if we need swap, user could get some fees back
     let pool = ctx.accounts.pool.load()?;
     let token_a_account_ai = ctx.accounts.token_a_account.to_account_info();
@@ -229,6 +231,25 @@ pub fn handle_zap_in_damm_v2(
         drop(pool);
         ctx.accounts.add_liquidity(liquidity)?;
     }
+
+    let user_amount_a_4 = accessor::amount(&token_a_account_ai)?;
+    let user_amount_b_4 = accessor::amount(&token_b_account_ai)?;
+
+    ledger.update_ledger_balances(
+        user_amount_a_3,
+        user_amount_a_4,
+        user_amount_b_3,
+        user_amount_b_4,
+    )?;
+
+    // log will be truncated, shouldn't rely on that
+    msg!(
+        "max_deposit_amounts: {} {}, remaining_amounts: {} {}",
+        max_deposit_a_amount,
+        max_deposit_b_amount,
+        ledger.amount_a,
+        ledger.amount_b
+    );
 
     Ok(())
 }

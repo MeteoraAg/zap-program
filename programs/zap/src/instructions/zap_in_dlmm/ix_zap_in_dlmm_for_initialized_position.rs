@@ -1,5 +1,5 @@
 use anchor_lang::prelude::*;
-use anchor_spl::token_interface::Mint;
+use anchor_spl::{token::accessor, token_interface::Mint};
 use damm_v2::token::calculate_transfer_fee_excluded_amount;
 use dlmm::{
     accounts::LbPair,
@@ -76,11 +76,20 @@ pub fn handle_zap_in_dlmm_for_initialized_position<'c: 'info, 'info>(
     strategy: StrategyType,
     remaining_accounts_info: RemainingAccountsInfo,
 ) -> Result<()> {
-    let ledger = ctx.accounts.ledger.load()?;
+    let mut ledger = ctx.accounts.ledger.load_mut()?;
+    let max_deposit_x_amount = ledger.amount_a;
+    let max_deposit_y_amount = ledger.amount_b;
+    let token_x_account_ai = ctx.accounts.user_token_x.to_account_info();
+    let token_y_account_ai = ctx.accounts.user_token_y.to_account_info();
+    let pre_user_amount_x = accessor::amount(&token_x_account_ai)?;
+    let pre_user_amount_y = accessor::amount(&token_y_account_ai)?;
+
     let amount_x =
-        calculate_transfer_fee_excluded_amount(&ctx.accounts.token_x_mint, ledger.amount_a)?.amount;
+        calculate_transfer_fee_excluded_amount(&ctx.accounts.token_x_mint, max_deposit_x_amount)?
+            .amount;
     let amount_y =
-        calculate_transfer_fee_excluded_amount(&ctx.accounts.token_y_mint, ledger.amount_b)?.amount;
+        calculate_transfer_fee_excluded_amount(&ctx.accounts.token_y_mint, max_deposit_y_amount)?
+            .amount;
 
     let lb_pair = ctx.accounts.lb_pair.load()?;
 
@@ -111,9 +120,9 @@ pub fn handle_zap_in_dlmm_for_initialized_position<'c: 'info, 'info>(
         should_claim_fee: false,
         should_claim_reward: false,
         min_withdraw_x_amount: 0,
-        max_deposit_x_amount: ledger.amount_a,
+        max_deposit_x_amount,
         min_withdraw_y_amount: 0,
-        max_deposit_y_amount: ledger.amount_b,
+        max_deposit_y_amount,
         shrink_mode: 3, // we dont allow to shrink in both side
         padding: [0; 31],
         removes: vec![],
@@ -162,6 +171,25 @@ pub fn handle_zap_in_dlmm_for_initialized_position<'c: 'info, 'info>(
         params,
         remaining_accounts_info,
     )?;
+
+    let post_user_amount_x = accessor::amount(&token_x_account_ai)?;
+    let post_user_amount_y = accessor::amount(&token_y_account_ai)?;
+
+    ledger.update_ledger_balances(
+        pre_user_amount_x,
+        post_user_amount_x,
+        pre_user_amount_y,
+        post_user_amount_y,
+    )?;
+
+    // log will be truncated, shouldn't rely on that
+    msg!(
+        "max_deposit_amounts: {} {}, remaining_amounts: {} {}",
+        max_deposit_x_amount,
+        max_deposit_y_amount,
+        ledger.amount_a,
+        ledger.amount_b
+    );
 
     Ok(())
 }
