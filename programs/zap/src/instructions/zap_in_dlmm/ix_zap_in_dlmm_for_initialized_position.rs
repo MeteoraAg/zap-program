@@ -47,7 +47,6 @@ pub struct ZapInDlmmForInitializedPositionCtx<'info> {
     pub dlmm_program: Program<'info, dlmm::program::LbClmm>,
 
     /// owner of position
-    #[account(mut)]
     pub owner: Signer<'info>,
 
     #[account(mut)]

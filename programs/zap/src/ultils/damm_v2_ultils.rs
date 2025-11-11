@@ -1,4 +1,4 @@
-use anchor_lang::{prelude::*, solana_program::log::sol_log_compute_units};
+use anchor_lang::prelude::*;
 use damm_v2::{
     base_fee::{BaseFeeHandler, FeeRateLimiter},
     constants::fee::get_max_fee_numerator,
@@ -337,18 +337,11 @@ pub fn calculate_swap_amount(
     let (pool_amount_a, pool_amount_b) = pool.get_reserves_amount()?;
 
     // max 20 loops
-    // need to test for compute unit
-    for i in 0..20 {
-        #[cfg(feature = "local")]
-        msg!("iterator: {}", i);
-
+    // For each loop program consumed ~ 5.19 CUs
+    // So the 20 loops will consume maximum ~ 100 CUs
+    for _i in 0..20 {
         let amount_in = max_swap_amount.safe_add(min_swap_amount)?.safe_div(2)?;
 
-        #[cfg(feature = "local")]
-        {
-            msg!("Remain CUs before calculate swap result");
-            sol_log_compute_units();
-        }
         if let Ok(swap_result) = calculate_swap_result(
             pool,
             current_point,
@@ -357,11 +350,6 @@ pub fn calculate_swap_amount(
             &fee_handler,
             &fee_mode,
         ) {
-            #[cfg(feature = "local")]
-            {
-                msg!("Remain CUs before validate swap result");
-                sol_log_compute_units();
-            }
             // update swap amount
             swap_amount = amount_in;
             if let Ok(status) = validate_swap_result(
@@ -371,15 +359,10 @@ pub fn calculate_swap_amount(
                 pool_amount_b,
                 trade_direction,
             ) {
-                #[cfg(feature = "local")]
-                {
-                    msg!("Remain CUs end of validate swap result");
-                    sol_log_compute_units();
-                }
                 match status {
                     SwapResultStatus::Done => {
                         #[cfg(test)]
-                        println!("Done calculate swap result {}", i);
+                        println!("Done calculate swap result {}", _i);
                         break;
                     }
                     SwapResultStatus::ExceededA => {
@@ -403,13 +386,13 @@ pub fn calculate_swap_amount(
                 }
             } else {
                 #[cfg(test)]
-                println!("can't validate swap result {}", i);
+                println!("can't validate swap result {}", _i);
 
                 break; // if we can't validate swap result, then just break
             }
         } else {
             #[cfg(test)]
-            println!("can't simulate swap result {}", i);
+            println!("can't simulate swap result {}", _i);
 
             break; // if we can't simulate swap result, then just break
         }
