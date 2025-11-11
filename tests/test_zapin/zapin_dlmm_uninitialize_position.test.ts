@@ -20,12 +20,10 @@ import {
   setLedgerBalance,
   getTokenBalance,
   updateLedgerBalanceAfterSwap,
-  zapInDlmmforInitializedPosition,
   closeLedgerAccount,
   zapInDlmmforUnInitializedPosition,
 } from "../common";
 import babar from "babar";
-import { TOKEN_PROGRAM_ID } from "@coral-xyz/anchor/dist/cjs/utils/token";
 import { expect } from "chai";
 
 import ZapIDL from "../../target/idl/zap.json";
@@ -33,9 +31,6 @@ import { getAssociatedTokenAddressSync } from "@solana/spl-token";
 import {
   binIdToBinArrayIndex,
   createBinArrays,
-  createDlmmPool,
-  createDlmmPosition,
-  createPresetParameter2,
   DLMM_PROGRAM_ID_LOCAL,
   dlmmCreatePositionAndAddLiquidityRadius,
   dlmmSwap,
@@ -326,7 +321,7 @@ async function zapInDlmmFullFlow(params: {
   if (result instanceof FailedTransactionMetadata) {
     console.log(result.meta().logs());
   } else {
-    console.log(result.logs());
+    // console.log(result.logs());
   }
   expect(result).instanceOf(TransactionMetadata);
 

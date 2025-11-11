@@ -32,9 +32,7 @@ import { getAssociatedTokenAddressSync } from "@solana/spl-token";
 import {
   binIdToBinArrayIndex,
   createBinArrays,
-  createDlmmPool,
   createDlmmPosition,
-  createPresetParameter2,
   DLMM_PROGRAM_ID_LOCAL,
   dlmmCreatePositionAndAddLiquidityRadius,
   dlmmSwap,
@@ -210,7 +208,7 @@ describe("Zapin DLMM with initialize position", () => {
     });
   });
 
-  it.skip("Zapin dlmm with Curve strategy", async () => {
+  it("Zapin dlmm with Curve strategy", async () => {
     const position = await createDlmmPosition(svm, user, lbPair, lowerBinId);
 
     const amountTokenA = new BN(LAMPORTS_PER_SOL);

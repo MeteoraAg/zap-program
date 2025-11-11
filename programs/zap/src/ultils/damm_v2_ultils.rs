@@ -379,7 +379,7 @@ pub fn calculate_swap_amount(
                 match status {
                     SwapResultStatus::Done => {
                         #[cfg(test)]
-                        println!("Done calculate swap result {}", _i);
+                        println!("Done calculate swap result {}", i);
                         break;
                     }
                     SwapResultStatus::ExceededA => {
@@ -403,13 +403,13 @@ pub fn calculate_swap_amount(
                 }
             } else {
                 #[cfg(test)]
-                println!("can't validate swap result {}", _i);
+                println!("can't validate swap result {}", i);
 
                 break; // if we can't validate swap result, then just break
             }
         } else {
             #[cfg(test)]
-            println!("can't simulate swap result {}", _i);
+            println!("can't simulate swap result {}", i);
 
             break; // if we can't simulate swap result, then just break
         }
