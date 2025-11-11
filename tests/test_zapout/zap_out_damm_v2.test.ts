@@ -1,4 +1,8 @@
-import { LiteSVM, TransactionMetadata } from "litesvm";
+import {
+  FailedTransactionMetadata,
+  LiteSVM,
+  TransactionMetadata,
+} from "litesvm";
 import {
   PublicKey,
   Keypair,
@@ -11,20 +15,18 @@ import {
   mintToken,
   ZapProgram,
   zapOutDammv2,
-} from "./common";
+} from "../common";
 import { TOKEN_PROGRAM_ID } from "@coral-xyz/anchor/dist/cjs/utils/token";
 import { expect } from "chai";
 
-import ZapIDL from "../target/idl/zap.json";
-import DAMMV2IDL from "../idls/damm_v2.json";
+import ZapIDL from "../../target/idl/zap.json";
+import DAMMV2IDL from "../../idls/damm_v2.json";
 import {
   createDammV2Pool,
   createPositionAndAddLiquidity,
   removeLiquidity,
-} from "./common/damm_v2";
-import {
-  getAssociatedTokenAddressSync
-} from "@solana/spl-token";
+} from "../common/damm_v2";
+import { getAssociatedTokenAddressSync } from "@solana/spl-token";
 
 describe("Zap out damm V2", () => {
   let zapProgram: ZapProgram;
@@ -101,9 +103,7 @@ describe("Zap out damm V2", () => {
     finalTransaction.sign(user);
 
     const result = svm.sendTransaction(finalTransaction);
-    if (result instanceof TransactionMetadata) {
-      console.log(result.logs());
-    } else {
+    if (result instanceof FailedTransactionMetadata) {
       console.log(result.meta().logs());
     }
     expect(result).instanceOf(TransactionMetadata);

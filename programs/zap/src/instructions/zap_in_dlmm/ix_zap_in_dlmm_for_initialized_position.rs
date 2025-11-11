@@ -23,7 +23,7 @@ pub struct ZapInDlmmForInitializedPositionCtx<'info> {
 
     /// CHECK: will be validated in dlmm program
     #[account(mut)]
-    pub bin_array_bitmap_extension: UncheckedAccount<'info>,
+    pub bin_array_bitmap_extension: Option<UncheckedAccount<'info>>,
 
     /// CHECK: will be validated in dlmm program
     #[account(mut)]
@@ -141,16 +141,19 @@ pub fn handle_zap_in_dlmm_for_initialized_position<'c: 'info, 'info>(
 
     drop(lb_pair);
 
+    let bin_array_bitmap_extension = if let Some(value) = &ctx.accounts.bin_array_bitmap_extension {
+        Some(value.to_account_info())
+    } else {
+        None
+    };
+
     dlmm::cpi::rebalance_liquidity(
         CpiContext::new(
             ctx.accounts.dlmm_program.to_account_info(),
             dlmm::cpi::accounts::RebalanceLiquidity {
                 position: ctx.accounts.position.to_account_info(),
                 lb_pair: ctx.accounts.lb_pair.to_account_info(),
-                // TODO need to check bin array bitmap extension
-                bin_array_bitmap_extension: Some(
-                    ctx.accounts.bin_array_bitmap_extension.to_account_info(),
-                ),
+                bin_array_bitmap_extension,
                 owner: ctx.accounts.owner.to_account_info(),
                 user_token_x: ctx.accounts.user_token_x.to_account_info(),
                 user_token_y: ctx.accounts.user_token_y.to_account_info(),

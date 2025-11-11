@@ -5,132 +5,105 @@
  * IDL can be found at `target/idl/transfer_hook_counter.json`.
  */
 export type TransferHookCounter = {
-  "address": "EBZDYx7599krFc4m2govwBdZcicr4GgepqC78m71nsHS",
-  "metadata": {
-    "name": "transferHookCounter",
-    "version": "0.1.0",
-    "spec": "0.1.0"
-  },
-  "instructions": [
+  address: "EBZDYx7599krFc4m2govwBdZcicr4GgepqC78m71nsHS";
+  metadata: {
+    name: "transferHookCounter";
+    version: "0.1.0";
+    spec: "0.1.0";
+  };
+  instructions: [
     {
-      "name": "initializeExtraAccountMetaList",
-      "discriminator": [
-        92,
-        197,
-        174,
-        197,
-        41,
-        124,
-        19,
-        3
-      ],
-      "accounts": [
+      name: "initializeExtraAccountMetaList";
+      discriminator: [92, 197, 174, 197, 41, 124, 19, 3];
+      accounts: [
         {
-          "name": "payer",
-          "writable": true,
-          "signer": true
+          name: "payer";
+          writable: true;
+          signer: true;
         },
         {
-          "name": "extraAccountMetaList",
-          "writable": true
+          name: "extraAccountMetaList";
+          writable: true;
         },
         {
-          "name": "mint"
+          name: "mint";
         },
         {
-          "name": "counterAccount",
-          "writable": true
+          name: "counterAccount";
+          writable: true;
         },
         {
-          "name": "tokenProgram"
+          name: "tokenProgram";
         },
         {
-          "name": "associatedTokenProgram"
+          name: "associatedTokenProgram";
         },
         {
-          "name": "systemProgram"
+          name: "systemProgram";
         }
-      ],
-      "args": []
+      ];
+      args: [];
     },
     {
-      "name": "transferHook",
-      "discriminator": [
-        220,
-        57,
-        220,
-        152,
-        126,
-        125,
-        97,
-        168
-      ],
-      "accounts": [
+      name: "transferHook";
+      discriminator: [220, 57, 220, 152, 126, 125, 97, 168];
+      accounts: [
         {
-          "name": "sourceToken"
+          name: "sourceToken";
         },
         {
-          "name": "mint"
+          name: "mint";
         },
         {
-          "name": "destinationToken"
+          name: "destinationToken";
         },
         {
-          "name": "owner"
+          name: "owner";
         },
         {
-          "name": "extraAccountMetaList"
+          name: "extraAccountMetaList";
         },
         {
-          "name": "counterAccount",
-          "writable": true
+          name: "counterAccount";
+          writable: true;
         },
         {
-          "name": "accountOrderVerifier"
+          name: "accountOrderVerifier";
         }
-      ],
-      "args": [
+      ];
+      args: [
         {
-          "name": "amount",
-          "type": "u64"
+          name: "amount";
+          type: "u64";
         }
-      ]
+      ];
     }
-  ],
-  "accounts": [
+  ];
+  accounts: [
     {
-      "name": "counterAccount",
-      "discriminator": [
-        164,
-        8,
-        153,
-        71,
-        8,
-        44,
-        93,
-        22
-      ]
+      name: "counterAccount";
+      discriminator: [164, 8, 153, 71, 8, 44, 93, 22];
     }
-  ],
-  "errors": [
+  ];
+  errors: [
     {
-      "code": 6000,
-      "name": "amountTooBig",
-      "msg": "The amount is too big"
+      code: 6000;
+      name: "amountTooBig";
+      msg: "The amount is too big";
     }
-  ],
-  "types": [
+  ];
+  types: [
     {
-      "name": "counterAccount",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: "counterAccount";
+      type: {
+        kind: "struct";
+        fields: [
           {
-            "name": "counter",
-            "type": "u32"
+            name: "counter";
+            type: "u32";
           }
-        ]
-      }
+        ];
+      };
     }
-  ]
+  ];
 };
