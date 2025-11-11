@@ -23,24 +23,6 @@ pub enum ZapError {
     #[msg("Position is not empty")]
     InvalidPosition,
 
-    #[msg("Missing remaining account for transfer hook")]
-    MissingRemainingAccountForTransferHook,
-
-    #[msg("Remaining account was passed for transfer hook but there's no hook program")]
-    NoTransferHookProgram,
-
-    #[msg("Invalid remaining account slice")]
-    InvalidRemainingAccountSlice,
-
-    #[msg("Insufficient remaining accounts")]
-    InsufficientRemainingAccounts,
-
-    #[msg("Duplicated remaining account types")]
-    DuplicatedRemainingAccountTypes,
-
     #[msg("Exceeded slippage tolerance")]
     ExceededSlippage,
-
-    #[msg("Invalid base fee mode")]
-    InvalidBaseFeeMode,
 }
