@@ -18,6 +18,7 @@ import {
   closeLedgerAccount,
   warpSlotBy,
   TOKEN_DECIMALS,
+  U64_MAX,
 } from "../common";
 
 import ZapIDL from "../../target/idl/zap.json";
@@ -269,7 +270,7 @@ async function zapInFullFlow(params: {
     user.publicKey,
     tokenBAccount,
     preTokenBBalance,
-    amountSwap,
+    U64_MAX,
     outputTokenMint.equals(poolState.tokenAMint)
   );
 
@@ -300,9 +301,9 @@ async function zapInFullFlow(params: {
   finalTx.sign(user);
 
   const result = svm.sendTransaction(finalTx);
-  if (result instanceof TransactionMetadata) {
-    console.log(result.logs());
-  }
+  // if (result instanceof TransactionMetadata) {
+  //   console.log(result.logs());
+  // }
   expect(result).instanceOf(TransactionMetadata);
 
   // check position after add liquidity

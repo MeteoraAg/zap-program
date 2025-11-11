@@ -11,10 +11,8 @@ import {
   AccountMeta,
 } from "@solana/web3.js";
 import {
-  createZapProgram,
   createToken,
   mintToken,
-  ZapProgram,
   TOKEN_DECIMALS,
   initializeLedgerAccount,
   setLedgerBalance,
@@ -22,6 +20,7 @@ import {
   updateLedgerBalanceAfterSwap,
   closeLedgerAccount,
   zapInDlmmforUnInitializedPosition,
+  U64_MAX,
 } from "../common";
 import babar from "babar";
 import { expect } from "chai";
@@ -47,7 +46,6 @@ import { BN } from "@coral-xyz/anchor";
 import { deriveBinArrayBitmapExtension } from "../common/pda";
 
 describe("Zapin DLMM with Uninitialize position", () => {
-  let zapProgram: ZapProgram;
   let svm: LiteSVM;
   let user: Keypair;
   let tokenXMint: PublicKey;
@@ -73,7 +71,6 @@ describe("Zapin DLMM with Uninitialize position", () => {
   );
 
   beforeEach(async () => {
-    zapProgram = createZapProgram();
     svm = new LiteSVM();
     svm.addProgramFromFile(
       new PublicKey(ZapIDL.address),
@@ -308,7 +305,7 @@ async function zapInDlmmFullFlow(params: {
     user.publicKey,
     tokenBAccount,
     preBalance,
-    amountSwap,
+    U64_MAX,
     outputTokenMint.equals(lbPairState.tokenXMint)
   );
 
