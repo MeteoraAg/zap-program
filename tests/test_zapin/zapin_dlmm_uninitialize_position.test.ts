@@ -109,8 +109,6 @@ describe("Zapin DLMM with Uninitialize position", () => {
       binStep: binStep.toNumber(),
     });
 
-    await initializeBinArrayBitmapExtension(svm, lbPair, admin);
-
     console.log("Create bin array");
     const binArrayIndex = binIdToBinArrayIndex(activeId);
     const binArrayIndexes = [];
@@ -150,6 +148,8 @@ describe("Zapin DLMM with Uninitialize position", () => {
     const amountTokenA = new BN(LAMPORTS_PER_SOL);
     const amountSwap = amountTokenA.divn(2);
 
+    await initializeBinArrayBitmapExtension(svm, lbPair, admin);
+
     const binArrays = getBinArrayAccountMetaByBinRange(
       lbPair,
       new BN(lowerBinId),
@@ -174,6 +174,8 @@ describe("Zapin DLMM with Uninitialize position", () => {
   it("Zapin dlmm with Bidask strategy", async () => {
     const amountTokenA = new BN(LAMPORTS_PER_SOL);
     const amountSwap = amountTokenA.divn(2);
+
+    await initializeBinArrayBitmapExtension(svm, lbPair, admin);
 
     const binArrays = getBinArrayAccountMetaByBinRange(
       lbPair,
@@ -200,6 +202,8 @@ describe("Zapin DLMM with Uninitialize position", () => {
     const amountTokenA = new BN(LAMPORTS_PER_SOL);
     const amountSwap = amountTokenA.divn(2);
 
+    await initializeBinArrayBitmapExtension(svm, lbPair, admin);
+
     const binArrays = getBinArrayAccountMetaByBinRange(
       lbPair,
       new BN(lowerBinId),
@@ -216,6 +220,31 @@ describe("Zapin DLMM with Uninitialize position", () => {
       totalAmount: amountTokenA,
       amountSwap,
       strategy: StrategyType.Curve,
+      binArrays,
+      remainingAccountInfo: { slices: [] },
+    });
+  });
+
+  it("Zapin dlmm without binArraybitmapExtension", async () => {
+    const amountTokenA = new BN(LAMPORTS_PER_SOL);
+    const amountSwap = amountTokenA.divn(2);
+
+    const binArrays = getBinArrayAccountMetaByBinRange(
+      lbPair,
+      new BN(lowerBinId),
+      new BN(upperBinId)
+    );
+
+    await zapInDlmmFullFlow({
+      svm,
+      user,
+      lbPair,
+      binDelta,
+      inputTokenMint: tokenXMint,
+      outputTokenMint: tokenYMint,
+      totalAmount: amountTokenA,
+      amountSwap,
+      strategy: StrategyType.Spot,
       binArrays,
       remainingAccountInfo: { slices: [] },
     });

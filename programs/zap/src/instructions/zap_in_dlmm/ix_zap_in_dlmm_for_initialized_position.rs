@@ -142,9 +142,10 @@ pub fn handle_zap_in_dlmm_for_initialized_position<'c: 'info, 'info>(
 
     drop(lb_pair);
 
-    let bin_array_bitmap_extension = match &ctx.accounts.bin_array_bitmap_extension {
-        Some(value) => Some(value.to_account_info()),
-        None => Some(ctx.accounts.dlmm_program.to_account_info()),
+    let bin_array_bitmap_extension = if let Some(value) = &ctx.accounts.bin_array_bitmap_extension {
+        Some(value.to_account_info())
+    } else {
+        None
     };
 
     dlmm::cpi::rebalance_liquidity(
