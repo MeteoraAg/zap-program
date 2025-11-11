@@ -1,10 +1,10 @@
 use crate::{
     damm_v2_ultils::{get_liquidity_from_amount_a, get_liquidity_from_amount_b},
     math::safe_math::SafeMath,
+    TransferFeeCalculator,
 };
 use anchor_lang::prelude::*;
-use anchor_spl::token_interface::Mint;
-use damm_v2::{params::swap::TradeDirection, token::calculate_transfer_fee_excluded_amount};
+use damm_v2::params::swap::TradeDirection;
 
 #[account(zero_copy)]
 #[derive(InitSpace, Debug, Default)]
@@ -35,14 +35,18 @@ impl UserLedger {
     // only needed for damm v2 function
     pub fn get_liquidity_from_amounts_and_trade_direction<'info>(
         &self,
-        token_a_mint: &InterfaceAccount<'info, Mint>,
-        token_b_mint: &InterfaceAccount<'info, Mint>,
+        token_a_transfer_fee_calculator: &TransferFeeCalculator,
+        token_b_transfer_fee_calculator: &TransferFeeCalculator,
         sqrt_price: u128,
         min_sqrt_price: u128,
         max_sqrt_price: u128,
     ) -> Result<(u128, TradeDirection)> {
-        let amount_a = calculate_transfer_fee_excluded_amount(token_a_mint, self.amount_a)?.amount;
-        let amount_b = calculate_transfer_fee_excluded_amount(token_b_mint, self.amount_b)?.amount;
+        let amount_a = token_a_transfer_fee_calculator
+            .calculate_transfer_fee_excluded_amount(self.amount_a)?
+            .amount;
+        let amount_b = token_b_transfer_fee_calculator
+            .calculate_transfer_fee_excluded_amount(self.amount_b)?
+            .amount;
         let liquidity_from_a = get_liquidity_from_amount_a(amount_a, max_sqrt_price, sqrt_price)?;
         let liquidity_from_b = get_liquidity_from_amount_b(amount_b, min_sqrt_price, sqrt_price)?;
         if liquidity_from_a > liquidity_from_b {
