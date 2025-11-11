@@ -12,7 +12,7 @@ pub struct InitializeLedgerAccountCtx<'info> {
         space = 8 + UserLedger::INIT_SPACE,
         bump
     )]
-    pub legder: AccountLoader<'info, UserLedger>,
+    pub ledger: AccountLoader<'info, UserLedger>,
 
     pub owner: Signer<'info>,
 
@@ -23,7 +23,7 @@ pub struct InitializeLedgerAccountCtx<'info> {
 }
 
 pub fn handle_initialize_ledger_account(ctx: Context<InitializeLedgerAccountCtx>) -> Result<()> {
-    let mut ledger = ctx.accounts.legder.load_init()?;
+    let mut ledger = ctx.accounts.ledger.load_init()?;
     ledger.owner = ctx.accounts.owner.key();
     Ok(())
 }
@@ -35,7 +35,7 @@ pub struct CloseLedgerAccountCtx<'info> {
         has_one = owner,
         close = rent_receiver,
     )]
-    pub legder: AccountLoader<'info, UserLedger>,
+    pub ledger: AccountLoader<'info, UserLedger>,
 
     pub owner: Signer<'info>,
 
@@ -53,7 +53,7 @@ pub struct SetLedgerBalanceCtx<'info> {
     #[account(
        mut, has_one = owner
     )]
-    pub legder: AccountLoader<'info, UserLedger>,
+    pub ledger: AccountLoader<'info, UserLedger>,
 
     pub owner: Signer<'info>,
 }
@@ -63,7 +63,7 @@ pub fn handle_set_ledger_balance(
     amount: u64,
     is_token_a: bool,
 ) -> Result<()> {
-    let mut ledger = ctx.accounts.legder.load_mut()?;
+    let mut ledger = ctx.accounts.ledger.load_mut()?;
     if is_token_a {
         ledger.amount_a = amount
     } else {
@@ -77,7 +77,7 @@ pub struct UpdateLedgerBalanceAfterSwapCtx<'info> {
     #[account(
        mut, has_one = owner
     )]
-    pub legder: AccountLoader<'info, UserLedger>,
+    pub ledger: AccountLoader<'info, UserLedger>,
 
     /// CHECK: user must send correct user account
     pub token_account: UncheckedAccount<'info>,
@@ -94,7 +94,7 @@ pub fn handle_update_ledger_balance_after_swap(
     let current_token_balance = accessor::amount(&ctx.accounts.token_account.to_account_info())?;
     let delta_balance: u64 = current_token_balance.saturating_sub(pre_source_token_balance);
     let amount = delta_balance.min(max_transfer_amount);
-    let mut ledger = ctx.accounts.legder.load_mut()?;
+    let mut ledger = ctx.accounts.ledger.load_mut()?;
     if is_token_a {
         ledger.amount_a = amount
     } else {

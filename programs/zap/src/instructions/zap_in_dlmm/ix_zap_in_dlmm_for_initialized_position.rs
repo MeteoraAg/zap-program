@@ -77,14 +77,14 @@ pub fn handle_zap_in_dlmm_for_initialized_position<'c: 'info, 'info>(
     remaining_accounts_info: RemainingAccountsInfo,
 ) -> Result<()> {
     let ledger = ctx.accounts.ledger.load()?;
-    let lb_pair = ctx.accounts.lb_pair.load()?;
-
-    let lb_pair_active_id = lb_pair.active_id;
-
     let amount_x =
         calculate_transfer_fee_excluded_amount(&ctx.accounts.token_x_mint, ledger.amount_a)?.amount;
     let amount_y =
         calculate_transfer_fee_excluded_amount(&ctx.accounts.token_y_mint, ledger.amount_b)?.amount;
+
+    let lb_pair = ctx.accounts.lb_pair.load()?;
+
+    let lb_pair_active_id = lb_pair.active_id;
 
     let params = ZapInRebalancingParams {
         amount_x,
@@ -144,14 +144,14 @@ pub fn handle_zap_in_dlmm_for_initialized_position<'c: 'info, 'info>(
                 ),
                 owner: ctx.accounts.owner.to_account_info(),
                 user_token_x: ctx.accounts.user_token_x.to_account_info(),
-                user_token_y: ctx.accounts.user_token_x.to_account_info(),
+                user_token_y: ctx.accounts.user_token_y.to_account_info(),
                 reserve_x: ctx.accounts.reserve_x.to_account_info(),
                 reserve_y: ctx.accounts.reserve_y.to_account_info(),
                 token_x_mint: ctx.accounts.token_x_mint.to_account_info(),
                 token_y_mint: ctx.accounts.token_y_mint.to_account_info(),
                 rent_payer: ctx.accounts.rent_payer.to_account_info(),
                 token_x_program: ctx.accounts.token_x_program.to_account_info(),
-                token_y_program: ctx.accounts.token_x_program.to_account_info(),
+                token_y_program: ctx.accounts.token_y_program.to_account_info(),
                 memo_program: ctx.accounts.memo_program.to_account_info(),
                 system_program: ctx.accounts.system_program.to_account_info(),
                 program: ctx.accounts.dlmm_program.to_account_info(),

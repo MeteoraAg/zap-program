@@ -114,7 +114,7 @@ fn calculate_swap_result(
     current_point: u64,
     amount_in: u64,
     trade_direction: TradeDirection,
-    fee_handler: &FeeHander,
+    fee_handler: &FeeHandler,
     fee_mode: &FeeMode,
 ) -> Result<SimulateSwapResult> {
     let trade_fee_numerator = fee_handler.get_trade_fee_numerator(
@@ -160,7 +160,7 @@ fn calculate_swap_result(
     })
 }
 
-/// pool status
+/// swap result status
 #[repr(u8)]
 #[derive(Clone, Copy, Debug, PartialEq, AnchorDeserialize, AnchorSerialize)]
 pub enum SwapResultStatus {
@@ -198,7 +198,7 @@ fn validate_swap_result(
     }
 }
 
-struct FeeHander {
+struct FeeHandler {
     pub rate_limiter_handler: FeeRateLimiter, // avoid copy
     pub variable_fee_numerator: u128,
     pub max_fee_numerator: u64,
@@ -206,7 +206,7 @@ struct FeeHander {
     pub is_rate_limiter: bool,
 }
 
-impl FeeHander {
+impl FeeHandler {
     pub fn get_trade_fee_numerator(
         &self,
         input_amount: u64,
@@ -239,7 +239,7 @@ fn get_fee_handler(
     pool: &Pool,
     current_point: u64,
     trade_direction: TradeDirection,
-) -> Result<FeeHander> {
+) -> Result<FeeHandler> {
     let variable_fee_numerator = pool.pool_fees.dynamic_fee.get_variable_fee()?;
     let max_fee_numerator = get_max_fee_numerator(pool.version)?;
 
@@ -263,7 +263,7 @@ fn get_fee_handler(
                         variable_fee_numerator,
                         max_fee_numerator,
                     )?;
-                    Ok(FeeHander {
+                    Ok(FeeHandler {
                         rate_limiter_handler: FeeRateLimiter::default(),
                         variable_fee_numerator,
                         max_fee_numerator,
@@ -273,7 +273,7 @@ fn get_fee_handler(
                 }
                 BaseFeeMode::RateLimiter => {
                     let rate_limiter_handler = pool.pool_fees.base_fee.get_fee_rate_limiter()?;
-                    Ok(FeeHander {
+                    Ok(FeeHandler {
                         rate_limiter_handler,
                         total_fee_numerator: 0,
                         variable_fee_numerator,
@@ -292,7 +292,7 @@ fn get_fee_handler(
                 variable_fee_numerator,
                 max_fee_numerator,
             )?;
-            Ok(FeeHander {
+            Ok(FeeHandler {
                 rate_limiter_handler: FeeRateLimiter::default(),
                 variable_fee_numerator,
                 max_fee_numerator,

@@ -50,7 +50,7 @@ impl UserLedger {
             Ok((liquidity_from_b, TradeDirection::AtoB))
         } else {
             // b is surplus, so we need to swap BtoA
-            Ok((liquidity_from_b, TradeDirection::BtoA))
+            Ok((liquidity_from_a, TradeDirection::BtoA))
         }
     }
 }

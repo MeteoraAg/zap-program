@@ -148,9 +148,11 @@ pub fn handle_zap_in_damm_v2(
     let mut ledger = ctx.accounts.ledger.load_mut()?;
     // 1. we add liquidity firstly, so later if we need swap, user could get some fees back
     let pool = ctx.accounts.pool.load()?;
+    let token_a_account_ai = ctx.accounts.token_a_account.to_account_info();
+    let token_b_account_ai = ctx.accounts.token_b_account.to_account_info();
 
-    let user_amount_a_1 = accessor::amount(&ctx.accounts.token_a_account.to_account_info())?;
-    let user_amount_b_1 = accessor::amount(&ctx.accounts.token_b_account.to_account_info())?;
+    let user_amount_a_1 = accessor::amount(&token_a_account_ai)?;
+    let user_amount_b_1 = accessor::amount(&token_b_account_ai)?;
 
     let (liquidity, trade_direction) = ledger.get_liquidity_from_amounts_and_trade_direction(
         &ctx.accounts.token_a_mint,
@@ -165,9 +167,9 @@ pub fn handle_zap_in_damm_v2(
         ctx.accounts.add_liquidity(liquidity)?;
     }
 
-    // 2. We check if user is still having some balance left, we will swap before they could add remainining liquidity
-    let user_amount_a_2 = accessor::amount(&ctx.accounts.token_a_account.to_account_info())?;
-    let user_amount_b_2 = accessor::amount(&ctx.accounts.token_b_account.to_account_info())?;
+    // 2. We check if user is still having some balance left, we will swap before they could add remaining liquidity
+    let user_amount_a_2 = accessor::amount(&token_a_account_ai)?;
+    let user_amount_b_2 = accessor::amount(&token_b_account_ai)?;
 
     ledger.update_ledger_balances(
         user_amount_a_1,
@@ -205,8 +207,8 @@ pub fn handle_zap_in_damm_v2(
 
     // 3. Do final add liquidity
     // reload balance
-    let user_amount_a_3 = accessor::amount(&ctx.accounts.token_a_account.to_account_info())?;
-    let user_amount_b_3 = accessor::amount(&ctx.accounts.token_b_account.to_account_info())?;
+    let user_amount_a_3 = accessor::amount(&token_a_account_ai)?;
+    let user_amount_b_3 = accessor::amount(&token_b_account_ai)?;
 
     ledger.update_ledger_balances(
         user_amount_a_2,
@@ -227,8 +229,6 @@ pub fn handle_zap_in_damm_v2(
         drop(pool);
         ctx.accounts.add_liquidity(liquidity)?;
     }
-
-    // TODO emit event?
 
     Ok(())
 }
