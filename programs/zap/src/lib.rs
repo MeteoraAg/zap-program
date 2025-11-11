@@ -9,6 +9,7 @@ pub mod error;
 pub mod math;
 pub use math::*;
 pub mod state;
+#[cfg(test)]
 pub mod tests;
 pub use state::*;
 pub mod ultils;

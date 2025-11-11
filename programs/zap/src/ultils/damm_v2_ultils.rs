@@ -358,7 +358,11 @@ pub fn calculate_swap_amount(
                 trade_direction,
             ) {
                 match status {
-                    SwapResultStatus::Done => break,
+                    SwapResultStatus::Done => {
+                        #[cfg(test)]
+                        println!("Done calculate swap result {}", _i);
+                        break;
+                    }
                     SwapResultStatus::ExceededA => {
                         if trade_direction == TradeDirection::AtoB {
                             // need to increase swap amount
@@ -379,9 +383,15 @@ pub fn calculate_swap_amount(
                     }
                 }
             } else {
+                #[cfg(test)]
+                println!("can't validate swap result {}", _i);
+
                 break; // if we can't validate swap result, then just break
             }
         } else {
+            #[cfg(test)]
+            println!("can't simulate swap result {}", _i);
+
             break; // if we can't simulate swap result, then just break
         }
     }
