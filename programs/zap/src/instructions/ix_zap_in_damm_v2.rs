@@ -8,7 +8,7 @@ use damm_v2::{
 use crate::{
     damm_v2_ultils::{calculate_swap_amount, get_price_change_bps},
     error::ZapError,
-    UserLedger,
+    new_transfer_fee_calculator, UserLedger,
 };
 
 #[derive(Accounts)]
@@ -153,12 +153,15 @@ pub fn handle_zap_in_damm_v2(
     let token_a_account_ai = ctx.accounts.token_a_account.to_account_info();
     let token_b_account_ai = ctx.accounts.token_b_account.to_account_info();
 
+    let token_a_transfer_fee_calculator = new_transfer_fee_calculator(&ctx.accounts.token_a_mint)?;
+    let token_b_transfer_fee_calculator = new_transfer_fee_calculator(&ctx.accounts.token_b_mint)?;
+
     let user_amount_a_1 = accessor::amount(&token_a_account_ai)?;
     let user_amount_b_1 = accessor::amount(&token_b_account_ai)?;
 
     let (liquidity, trade_direction) = ledger.get_liquidity_from_amounts_and_trade_direction(
-        &ctx.accounts.token_a_mint,
-        &ctx.accounts.token_b_mint,
+        &token_a_transfer_fee_calculator,
+        &token_b_transfer_fee_calculator,
         pool.sqrt_price,
         pool.sqrt_min_price,
         pool.sqrt_max_price,
@@ -189,8 +192,14 @@ pub fn handle_zap_in_damm_v2(
     if remaining_amount > 0 {
         let pool = ctx.accounts.pool.load()?;
         let current_point = ActivationHandler::get_current_point(pool.activation_type)?;
-        let swap_amount =
-            calculate_swap_amount(&pool, remaining_amount, trade_direction, current_point)?;
+        let swap_amount = calculate_swap_amount(
+            &pool,
+            &token_a_transfer_fee_calculator,
+            &token_b_transfer_fee_calculator,
+            remaining_amount,
+            trade_direction,
+            current_point,
+        )?;
         if swap_amount > 0 {
             drop(pool);
             ctx.accounts.swap(swap_amount, trade_direction)?;
@@ -220,8 +229,8 @@ pub fn handle_zap_in_damm_v2(
     )?;
 
     let (liquidity, _trade_direction) = ledger.get_liquidity_from_amounts_and_trade_direction(
-        &ctx.accounts.token_a_mint,
-        &ctx.accounts.token_b_mint,
+        &token_a_transfer_fee_calculator,
+        &token_b_transfer_fee_calculator,
         pool.sqrt_price,
         pool.sqrt_min_price,
         pool.sqrt_max_price,

@@ -15,23 +15,34 @@ use damm_v2::{
 };
 use ruint::aliases::{U192, U256, U512};
 
-use crate::{constants::MAX_BASIS_POINT, error::ZapError, safe_math::SafeMath};
+use crate::{
+    constants::MAX_BASIS_POINT, error::ZapError, safe_math::SafeMath, TransferFeeCalculator,
+};
 
 struct SwapAmountFromInput {
     output_amount: u64,
 }
 
 pub fn get_swap_result_status(
+    token_a_transfer_fee_calculator: &TransferFeeCalculator,
+    token_b_transfer_fee_calculator: &TransferFeeCalculator,
     token_a_amount: u64,
     token_b_amount: u64,
     total_amount_a: u64,
     total_amount_b: u64,
 ) -> Result<SwapResultStatus> {
+    let exclude_transfer_fee_token_a_amount = token_a_transfer_fee_calculator
+        .calculate_transfer_fee_excluded_amount(token_a_amount)?
+        .amount;
+
+    let exclude_transfer_fee_token_b_amount = token_b_transfer_fee_calculator
+        .calculate_transfer_fee_excluded_amount(token_b_amount)?
+        .amount;
     // if total_amount_a and total_amount_b is zero, it will return error, but outside function will skip that
-    let r1 = u128::from(token_a_amount)
+    let r1 = u128::from(exclude_transfer_fee_token_a_amount)
         .safe_shl(64)?
         .safe_div(u128::from(total_amount_a))?;
-    let r2 = u128::from(token_b_amount)
+    let r2 = u128::from(exclude_transfer_fee_token_b_amount)
         .safe_shl(64)?
         .safe_div(u128::from(total_amount_b))?;
 
@@ -107,25 +118,34 @@ struct SimulateSwapResult {
 }
 
 /// Replicate exactly how swap_exact_in work
-/// Note: it doesn't work properly if
-/// Token has transfer fee extensions
 fn calculate_swap_result(
     pool: &Pool,
+    token_a_transfer_fee_calculator: &TransferFeeCalculator,
+    token_b_transfer_fee_calculator: &TransferFeeCalculator,
     current_point: u64,
     amount_in: u64,
     trade_direction: TradeDirection,
     fee_handler: &FeeHandler,
     fee_mode: &FeeMode,
 ) -> Result<SimulateSwapResult> {
+    let excluded_fee_amount_in = if trade_direction == TradeDirection::AtoB {
+        token_a_transfer_fee_calculator
+            .calculate_transfer_fee_excluded_amount(amount_in)?
+            .amount
+    } else {
+        token_b_transfer_fee_calculator
+            .calculate_transfer_fee_excluded_amount(amount_in)?
+            .amount
+    };
     let trade_fee_numerator = fee_handler.get_trade_fee_numerator(
-        amount_in,
+        excluded_fee_amount_in,
         current_point,
         pool.activation_point,
         trade_direction,
     )?;
     let actual_amount_in = if fee_mode.fees_on_input {
         let FeeOnAmountResult { amount, .. } = pool.pool_fees.get_fee_on_amount(
-            amount_in,
+            excluded_fee_amount_in,
             trade_fee_numerator,
             fee_mode.has_referral,
             false,
@@ -133,7 +153,7 @@ fn calculate_swap_result(
 
         amount
     } else {
-        amount_in
+        excluded_fee_amount_in
     };
     let SwapAmountFromInput { output_amount, .. } = match trade_direction {
         TradeDirection::AtoB => calculate_a_to_b_from_amount_in(pool, actual_amount_in),
@@ -152,8 +172,18 @@ fn calculate_swap_result(
         amount
     };
 
+    let excluded_fee_amount_out = if trade_direction == TradeDirection::AtoB {
+        token_b_transfer_fee_calculator
+            .calculate_transfer_fee_excluded_amount(actual_amount_out)?
+            .amount
+    } else {
+        token_a_transfer_fee_calculator
+            .calculate_transfer_fee_excluded_amount(actual_amount_out)?
+            .amount
+    };
+
     Ok(SimulateSwapResult {
-        user_amount_in: actual_amount_out,
+        user_amount_in: excluded_fee_amount_out,
         user_amount_out: amount_in,
         pool_amount_in: actual_amount_in,
         pool_amount_out: output_amount,
@@ -171,6 +201,8 @@ pub enum SwapResultStatus {
 
 fn validate_swap_result(
     swap_result: &SimulateSwapResult,
+    token_a_transfer_fee_calculator: &TransferFeeCalculator,
+    token_b_transfer_fee_calculator: &TransferFeeCalculator,
     remaining_amount: u64,
     total_amount_a: u64,
     total_amount_b: u64,
@@ -188,13 +220,27 @@ fn validate_swap_result(
         let user_amount_b = user_amount_in;
         let pool_amount_a = total_amount_a.safe_add(pool_amount_in)?;
         let pool_amount_b = total_amount_b.safe_sub(pool_amount_out)?;
-        get_swap_result_status(user_amount_a, user_amount_b, pool_amount_a, pool_amount_b)
+        get_swap_result_status(
+            token_a_transfer_fee_calculator,
+            token_b_transfer_fee_calculator,
+            user_amount_a,
+            user_amount_b,
+            pool_amount_a,
+            pool_amount_b,
+        )
     } else {
         let user_amount_a = user_amount_in;
         let user_amount_b = remaining_amount.safe_sub(user_amount_out)?;
         let pool_amount_a = total_amount_a.safe_sub(pool_amount_out)?;
         let pool_amount_b = total_amount_b.safe_add(pool_amount_in)?;
-        get_swap_result_status(user_amount_a, user_amount_b, pool_amount_a, pool_amount_b)
+        get_swap_result_status(
+            token_a_transfer_fee_calculator,
+            token_b_transfer_fee_calculator,
+            user_amount_a,
+            user_amount_b,
+            pool_amount_a,
+            pool_amount_b,
+        )
     }
 }
 
@@ -322,6 +368,8 @@ fn get_total_fee_numerator(
 // we will use binary search
 pub fn calculate_swap_amount(
     pool: &Pool,
+    token_a_transfer_fee_calculator: &TransferFeeCalculator,
+    token_b_transfer_fee_calculator: &TransferFeeCalculator,
     remaining_amount: u64,
     trade_direction: TradeDirection,
     current_point: u64,
@@ -344,6 +392,8 @@ pub fn calculate_swap_amount(
 
         if let Ok(swap_result) = calculate_swap_result(
             pool,
+            token_a_transfer_fee_calculator,
+            token_b_transfer_fee_calculator,
             current_point,
             amount_in,
             trade_direction,
@@ -354,6 +404,8 @@ pub fn calculate_swap_amount(
             swap_amount = amount_in;
             if let Ok(status) = validate_swap_result(
                 &swap_result,
+                token_a_transfer_fee_calculator,
+                token_b_transfer_fee_calculator,
                 remaining_amount,
                 pool_amount_a,
                 pool_amount_b,
