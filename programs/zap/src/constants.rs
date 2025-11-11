@@ -16,13 +16,10 @@ pub const JUP_V6_ROUTE_DISC: [u8; 8] = [229, 23, 203, 151, 122, 227, 173, 42];
 #[constant]
 pub const JUP_V6_SHARED_ACCOUNT_ROUTE_DISC: [u8; 8] = [193, 32, 155, 51, 65, 214, 156, 129];
 
-#[cfg(not(feature = "local"))]
 pub const DLMM: Pubkey = pubkey!("LBUZKhRxPF3XUpBCjp4YzTKgLccjZhTSDM9YuVaPwxo");
 // https://github.com/MeteoraAg/zap-program/blob/main/idls/dlmm.json#L3413-L3422
 #[constant]
 pub const DLMM_SWAP2_DISC: [u8; 8] = [65, 75, 63, 76, 235, 91, 91, 136];
-#[cfg(feature = "local")]
-pub const DLMM: Pubkey = pubkey!("LbVRzDTvBDEcrthxfZ4RL6yiq3uZw8bS6MwtdY6UhFQ");
 
 #[constant]
 pub const WHITELISTED_AMM_PROGRAMS: [(Pubkey, [u8; 8]); 4] = [

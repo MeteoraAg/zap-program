@@ -14,7 +14,7 @@ export async function initializeLedgerAccount(
   return await program.methods
     .initializeLedgerAccount()
     .accountsPartial({
-      legder: deriveLedgerAccount(owner),
+      ledger: deriveLedgerAccount(owner),
       owner,
       payer: owner,
     })
@@ -29,7 +29,7 @@ export async function closeLedgerAccount(
   return await program.methods
     .closeLedgerAccount()
     .accountsPartial({
-      legder: deriveLedgerAccount(owner),
+      ledger: deriveLedgerAccount(owner),
       owner,
       rentReceiver: owner,
     })
@@ -46,7 +46,7 @@ export async function setLedgerBalance(
   return await program.methods
     .setLedgerBalance(amount, isTokenA)
     .accountsPartial({
-      legder: deriveLedgerAccount(owner),
+      ledger: deriveLedgerAccount(owner),
       owner,
     })
     .transaction();
@@ -68,7 +68,7 @@ export async function updateLedgerBalanceAfterSwap(
       isTokenA
     )
     .accountsPartial({
-      legder: deriveLedgerAccount(owner),
+      ledger: deriveLedgerAccount(owner),
       tokenAccount,
       owner,
     })

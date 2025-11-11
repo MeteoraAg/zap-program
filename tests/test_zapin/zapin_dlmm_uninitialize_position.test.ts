@@ -8,6 +8,7 @@ import {
   Keypair,
   LAMPORTS_PER_SOL,
   Transaction,
+  AccountMeta,
 } from "@solana/web3.js";
 import {
   createZapProgram,
@@ -43,11 +44,14 @@ import {
   DEFAULT_BIN_PER_POSITION,
   RemainingAccountsInfo,
   StrategyType,
+  createDlmmPermissionlessPool,
+  getBinArrayAccountMetaByBinRange,
+  initializeBinArrayBitmapExtension,
 } from "../common/dlmm";
 import { BN } from "@coral-xyz/anchor";
 import { deriveBinArrayBitmapExtension } from "../common/pda";
 
-describe.skip("Zapin DLMM with Uninitialize position", () => {
+describe("Zapin DLMM with Uninitialize position", () => {
   let zapProgram: ZapProgram;
   let svm: LiteSVM;
   let user: Keypair;
@@ -98,33 +102,19 @@ describe.skip("Zapin DLMM with Uninitialize position", () => {
     mintToken(svm, admin, tokenXMint, admin, user.publicKey);
     mintToken(svm, admin, tokenYMint, admin, user.publicKey);
 
-    console.log("create presetParameter2");
-    let presetParameter2 = await createPresetParameter2(
-      svm,
-      admin,
-      new BN(0),
-      binStep.toNumber(),
-      10000,
-      0,
-      0,
-      0,
-      0,
-      0,
-      500,
-      0
-    );
-
     console.log("create lb pair");
-    lbPair = await createDlmmPool(
+
+    lbPair = await createDlmmPermissionlessPool({
       svm,
-      admin,
-      tokenXMint,
-      tokenYMint,
+      creator: admin,
+      tokenX: tokenXMint,
+      tokenY: tokenYMint,
       activeId,
-      TOKEN_PROGRAM_ID,
-      TOKEN_PROGRAM_ID,
-      presetParameter2
-    );
+      baseFactor: 10000,
+      binStep: binStep.toNumber(),
+    });
+
+    await initializeBinArrayBitmapExtension(svm, lbPair, admin);
 
     console.log("Create bin array");
     const binArrayIndex = binIdToBinArrayIndex(activeId);
@@ -165,6 +155,12 @@ describe.skip("Zapin DLMM with Uninitialize position", () => {
     const amountTokenA = new BN(LAMPORTS_PER_SOL);
     const amountSwap = amountTokenA.divn(2);
 
+    const binArrays = getBinArrayAccountMetaByBinRange(
+      lbPair,
+      new BN(lowerBinId),
+      new BN(upperBinId)
+    );
+
     await zapInDlmmFullFlow({
       svm,
       user,
@@ -175,6 +171,7 @@ describe.skip("Zapin DLMM with Uninitialize position", () => {
       totalAmount: amountTokenA,
       amountSwap,
       strategy: StrategyType.Spot,
+      binArrays,
       remainingAccountInfo: { slices: [] },
     });
   });
@@ -182,6 +179,12 @@ describe.skip("Zapin DLMM with Uninitialize position", () => {
   it("Zapin dlmm with Bidask strategy", async () => {
     const amountTokenA = new BN(LAMPORTS_PER_SOL);
     const amountSwap = amountTokenA.divn(2);
+
+    const binArrays = getBinArrayAccountMetaByBinRange(
+      lbPair,
+      new BN(lowerBinId),
+      new BN(upperBinId)
+    );
 
     await zapInDlmmFullFlow({
       svm,
@@ -193,6 +196,7 @@ describe.skip("Zapin DLMM with Uninitialize position", () => {
       totalAmount: amountTokenA,
       amountSwap,
       strategy: StrategyType.BidAsk,
+      binArrays,
       remainingAccountInfo: { slices: [] },
     });
   });
@@ -200,6 +204,12 @@ describe.skip("Zapin DLMM with Uninitialize position", () => {
   it("Zapin dlmm with Curve strategy", async () => {
     const amountTokenA = new BN(LAMPORTS_PER_SOL);
     const amountSwap = amountTokenA.divn(2);
+
+    const binArrays = getBinArrayAccountMetaByBinRange(
+      lbPair,
+      new BN(lowerBinId),
+      new BN(upperBinId)
+    );
 
     await zapInDlmmFullFlow({
       svm,
@@ -211,6 +221,7 @@ describe.skip("Zapin DLMM with Uninitialize position", () => {
       totalAmount: amountTokenA,
       amountSwap,
       strategy: StrategyType.Curve,
+      binArrays,
       remainingAccountInfo: { slices: [] },
     });
   });
@@ -226,6 +237,7 @@ async function zapInDlmmFullFlow(params: {
   totalAmount: BN;
   amountSwap: BN;
   strategy;
+  binArrays: AccountMeta[];
   remainingAccountInfo: RemainingAccountsInfo;
 }) {
   const {
@@ -239,6 +251,7 @@ async function zapInDlmmFullFlow(params: {
     totalAmount,
     strategy,
     remainingAccountInfo,
+    binArrays,
   } = params;
 
   let lbPairState = getLbPairState(svm, lbPair);
@@ -287,10 +300,11 @@ async function zapInDlmmFullFlow(params: {
     position: positionKP.publicKey,
     activeId: lbPairState.activeId,
     binDelta,
-    maxActiveBinSlippage: 3,
+    maxActiveBinSlippage: 10,
     favorXInActiveId: true,
     strategy,
     remainingAccountInfo,
+    binArrays,
     binArrayBitmapExtension,
   });
 

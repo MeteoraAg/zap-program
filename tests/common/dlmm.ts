@@ -35,6 +35,7 @@ import {
   deriveBinArray,
   deriveBinArrayBitmapExtension,
   deriveDlmmEventAuthority,
+  deriveLbCustomizablePermissionless2,
   deriveLbPermissionless2,
   deriveOracle,
   derivePresetParameter2,
@@ -72,7 +73,7 @@ export const AccountsType = {
   },
 };
 export const DLMM_PROGRAM_ID_LOCAL = new PublicKey(
-  "LbVRzDTvBDEcrthxfZ4RL6yiq3uZw8bS6MwtdY6UhFQ"
+  "LBUZKhRxPF3XUpBCjp4YzTKgLccjZhTSDM9YuVaPwxo"
 );
 
 export const MEMO_PROGRAM_ID = new PublicKey(
@@ -536,6 +537,126 @@ export async function createDlmmPool(
 
   if (result instanceof FailedTransactionMetadata) {
     console.log(result.meta().toString());
+  }
+  expect(result).instanceOf(TransactionMetadata);
+
+  return lbPair;
+}
+
+export async function initializeBinArrayBitmapExtension(
+  svm: LiteSVM,
+  lbPair: PublicKey,
+  payer: Keypair
+) {
+  const [binArrayBitmapExtension] = deriveBinArrayBitmapExtension(lbPair);
+  const program = createDlmmProgram();
+  const binArrayBitmapExtensionState = svm.getAccount(binArrayBitmapExtension);
+  if (!binArrayBitmapExtensionState) {
+    const tx = await program.methods
+      .initializeBinArrayBitmapExtension()
+      .accountsPartial({
+        lbPair,
+        binArrayBitmapExtension,
+        systemProgram: SystemProgram.programId,
+        funder: payer.publicKey,
+        rent: SYSVAR_RENT_PUBKEY,
+      })
+      .transaction();
+
+    tx.recentBlockhash = svm.latestBlockhash();
+    tx.sign(payer);
+
+    const result = svm.sendTransaction(tx);
+    expect(result).instanceOf(TransactionMetadata);
+  }
+}
+
+export async function createDlmmPermissionlessPool(params: {
+  svm: LiteSVM;
+  creator: Keypair;
+  tokenX: PublicKey;
+  tokenY: PublicKey;
+  activeId: BN;
+  baseFactor: number;
+  binStep: number;
+}) {
+  const { svm, creator, tokenX, tokenY, activeId, baseFactor, binStep } =
+    params;
+  const program = createDlmmProgram();
+  const lbPair = deriveLbCustomizablePermissionless2(tokenX, tokenY);
+
+  const [reserveX] = deriveReserve(tokenX, lbPair);
+  const [reserveY] = deriveReserve(tokenY, lbPair);
+  const [oracle] = deriveOracle(lbPair);
+
+  const binArrayIndex = binIdToBinArrayIndex(activeId);
+
+  const [minBinArrayIndex, maxBinArrayIndex] = DEFAULT_BITMAP_RANGE;
+
+  const binArrayBitmapExtension =
+    binArrayIndex.gt(maxBinArrayIndex) || binArrayIndex.lt(minBinArrayIndex)
+      ? deriveBinArrayBitmapExtension(lbPair)[0]
+      : null;
+
+  const tokenBadgeX = deriveTokenBadge(tokenX);
+  const tokenBadgeXState = svm.getAccount(tokenBadgeX);
+  const tokenBadgeY = deriveTokenBadge(tokenX);
+  const tokenBadgeYState = svm.getAccount(tokenBadgeY);
+
+  const tokenProgramX = svm.getAccount(tokenX).owner;
+  const tokenProgramY = svm.getAccount(tokenY).owner;
+  const userTokenX = getAssociatedTokenAddressSync(
+    tokenX,
+    creator.publicKey,
+    true,
+    tokenProgramX
+  );
+
+  const userTokenY = getAssociatedTokenAddressSync(
+    tokenX,
+    creator.publicKey,
+    true,
+    tokenProgramX
+  );
+
+  const tx = await program.methods
+    .initializeCustomizablePermissionlessLbPair2({
+      activeId: activeId.toNumber(),
+      binStep,
+      baseFactor,
+      activationPoint: null,
+      activationType: 0,
+      hasAlphaVault: false,
+      creatorPoolOnOffControl: true,
+      baseFeePowerFactor: 0,
+      padding: new Array(63).fill(0),
+    })
+    .accountsPartial({
+      funder: creator.publicKey,
+      lbPair,
+      reserveX,
+      reserveY,
+      oracle,
+      binArrayBitmapExtension,
+      tokenMintX: tokenX,
+      tokenMintY: tokenY,
+      tokenProgramX: svm.getAccount(tokenX).owner,
+      tokenProgramY: svm.getAccount(tokenY).owner,
+      tokenBadgeX: tokenBadgeXState ? tokenBadgeX : null,
+      tokenBadgeY: tokenBadgeYState ? tokenBadgeY : null,
+      systemProgram: SystemProgram.programId,
+      userTokenX,
+      userTokenY,
+    })
+    .transaction();
+  tx.recentBlockhash = svm.latestBlockhash();
+  tx.sign(creator);
+
+  const result = svm.sendTransaction(tx);
+
+  if (result instanceof FailedTransactionMetadata) {
+    console.log(result.err());
+    console.log(result.meta().logs());
   }
   expect(result).instanceOf(TransactionMetadata);
 
@@ -1184,7 +1305,6 @@ export async function dlmmSwap(
       hostFeeIn: null,
     })
     .remainingAccounts(remainingAccountsData)
-    .preInstructions([SET_COMPUTE_UNIT_LIMIT_IX])
     .transaction();
 }
 
@@ -1229,10 +1349,10 @@ export function getBinArrayState(
   );
 }
 
-export async function getPositionTotalLiquidityAllBin(
+export function getPositionTotalLiquidityAllBin(
   svm: LiteSVM,
   position: PublicKey
-): Promise<Number[][]> {
+): Number[][] {
   const positionState = fetchAndDecodeDynamicPosition(svm, position);
 
   const lbPairState = getLbPairState(svm, positionState.globalData.lbPair);
@@ -1378,7 +1498,9 @@ export function fetchAndDecodeDynamicPosition(
 ): DynamicPosition {
   const positionState = getDlmmPositionState(svm, position);
 
-  const remainingBytes = positionState.data.subarray(8 + 8112);
+  const positionData = svm.getAccount(position);
+
+  const remainingBytes = positionData.data.subarray(8 + 8112);
 
   const positionWidth = Math.max(
     positionState.upperBinId - positionState.lowerBinId + 1,

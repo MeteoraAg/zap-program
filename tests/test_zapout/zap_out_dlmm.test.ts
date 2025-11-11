@@ -16,6 +16,7 @@ import {
   ZapProgram,
   zapOutDlmm,
   TOKEN_DECIMALS,
+  warpSlotBy,
 } from "../common";
 import { TOKEN_PROGRAM_ID } from "@coral-xyz/anchor/dist/cjs/utils/token";
 import { expect } from "chai";
@@ -31,6 +32,7 @@ import {
   dlmmCreatePositionAndAddLiquidityRadius,
   DEFAULT_BIN_PER_POSITION,
   removeAllLiquidity,
+  createDlmmPermissionlessPool,
 } from "../common/dlmm";
 import { BN } from "@coral-xyz/anchor";
 
@@ -84,33 +86,17 @@ describe("Zap out dlmm", () => {
     mintToken(svm, admin, tokenAMint, admin, user.publicKey);
     mintToken(svm, admin, tokenBMint, admin, user.publicKey);
 
-    console.log("create presetParameter2");
-    let presetParameter2 = await createPresetParameter2(
-      svm,
-      admin,
-      new BN(0),
-      binStep.toNumber(),
-      10000,
-      0,
-      0,
-      0,
-      0,
-      0,
-      500,
-      0
-    );
-
     console.log("create lb pair");
-    lbPair = await createDlmmPool(
+    lbPair = await createDlmmPermissionlessPool({
       svm,
-      admin,
-      tokenAMint,
-      tokenBMint,
+      creator: admin,
+      tokenX: tokenAMint,
+      tokenY: tokenBMint,
       activeId,
-      TOKEN_PROGRAM_ID,
-      TOKEN_PROGRAM_ID,
-      presetParameter2
-    );
+      baseFactor: 10000,
+      binStep: binStep.toNumber(),
+    });
+    warpSlotBy(svm, new BN(1));
 
     console.log("Create bin array");
     const binArrayIndex = binIdToBinArrayIndex(activeId);

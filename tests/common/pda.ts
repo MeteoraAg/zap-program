@@ -135,6 +135,18 @@ export function deriveLbPermissionless2(
   );
 }
 
+export function deriveLbCustomizablePermissionless2(
+  tokenX: PublicKey,
+  tokenY: PublicKey
+): PublicKey {
+  const baseKey = new PublicKey("MFGQxwAmB91SwuYX36okv2Qmdc9aMuHTwWGUrp4AtB1");
+  const [minKey, maxKey] = sortTokenMints(tokenX, tokenY);
+  return PublicKey.findProgramAddressSync(
+    [baseKey.toBuffer(), minKey.toBuffer(), maxKey.toBuffer()],
+    DLMM_PROGRAM_ID_LOCAL
+  )[0];
+}
+
 export function deriveReserve(token: PublicKey, lbPair: PublicKey) {
   return PublicKey.findProgramAddressSync(
     [lbPair.toBuffer(), token.toBuffer()],

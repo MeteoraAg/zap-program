@@ -1,6 +1,11 @@
 import { BN } from "@coral-xyz/anchor";
 import { LiteSVM } from "litesvm";
-import { PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
+import {
+  AccountMeta,
+  PublicKey,
+  SystemProgram,
+  Transaction,
+} from "@solana/web3.js";
 import { DAMM_V2_PROGRAM_ID } from "../damm_v2";
 import {
   deriveDammV2EventAuthority,
@@ -9,12 +14,14 @@ import {
   deriveLedgerAccount,
   getDammV2Pool,
 } from "../pda";
-import { createZapProgram } from "./zapOut";
+import { createZapProgram, ZAP_PROGRAM_ID } from "./zapOut";
 import { getAssociatedTokenAddressSync } from "@solana/spl-token";
 import {
   DLMM_PROGRAM_ID_LOCAL,
+  getBinArrayAccountMetaByBinRange,
   getLbPairState,
   MEMO_PROGRAM_ID,
+  SET_COMPUTE_UNIT_LIMIT_IX,
   StrategyType,
 } from "../dlmm";
 
@@ -95,6 +102,7 @@ export async function zapInDlmmforInitializedPosition(params: {
   favorXInActiveId: boolean;
   strategy: any;
   remainingAccountInfo: any;
+  binArrays: AccountMeta[];
   binArrayBitmapExtension: PublicKey;
 }): Promise<Transaction> {
   const program = createZapProgram();
@@ -112,6 +120,7 @@ export async function zapInDlmmforInitializedPosition(params: {
     strategy,
     remainingAccountInfo,
     binArrayBitmapExtension,
+    binArrays,
   } = params;
 
   const lbPairState = getLbPairState(svm, lbPair);
@@ -133,6 +142,9 @@ export async function zapInDlmmforInitializedPosition(params: {
     true,
     tokenYProgram
   );
+
+  let binArrayBitmapExtensionState = svm.getAccount(binArrayBitmapExtension);
+
   return await program.methods
     .zapInDlmmForInitializedPosition(
       activeId,
@@ -147,7 +159,9 @@ export async function zapInDlmmforInitializedPosition(params: {
       ledger: deriveLedgerAccount(owner),
       lbPair,
       position,
-      binArrayBitmapExtension: binArrayBitmapExtension,
+      binArrayBitmapExtension: binArrayBitmapExtensionState
+        ? binArrayBitmapExtension
+        : null,
       userTokenX,
       userTokenY,
       reserveX,
@@ -163,6 +177,7 @@ export async function zapInDlmmforInitializedPosition(params: {
       dlmmEventAuthority: deriveDlmmEventAuthority(),
       systemProgram: SystemProgram.programId,
     })
+    .remainingAccounts(binArrays)
     .transaction();
 }
 
@@ -177,7 +192,8 @@ export async function zapInDlmmforUnInitializedPosition(params: {
   favorXInActiveId: boolean;
   strategy: any;
   remainingAccountInfo: any;
-  binArrayBitmapExtension?: PublicKey;
+  binArrays: AccountMeta[];
+  binArrayBitmapExtension: PublicKey;
 }): Promise<Transaction> {
   const program = createZapProgram();
 
@@ -193,6 +209,7 @@ export async function zapInDlmmforUnInitializedPosition(params: {
     strategy,
     remainingAccountInfo,
     binArrayBitmapExtension,
+    binArrays,
   } = params;
 
   const lbPairState = getLbPairState(svm, lbPair);
@@ -214,6 +231,9 @@ export async function zapInDlmmforUnInitializedPosition(params: {
     true,
     tokenYProgram
   );
+
+  let binArrayBitmapExtensionState = svm.getAccount(binArrayBitmapExtension);
+
   return await program.methods
     .zapInDlmmForUninitializedPosition(
       binDelta,
@@ -227,7 +247,9 @@ export async function zapInDlmmforUnInitializedPosition(params: {
       ledger: deriveLedgerAccount(owner),
       lbPair,
       position,
-      binArrayBitmapExtension: binArrayBitmapExtension ?? DLMM_PROGRAM_ID_LOCAL,
+      binArrayBitmapExtension: binArrayBitmapExtensionState
+        ? binArrayBitmapExtension
+        : null,
       userTokenX,
       userTokenY,
       reserveX,
@@ -243,5 +265,6 @@ export async function zapInDlmmforUnInitializedPosition(params: {
       dlmmEventAuthority: deriveDlmmEventAuthority(),
       systemProgram: SystemProgram.programId,
     })
+    .remainingAccounts(binArrays)
     .transaction();
 }
