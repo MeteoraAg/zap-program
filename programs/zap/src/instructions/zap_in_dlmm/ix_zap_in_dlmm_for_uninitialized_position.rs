@@ -170,7 +170,7 @@ pub fn handle_zap_in_dlmm_for_uninitialized_position<'c: 'info, 'info>(
         max_deposit_x_amount,
         min_withdraw_y_amount: 0,
         max_deposit_y_amount,
-        shrink_mode: 3, // we dont allow to shrink in both side
+        shrink_mode: 0, // we allow to shrink in both side
         padding: [0; 31],
         removes: vec![],
         adds: vec![AddLiquidityParams {
