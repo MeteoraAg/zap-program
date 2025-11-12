@@ -19,4 +19,10 @@ pub enum ZapError {
 
     #[msg("Amm program is not supported")]
     AmmIsNotSupported,
+
+    #[msg("Position is not empty")]
+    InvalidPosition,
+
+    #[msg("Exceeded slippage tolerance")]
+    ExceededSlippage,
 }

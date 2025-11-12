@@ -1,4 +1,8 @@
-import { LiteSVM, TransactionMetadata } from "litesvm";
+import {
+  FailedTransactionMetadata,
+  LiteSVM,
+  TransactionMetadata,
+} from "litesvm";
 import {
   PublicKey,
   Keypair,
@@ -11,11 +15,12 @@ import {
   zapOutDlmm,
   TOKEN_DECIMALS,
   createTokenWithTransferHook,
-} from "./common";
+  warpSlotBy,
+} from "../common";
 import { TOKEN_PROGRAM_ID } from "@coral-xyz/anchor/dist/cjs/utils/token";
 import { expect } from "chai";
 
-import ZapIDL from "../target/idl/zap.json";
+import ZapIDL from "../../target/idl/zap.json";
 import {
   getAssociatedTokenAddressSync,
   TOKEN_2022_PROGRAM_ID,
@@ -28,14 +33,15 @@ import {
   DLMM_PROGRAM_ID_LOCAL,
   dlmmCreatePositionAndAddLiquidityRadius,
   initializeTokenBadge,
-  MAX_BIN_PER_POSITION,
+  DEFAULT_BIN_PER_POSITION,
   removeAllLiquidity,
-} from "./common/dlmm";
+  createDlmmPermissionlessPool,
+} from "../common/dlmm";
 import { BN } from "@coral-xyz/anchor";
 import {
   createExtraAccountMetaListAndCounter,
   TRANSFER_HOOK_COUNTER_PROGRAM_ID,
-} from "./common/transferHook";
+} from "../common/transferHook";
 
 describe("Zap out dlmm with transfer hook", () => {
   let svm: LiteSVM;
@@ -48,9 +54,10 @@ describe("Zap out dlmm with transfer hook", () => {
   const activeId = new BN(5660);
   // 5 = Create 5 lower bin arrays, and 5 upper bin arrays surrounding the active bin arrays. Total bins = 600 * 11
   const binArrayDelta = 5;
-  const lowerBinId = activeId.toNumber() - MAX_BIN_PER_POSITION.toNumber() / 2;
+  const lowerBinId =
+    activeId.toNumber() - DEFAULT_BIN_PER_POSITION.toNumber() / 2;
 
-  const upperBinId = MAX_BIN_PER_POSITION.toNumber() + lowerBinId - 1;
+  const upperBinId = DEFAULT_BIN_PER_POSITION.toNumber() + lowerBinId - 1;
 
   const admin = Keypair.fromSecretKey(
     new Uint8Array([
@@ -112,35 +119,21 @@ describe("Zap out dlmm with transfer hook", () => {
     mintToken(svm, admin, tokenBMint, admin, user.publicKey);
 
     console.log("create presetParameter2");
-    let presetParameter2 = await createPresetParameter2(
-      svm,
-      admin,
-      new BN(0),
-      binStep.toNumber(),
-      10000,
-      0,
-      0,
-      0,
-      0,
-      0,
-      500,
-      0
-    );
-
     console.log("create token badge");
     await initializeTokenBadge(svm, admin, tokenAMint);
 
     console.log("create lb pair");
-    lbPair = await createDlmmPool(
+    lbPair = await createDlmmPermissionlessPool({
       svm,
-      admin,
-      tokenAMint,
-      tokenBMint,
+      creator: admin,
+      tokenX: tokenAMint,
+      tokenY: tokenBMint,
       activeId,
-      TOKEN_2022_PROGRAM_ID,
-      TOKEN_PROGRAM_ID,
-      presetParameter2
-    );
+      baseFactor: 10000,
+      binStep: binStep.toNumber(),
+    });
+
+    warpSlotBy(svm, new BN(1));
 
     console.log("Create bin array");
     const binArrayIndex = binIdToBinArrayIndex(activeId);
@@ -243,9 +236,7 @@ describe("Zap out dlmm with transfer hook", () => {
     finalTransaction.sign(user);
 
     const result = svm.sendTransaction(finalTransaction);
-    if (result instanceof TransactionMetadata) {
-      console.log(result.logs());
-    } else {
+    if (result instanceof FailedTransactionMetadata) {
       console.log(result.meta().logs());
     }
     expect(result).instanceOf(TransactionMetadata);

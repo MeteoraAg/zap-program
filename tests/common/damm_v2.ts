@@ -2,6 +2,7 @@ import {
   AnchorProvider,
   BN,
   IdlAccounts,
+  IdlTypes,
   Program,
   Wallet,
 } from "@coral-xyz/anchor";
@@ -13,12 +14,18 @@ import {
   Connection,
   Keypair,
   PublicKey,
+  SYSVAR_INSTRUCTIONS_PUBKEY,
   Transaction,
 } from "@solana/web3.js";
-import { LiteSVM, TransactionMetadata } from "litesvm";
+import {
+  FailedTransactionMetadata,
+  LiteSVM,
+  TransactionMetadata,
+} from "litesvm";
 import {
   AccountLayout,
   getAssociatedTokenAddressSync,
+  NATIVE_MINT,
   TOKEN_2022_PROGRAM_ID,
   TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
@@ -41,10 +48,14 @@ import {
   getDammV2Pool,
   getDammV2Position,
 } from "./pda";
+import {
+  getLiquidityDeltaFromAmountA,
+  getLiquidityDeltaFromAmountB,
+} from "@meteora-ag/cp-amm-sdk";
 
 export const DAMM_V2_PROGRAM_ID = new PublicKey(CpAmmIDL.address);
 
-export const DAMM_V2_SWAP_DISC = [248, 198, 158, 145, 225, 117, 135, 200]
+export const DAMM_V2_SWAP_DISC = [248, 198, 158, 145, 225, 117, 135, 200];
 
 export type Pool = IdlAccounts<CpAmm>["pool"];
 export type Position = IdlAccounts<CpAmm>["position"];
@@ -154,7 +165,10 @@ export async function createDammV2Pool(
   svm: LiteSVM,
   creator: Keypair,
   tokenAMint: PublicKey,
-  tokenBMint: PublicKey
+  tokenBMint: PublicKey,
+  amountA?: BN,
+  amountB?: BN,
+  baseFeeParams?: any
 ): Promise<PublicKey> {
   const program = createDammV2Program();
 
@@ -170,41 +184,59 @@ export async function createDammV2Pool(
   const tokenAVault = deriveDammV2TokenVaultAddress(tokenAMint, pool);
   const tokenBVault = deriveDammV2TokenVaultAddress(tokenBMint, pool);
 
+  const tokenAProgram = svm.getAccount(tokenAMint).owner;
+  const tokenBProgram = svm.getAccount(tokenBMint).owner;
+
   const payerTokenA = getAssociatedTokenAddressSync(
     tokenAMint,
     creator.publicKey,
     true,
-    TOKEN_PROGRAM_ID
+    tokenAProgram
   );
   const payerTokenB = getAssociatedTokenAddressSync(
     tokenBMint,
     creator.publicKey,
     true,
-    TOKEN_PROGRAM_ID
+    tokenBProgram
   );
+
+  let liquidityDelta = LIQUIDITY_DELTA;
+  if (amountA && amountB) {
+    const liquidityFromA = getLiquidityDeltaFromAmountA(
+      amountA,
+      INIT_PRICE,
+      MAX_SQRT_PRICE
+    );
+
+    const liquidityFromB = getLiquidityDeltaFromAmountB(
+      amountB,
+      MIN_SQRT_PRICE,
+      INIT_PRICE
+    );
+
+    liquidityDelta = BN.min(liquidityFromA, liquidityFromB);
+  }
 
   const transaction = await program.methods
     .initializeCustomizablePool({
       poolFees: {
-        baseFee: {
+        baseFee: baseFeeParams ?? {
           cliffFeeNumerator: new BN(2_500_000),
-          numberOfPeriod: 0,
-          reductionFactor: new BN(0),
-          periodFrequency: new BN(0),
-          feeSchedulerMode: 0,
+          firstFactor: 0,
+          secondFactor: Array.from(new BN(0).toArrayLike(Buffer, "le", 8)),
+          thirdFactor: new BN(0),
+          baseFeeMode: 0,
         },
-        protocolFeePercent: 20,
-        partnerFeePercent: 0,
-        referralFeePercent: 20,
+        padding: [],
         dynamicFee: null,
       },
       sqrtMinPrice: MIN_SQRT_PRICE,
       sqrtMaxPrice: MAX_SQRT_PRICE,
       hasAlphaVault: false,
-      liquidity: LIQUIDITY_DELTA,
+      liquidity: liquidityDelta,
       sqrtPrice: INIT_PRICE,
       activationType: 0,
-      collectFeeMode: 0,
+      collectFeeMode: 1,
       activationPoint: null,
     })
     .accountsPartial({
@@ -222,14 +254,17 @@ export async function createDammV2Pool(
       payerTokenA,
       payerTokenB,
       token2022Program: TOKEN_2022_PROGRAM_ID,
-      tokenAProgram: TOKEN_PROGRAM_ID,
-      tokenBProgram: TOKEN_PROGRAM_ID,
+      tokenAProgram: tokenAProgram,
+      tokenBProgram: tokenBProgram,
     })
     .transaction();
   transaction.recentBlockhash = svm.latestBlockhash();
   transaction.sign(creator, positionNftKP);
 
   const result = svm.sendTransaction(transaction);
+  if (result instanceof FailedTransactionMetadata) {
+    console.log(result.meta().logs());
+  }
   expect(result).instanceOf(TransactionMetadata);
 
   const tokenAVaultData = svm.getAccount(tokenAVault).data;
@@ -242,6 +277,48 @@ export async function createDammV2Pool(
   expect(vaultBBalance).greaterThan(0);
 
   return pool;
+}
+
+export async function createDammV2Position(
+  svm: LiteSVM,
+  user: Keypair,
+  pool: PublicKey
+): Promise<{
+  position: PublicKey;
+  positionNftAccount: PublicKey;
+}> {
+  const program = createDammV2Program();
+
+  const positionNftKP = Keypair.generate();
+  const position = deriveDammV2PositionAddress(positionNftKP.publicKey);
+  const positionNftAccount = deriveDammV2PositionNftAccount(
+    positionNftKP.publicKey
+  );
+
+  const tx = await program.methods
+    .createPosition()
+    .accountsPartial({
+      owner: user.publicKey,
+      positionNftMint: positionNftKP.publicKey,
+      poolAuthority: deriveDammV2PoolAuthority(),
+      positionNftAccount,
+      payer: user.publicKey,
+      pool,
+      position,
+      tokenProgram: TOKEN_2022_PROGRAM_ID,
+    })
+    .transaction();
+
+  tx.recentBlockhash = svm.latestBlockhash();
+  tx.sign(user, positionNftKP);
+
+  const result = svm.sendTransaction(tx);
+  expect(result).instanceOf(TransactionMetadata);
+
+  return {
+    position,
+    positionNftAccount,
+  };
 }
 
 export async function createPositionAndAddLiquidity(
@@ -365,4 +442,80 @@ export async function removeLiquidity(
       tokenBMint,
     })
     .transaction();
+}
+
+export async function swap(params: {
+  svm: LiteSVM;
+  user: PublicKey;
+  pool: PublicKey;
+  amountIn: BN;
+  inputTokenMint: PublicKey;
+  outputTokenMint: PublicKey;
+}): Promise<Transaction> {
+  const dammV2Program = createDammV2Program();
+
+  const { svm, pool, amountIn, user, inputTokenMint, outputTokenMint } = params;
+
+  const poolState = getDammV2Pool(svm, pool);
+
+  const tokenAProgram = svm.getAccount(poolState.tokenAMint).owner;
+
+  const tokenBProgram = svm.getAccount(poolState.tokenBMint).owner;
+
+  const inputTokenAccount = getAssociatedTokenAddressSync(
+    inputTokenMint,
+    user,
+    true,
+    tokenAProgram
+  );
+
+  const outputTokenAccount = getAssociatedTokenAddressSync(
+    outputTokenMint,
+    user,
+    true,
+    tokenBProgram
+  );
+
+  const { tokenAMint, tokenBMint, tokenAVault, tokenBVault } = poolState;
+
+  return await dammV2Program.methods
+    .swap({
+      amountIn,
+      minimumAmountOut: new BN(0),
+    })
+    .accountsPartial({
+      poolAuthority: deriveDammV2PoolAuthority(),
+      pool,
+      payer: user,
+      inputTokenAccount,
+      outputTokenAccount,
+      tokenAVault,
+      tokenBVault,
+      tokenAProgram,
+      tokenBProgram,
+      tokenAMint,
+      tokenBMint,
+      referralTokenAccount: null,
+    })
+    .remainingAccounts(
+      // TODO should check condition to add this in remaining accounts
+      [
+        {
+          isSigner: false,
+          isWritable: false,
+          pubkey: SYSVAR_INSTRUCTIONS_PUBKEY,
+        },
+      ]
+    )
+    .transaction();
+}
+
+export function convertToRateLimiterSecondFactor(
+  maxLimiterDuration: BN,
+  maxFeeBps: BN
+): number[] {
+  const buffer1 = maxLimiterDuration.toArrayLike(Buffer, "le", 4);
+  const buffer2 = maxFeeBps.toArrayLike(Buffer, "le", 4);
+  const buffer = Buffer.concat([buffer1, buffer2]);
+  return Array.from(buffer);
 }

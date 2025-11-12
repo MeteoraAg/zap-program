@@ -8,6 +8,16 @@ import {
   Position,
 } from "./damm_v2";
 import { LiteSVM } from "litesvm";
+import { ZAP_PROGRAM_ID } from "./endpoints";
+
+////// ZAP PDA /////
+
+export function deriveLedgerAccount(owner: PublicKey): PublicKey {
+  return PublicKey.findProgramAddressSync(
+    [Buffer.from("user_ledger"), owner.toBuffer()],
+    ZAP_PROGRAM_ID
+  )[0];
+}
 
 ///////// DAMM V2 ////////////
 
@@ -123,6 +133,18 @@ export function deriveLbPermissionless2(
     [presetParameter2.toBuffer(), minKey.toBuffer(), maxKey.toBuffer()],
     DLMM_PROGRAM_ID_LOCAL
   );
+}
+
+export function deriveLbCustomizablePermissionless2(
+  tokenX: PublicKey,
+  tokenY: PublicKey
+): PublicKey {
+  const baseKey = new PublicKey("MFGQxwAmB91SwuYX36okv2Qmdc9aMuHTwWGUrp4AtB1");
+  const [minKey, maxKey] = sortTokenMints(tokenX, tokenY);
+  return PublicKey.findProgramAddressSync(
+    [baseKey.toBuffer(), minKey.toBuffer(), maxKey.toBuffer()],
+    DLMM_PROGRAM_ID_LOCAL
+  )[0];
 }
 
 export function deriveReserve(token: PublicKey, lbPair: PublicKey) {

@@ -1,4 +1,8 @@
-import { LiteSVM, TransactionMetadata } from "litesvm";
+import {
+  FailedTransactionMetadata,
+  LiteSVM,
+  TransactionMetadata,
+} from "litesvm";
 import {
   PublicKey,
   Keypair,
@@ -11,21 +15,19 @@ import {
   mintToken,
   ZapProgram,
   zapOutJupV6,
-} from "./common";
+} from "../common";
 import { TOKEN_PROGRAM_ID } from "@coral-xyz/anchor/dist/cjs/utils/token";
 import { expect } from "chai";
 
-import ZapIDL from "../target/idl/zap.json";
+import ZapIDL from "../../target/idl/zap.json";
 import {
   createDammV2Pool,
   createPositionAndAddLiquidity,
   DAMM_V2_PROGRAM_ID,
   removeLiquidity,
-} from "./common/damm_v2";
-import {
-  getAssociatedTokenAddressSync
-} from "@solana/spl-token";
-import { JUP_V6_PROGRAM_ID } from "./common/jup";
+} from "../common/damm_v2";
+import { getAssociatedTokenAddressSync } from "@solana/spl-token";
+import { JUP_V6_PROGRAM_ID } from "../common/jup";
 
 describe("Zap out Jup V6", () => {
   let zapProgram: ZapProgram;
@@ -43,14 +45,8 @@ describe("Zap out Jup V6", () => {
       new PublicKey(ZapIDL.address),
       "./target/deploy/zap.so"
     );
-    svm.addProgramFromFile(
-      DAMM_V2_PROGRAM_ID,
-      "./tests/fixtures/damm_v2.so"
-    );
-    svm.addProgramFromFile(
-        JUP_V6_PROGRAM_ID,
-        "./tests/fixtures/jup_v6.so"
-      );
+    svm.addProgramFromFile(DAMM_V2_PROGRAM_ID, "./tests/fixtures/damm_v2.so");
+    svm.addProgramFromFile(JUP_V6_PROGRAM_ID, "./tests/fixtures/jup_v6.so");
 
     user = Keypair.generate();
     admin = Keypair.generate();
@@ -106,9 +102,7 @@ describe("Zap out Jup V6", () => {
     finalTransaction.sign(user);
 
     const result = svm.sendTransaction(finalTransaction);
-    if (result instanceof TransactionMetadata) {
-      console.log(result.logs());
-    } else {
+    if (result instanceof FailedTransactionMetadata) {
       console.log(result.meta().logs());
     }
     expect(result).instanceOf(TransactionMetadata);
