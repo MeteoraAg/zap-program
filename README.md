@@ -4,11 +4,10 @@ The Zap program provide util functions that allow user to zap in/out from any Am
 
 ## Zap out
 
-User can withdraw liquidity or claim fees from Meteora pools immediately swaps the withdrawn tokens through direct pools (Damm V2 or DLMM) or Jupiter.
+User can withdraw liquidity or claim fees from AMM pools and immediately swaps the withdrawn tokens through direct pools (Damm V2 or DLMM) or Jupiter.
 
-## Zap in
+## Zap in (Please refer examples in ZAPIN.md)
 
-### TODO
 - Swap and deposit in Damm V2
 - Swap and deposit in DLMM
 
@@ -16,9 +15,9 @@ User can withdraw liquidity or claim fees from Meteora pools immediately swaps t
 
 ### Dependencies
 
-- anchor 0.31.0
+- anchor 0.31.1
 - solana 2.1.0
-- rust 1.79.0
+- rust 1.85.0
 
 
 
