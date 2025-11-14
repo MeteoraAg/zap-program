@@ -167,8 +167,9 @@ pub fn handle_zap_in_damm_v2(
         pool.sqrt_max_price,
     )?;
 
+    drop(pool);
+
     if liquidity > 0 {
-        drop(pool);
         ctx.accounts.add_liquidity(liquidity)?;
     }
 

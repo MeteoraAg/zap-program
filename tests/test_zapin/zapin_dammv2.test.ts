@@ -1,4 +1,8 @@
-import { LiteSVM, TransactionMetadata } from "litesvm";
+import {
+  FailedTransactionMetadata,
+  LiteSVM,
+  TransactionMetadata,
+} from "litesvm";
 import {
   PublicKey,
   Keypair,
@@ -209,6 +213,80 @@ describe("Zap In damm V2", () => {
       totalAmount: amountTokenA,
       amountSwap,
     });
+  });
+
+  it("zap in without external swap", async () => {
+    const pool = await createDammV2Pool(
+      svm,
+      admin,
+      tokenAMint,
+      tokenBMint,
+      new BN(LAMPORTS_PER_SOL),
+      new BN(LAMPORTS_PER_SOL)
+    );
+
+    const { position, positionNftAccount } = await createDammV2Position(
+      svm,
+      user,
+      pool
+    );
+
+    let poolState = getDammV2Pool(svm, pool);
+
+    const totalAmountA = new BN(LAMPORTS_PER_SOL / 2); // 0.5 SOL
+    const initializeLedgerTx = await initializeLedgerAccount(user.publicKey);
+
+    const setLedgerBalanceTx = await setLedgerBalance(
+      user.publicKey,
+      totalAmountA,
+      true
+    );
+
+    const tokenBAccount = getAssociatedTokenAddressSync(
+      tokenBMint,
+      user.publicKey
+    );
+
+    const preTokenBBalance = getTokenBalance(svm, tokenBAccount);
+
+    const updateLedgerBalanceAfterSwapTx = await updateLedgerBalanceAfterSwap(
+      user.publicKey,
+      tokenBAccount,
+      preTokenBBalance,
+      U64_MAX,
+      false
+    );
+
+    // zapin
+
+    const zapInTx = await zapInDammv2({
+      svm,
+      user: user.publicKey,
+      pool,
+      position,
+      positionNftAccount,
+      preSqrtPrice: poolState.sqrtPrice,
+      maxSqrtPriceChangeBps: 5000,
+    });
+
+    // close ledge
+    const closeLedgerTx = await closeLedgerAccount(user.publicKey);
+
+    const finalTx = new Transaction()
+      .add(initializeLedgerTx)
+      .add(setLedgerBalanceTx)
+      .add(updateLedgerBalanceAfterSwapTx)
+      .add(zapInTx)
+      .add(closeLedgerTx);
+
+    finalTx.recentBlockhash = svm.latestBlockhash();
+    finalTx.sign(user);
+
+    const result = svm.sendTransaction(finalTx);
+    if (result instanceof FailedTransactionMetadata) {
+      console.log(result.meta().logs());
+    }
+    expect(result).instanceOf(TransactionMetadata);
   });
 });
 
