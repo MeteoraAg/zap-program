@@ -117,8 +117,8 @@ pub fn handle_zap_in_dlmm_for_initialized_position<'c: 'info, 'info>(
     let params = RebalanceLiquidityParams {
         active_id,
         max_active_bin_slippage,
-        should_claim_fee: false,
-        should_claim_reward: false,
+        should_claim_fee: true,
+        should_claim_reward: true,
         min_withdraw_x_amount: 0,
         max_deposit_x_amount,
         min_withdraw_y_amount: 0,
