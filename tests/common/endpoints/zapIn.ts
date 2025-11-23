@@ -187,7 +187,8 @@ export async function zapInDlmmforUnInitializedPosition(params: {
   lbPair: PublicKey;
   position: PublicKey;
   activeId: number;
-  binDelta: number;
+  minDeltaId: number;
+  maxDeltaId: number;
   maxActiveBinSlippage: number;
   favorXInActiveId: boolean;
   strategy: any;
@@ -203,7 +204,8 @@ export async function zapInDlmmforUnInitializedPosition(params: {
     lbPair,
     position,
     activeId,
-    binDelta,
+    minDeltaId,
+    maxDeltaId,
     maxActiveBinSlippage,
     favorXInActiveId,
     strategy,
@@ -236,7 +238,8 @@ export async function zapInDlmmforUnInitializedPosition(params: {
 
   return await program.methods
     .zapInDlmmForUninitializedPosition(
-      binDelta,
+      minDeltaId,
+      maxDeltaId,
       activeId,
       maxActiveBinSlippage,
       favorXInActiveId,

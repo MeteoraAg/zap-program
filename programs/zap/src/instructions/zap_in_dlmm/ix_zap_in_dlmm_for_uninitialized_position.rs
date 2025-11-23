@@ -94,7 +94,8 @@ impl<'info> ZapInDlmmForUnintializedPositionCtx<'info> {
 
 pub fn handle_zap_in_dlmm_for_uninitialized_position<'c: 'info, 'info>(
     ctx: Context<'_, '_, 'c, 'info, ZapInDlmmForUnintializedPositionCtx<'info>>,
-    bin_delta: u8,
+    min_delta_id: i32,
+    max_delta_id: i32,
     active_id: i32,
     max_active_bin_slippage: u16,
     favor_x_in_active_id: bool,
@@ -113,9 +114,8 @@ pub fn handle_zap_in_dlmm_for_uninitialized_position<'c: 'info, 'info>(
     let lb_pair = ctx.accounts.lb_pair.load()?;
 
     // create position wth bin_delta in left side, and bin_delta in right side
-    let bin_delta: i32 = bin_delta.into();
-    let lower_bin_id = lb_pair.active_id.safe_sub(bin_delta)?;
-    let width = bin_delta.safe_mul(2)?.safe_add(1)?;
+    let lower_bin_id = lb_pair.active_id.safe_add(min_delta_id)?;
+    let width = max_delta_id.safe_sub(min_delta_id)?.safe_add(1)?;
 
     // check the position is not initialized yet
     require!(
@@ -131,9 +131,6 @@ pub fn handle_zap_in_dlmm_for_uninitialized_position<'c: 'info, 'info>(
     // TODO refactor to save more code with endpoint zap in dlmm for initialized position
     let lb_pair = ctx.accounts.lb_pair.load()?;
     let lb_pair_active_id = lb_pair.active_id;
-    let min_delta_id = lower_bin_id.safe_sub(lb_pair_active_id)?;
-    let upper_bin_id = lower_bin_id.safe_add(width)?.safe_sub(1)?;
-    let max_delta_id = upper_bin_id.safe_sub(lb_pair_active_id)?;
 
     let amount_x =
         calculate_transfer_fee_excluded_amount(&ctx.accounts.token_x_mint, max_deposit_x_amount)?

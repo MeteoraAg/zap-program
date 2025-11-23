@@ -89,7 +89,8 @@ pub mod zap {
 
     pub fn zap_in_dlmm_for_uninitialized_position<'c: 'info, 'info>(
         ctx: Context<'_, '_, 'c, 'info, ZapInDlmmForUnintializedPositionCtx<'info>>,
-        bin_delta: u8,
+        min_delta_id: i32,
+        max_delta_id: i32,
         active_id: i32,
         max_active_bin_slippage: u16,
         favor_x_in_active_id: bool,
@@ -98,7 +99,8 @@ pub mod zap {
     ) -> Result<()> {
         instructions::handle_zap_in_dlmm_for_uninitialized_position(
             ctx,
-            bin_delta,
+            min_delta_id,
+            max_delta_id,
             active_id,
             max_active_bin_slippage,
             favor_x_in_active_id,
