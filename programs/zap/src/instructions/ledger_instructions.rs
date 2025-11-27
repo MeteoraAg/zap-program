@@ -1,5 +1,5 @@
 use anchor_lang::prelude::*;
-use anchor_spl::token::accessor;
+use anchor_spl::{token::accessor, token_interface::TokenAccount};
 
 use crate::{constants::seeds::USER_LEDGER_PREFIX, UserLedger};
 
@@ -79,8 +79,7 @@ pub struct UpdateLedgerBalanceAfterSwapCtx<'info> {
     )]
     pub ledger: AccountLoader<'info, UserLedger>,
 
-    /// CHECK: user must send correct user account
-    pub token_account: UncheckedAccount<'info>,
+    pub token_account: InterfaceAccount<'info, TokenAccount>,
 
     pub owner: Signer<'info>,
 }
@@ -91,7 +90,7 @@ pub fn handle_update_ledger_balance_after_swap(
     max_transfer_amount: u64,
     is_token_a: bool,
 ) -> Result<()> {
-    let current_token_balance = accessor::amount(&ctx.accounts.token_account.to_account_info())?;
+    let current_token_balance = ctx.accounts.token_account.amount;
     let delta_balance: u64 = current_token_balance.saturating_sub(pre_source_token_balance);
     let amount = delta_balance.min(max_transfer_amount);
     let mut ledger = ctx.accounts.ledger.load_mut()?;
