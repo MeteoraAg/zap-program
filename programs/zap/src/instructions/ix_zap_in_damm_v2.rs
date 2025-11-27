@@ -200,18 +200,29 @@ pub fn handle_zap_in_damm_v2(
             remaining_amount,
             trade_direction,
             current_point,
-        )?;
-        if swap_in_amount == 0 || swap_out_amount == 0 {
-            msg!(
-                "max_deposit_amounts: {} {}, remaining_amounts: {} {}, swap_amounts: {} {}",
-                max_deposit_a_amount,
-                max_deposit_b_amount,
-                ledger.amount_a,
-                ledger.amount_b,
-                swap_in_amount,
-                swap_out_amount
-            );
-            return Ok(()); // no need to swap, just return
+        );
+        match swap_amount {
+            Ok(swap_amount) => {
+                if swap_in_amount == 0 || swap_out_amount == 0 {
+                    msg!(
+                        "max_deposit_amounts: {} {}, remaining_amounts: {} {}, swap_amounts: {} {}",
+                        max_deposit_a_amount,
+                        max_deposit_b_amount,
+                        ledger.amount_a,
+                        ledger.amount_b,
+                        swap_in_amount,
+                        swap_out_amount
+                    );
+                    return Ok(()); // no need to swap, just return
+                }
+                drop(pool);
+                ctx.accounts.swap(swap_amount, trade_direction)?;
+            }
+            Err(err) => {
+                // if calculation fail, we just skip swap and add liquidity with remaining amount
+                msg!("Calculate swap amount error: {:?}", err);
+                return Ok(());
+            }
         }
 
         drop(pool);

@@ -392,7 +392,7 @@ pub fn calculate_swap_amount(
         let delta_half = max_swap_amount.safe_sub(min_swap_amount)? >> 1;
         let amount_in = min_swap_amount.safe_add(delta_half)?;
 
-        if let Ok(swap_result) = calculate_swap_result(
+        let swap_result = calculate_swap_result(
             pool,
             token_a_transfer_fee_calculator,
             token_b_transfer_fee_calculator,
@@ -401,56 +401,46 @@ pub fn calculate_swap_amount(
             trade_direction,
             &fee_handler,
             &fee_mode,
-        ) {
-            // update swap amount
-            swap_in_amount = amount_in;
-            swap_out_amount = swap_result.user_amount_in;
+        )?;
 
-            if let Ok(status) = validate_swap_result(
-                &swap_result,
-                token_a_transfer_fee_calculator,
-                token_b_transfer_fee_calculator,
-                remaining_amount,
-                pool_amount_a,
-                pool_amount_b,
-                trade_direction,
-            ) {
-                match status {
-                    SwapResultStatus::Done => {
-                        #[cfg(test)]
-                        println!("Done calculate swap result {}", _i);
-                        break;
-                    }
-                    SwapResultStatus::ExceededA => {
-                        if trade_direction == TradeDirection::AtoB {
-                            // need to increase swap amount
-                            min_swap_amount = swap_in_amount;
-                        } else {
-                            // need to decrease swap amount
-                            max_swap_amount = swap_in_amount;
-                        }
-                    }
-                    SwapResultStatus::ExceededB => {
-                        if trade_direction == TradeDirection::AtoB {
-                            // need to decrease swap amount
-                            max_swap_amount = swap_in_amount;
-                        } else {
-                            // need to increase swap amount
-                            min_swap_amount = swap_in_amount;
-                        }
-                    }
-                }
-            } else {
+        // update swap amount
+        swap_in_amount = amount_in;
+        swap_out_amount = swap_result.user_amount_in;
+
+        let status = validate_swap_result(
+            &swap_result,
+            token_a_transfer_fee_calculator,
+            token_b_transfer_fee_calculator,
+            remaining_amount,
+            pool_amount_a,
+            pool_amount_b,
+            trade_direction,
+        )?;
+
+        match status {
+            SwapResultStatus::Done => {
                 #[cfg(test)]
-                println!("can't validate swap result {}", _i);
-
-                break; // if we can't validate swap result, then just break
+                println!("Done calculate swap result {}", _i);
+                break;
             }
-        } else {
-            #[cfg(test)]
-            println!("can't simulate swap result {}", _i);
-
-            break; // if we can't simulate swap result, then just break
+            SwapResultStatus::ExceededA => {
+                if trade_direction == TradeDirection::AtoB {
+                    // need to increase swap amount
+                    min_swap_amount = swap_in_amount;
+                } else {
+                    // need to decrease swap amount
+                    max_swap_amount = swap_in_amount;
+                }
+            }
+            SwapResultStatus::ExceededB => {
+                if trade_direction == TradeDirection::AtoB {
+                    // need to decrease swap amount
+                    max_swap_amount = swap_in_amount;
+                } else {
+                    // need to increase swap amount
+                    min_swap_amount = swap_in_amount;
+                }
+            }
         }
     }
 
