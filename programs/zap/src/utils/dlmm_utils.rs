@@ -306,6 +306,10 @@ impl StrategyHandler for CurveHandler {
         // x0 = sum(amounts) / (B-C)
         // noted: x0 > 0 and delta_x < 0 in curve strategy
 
+        if min_delta_id == max_delta_id {
+            return Ok((amount_x.into(), 0));
+        }
+
         let mut b = U256::ZERO;
         let mut c = U256::ZERO;
         let m1 = min_delta_id;
@@ -327,7 +331,7 @@ impl StrategyHandler for CurveHandler {
             .safe_div(b.safe_sub(c)?)?;
         let x0: i128 = x0.try_into().map_err(|_| ZapError::TypeCastFailed)?;
         let m2: i128 = max_delta_id.into();
-        let delta_x = if m2 != 0 { -x0 / m2 } else { 0 };
+        let delta_x = -x0 / m2;
 
         // same handle as get y0, delta_y
         let x0 = -(delta_x * m2);
@@ -394,6 +398,10 @@ impl StrategyHandler for BidAskHandler {
         // C = (m1 * p(m1) + ... + m2 * p(m2))
         // delta_x = sum(amounts) / (C-B)
         // note: in bid ask strategy: x0 < 0 and delta_x > 0
+
+        if min_delta_id == max_delta_id {
+            return Ok((amount_x.into(), 0));
+        }
 
         let mut b = U256::ZERO;
         let mut c = U256::ZERO;
