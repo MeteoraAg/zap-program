@@ -19,7 +19,7 @@ pub struct ZapInDlmmForUnintializedPositionCtx<'info> {
     pub lb_pair: AccountLoader<'info, LbPair>,
 
     /// user position
-    /// Check it is different from owner to advoid user to pass owner address wrongly
+    /// Check it is different from owner to avoid user to pass owner address wrongly
     #[account(mut, constraint = position.key.ne(owner.key) && position.key.ne(rent_payer.key))]
     pub position: Signer<'info>,
 

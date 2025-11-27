@@ -251,7 +251,7 @@ impl StrategyHandler for CurveHandler {
         // sum(amounts) = y0 * (m1-m2+1) - y0 * (m1 * (m1+1)/2 - m2 * (m2-1)/2) / m1
         // A = (m1-m2+1) - (m1 * (m1+1)/2 - m2 * (m2-1)/2) / m1
         // y0 = sum(amounts) / A
-        // advoid precision loss:
+        // avoid precision loss:
         // y0 = sum(amounts) * m1 / ((m1-m2+1) * m1 - (m1 * (m1+1)/2 - m2 * (m2-1)/2))
         // noted: y0 > 0 and delta_y < 0 in curve strategy
 
@@ -267,11 +267,11 @@ impl StrategyHandler for CurveHandler {
         let a = (m1 - m2 + 1) * m1 - (m1 * (m1 + 1) / 2 - m2 * (m2 - 1) / 2);
         let y0 = i128::from(amount_y) * m1 / a;
         // we round down delta_y firstly
-        // m1 can't be zero becase we've checked for min_delta_id  <= max_delta_id, and both delta id is smaller than or equa 0
+        // m1 can't be zero because we've checked for min_delta_id  <= max_delta_id, and both delta id is smaller than or equal 0
         let delta_y = -(y0 / m1);
 
         // then we update y0 to ensure the first amount (active_id - m1 = y0 + delta_y * m1) > 0
-        // delta_y is negative and round up, while y0 is possitive and round down
+        // delta_y is negative and round up, while y0 is positive and round down
         // it will ensure sum(amounts) <= amount_y
         // sum(amounts) = y0 * (m1-m2+1) + delta_y * (m1 * (m1+1)/2 - m2 * (m2-1)/2)
         // sum(amounts) = -(delta_y * m1) * (m1-m2+1) + delta_y * (m1 * (m1+1)/2 - m2 * (m2-1)/2)
@@ -392,7 +392,7 @@ impl StrategyHandler for BidAskHandler {
         // A = -m1 * (p(m1)+..+p(m2)) + (m1 * p(m1) + ... + m2 * p(m2))
         // B = m1 * (p(m1)+..+p(m2))
         // C = (m1 * p(m1) + ... + m2 * p(m2))
-        // x0 = sum(amounts) / (C-B)
+        // delta_x = sum(amounts) / (C-B)
         // note: in bid ask strategy: x0 < 0 and delta_x > 0
 
         let mut b = U256::ZERO;

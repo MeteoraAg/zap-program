@@ -1,5 +1,5 @@
 use crate::{
-    damm_v2_ultils::{get_liquidity_from_amount_a, get_liquidity_from_amount_b},
+    damm_v2_utils::{get_liquidity_from_amount_a, get_liquidity_from_amount_b},
     error::ZapError,
     math::safe_math::SafeMath,
     TransferFeeCalculator,
