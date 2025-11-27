@@ -6,7 +6,9 @@ use dlmm::{
     types::{AddLiquidityParams, RebalanceLiquidityParams, RemainingAccountsInfo},
 };
 
-use crate::{StrategyType, UnparsedAddLiquidityParams, UserLedger, ZapInRebalancingParams};
+use crate::{
+    error::ZapError, StrategyType, UnparsedAddLiquidityParams, UserLedger, ZapInRebalancingParams,
+};
 
 #[derive(Accounts)]
 pub struct ZapInDlmmForInitializedPositionCtx<'info> {
@@ -105,6 +107,11 @@ pub fn handle_zap_in_dlmm_for_initialized_position<'c: 'info, 'info>(
         favor_x_in_active_id,
         strategy,
     };
+
+    require!(
+        min_delta_id <= max_delta_id,
+        ZapError::InvalidDlmmZapInParameters
+    );
 
     let UnparsedAddLiquidityParams {
         x0,
