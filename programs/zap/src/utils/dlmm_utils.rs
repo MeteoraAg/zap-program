@@ -3,7 +3,7 @@ use anchor_lang::prelude::*;
 use std::ops::Neg;
 
 use damm_v2::safe_math::SafeMath;
-use ruint::aliases::U256;
+use ruint::aliases::{U256, U512};
 
 use crate::{error::ZapError, price_math::get_price_from_id};
 #[derive(AnchorSerialize, AnchorDeserialize, Eq, PartialEq, Clone, Debug)]
@@ -314,23 +314,25 @@ impl StrategyHandler for CurveHandler {
             return Ok((x0, 0));
         }
 
-        let mut b = U256::ZERO;
-        let mut c = U256::ZERO;
+        let mut b = U512::ZERO;
+
         let m1 = min_delta_id;
         let m2 = max_delta_id;
 
+        let mut c_numerator = U512::ZERO;
+
         for m in m1..=m2 {
             let bin_id = active_id.safe_add(m)?;
-            let pm = U256::from(get_price_from_id(bin_id.neg(), bin_step)?);
+            let pm = U512::from(get_price_from_id(bin_id.neg(), bin_step)?);
 
             b = b.safe_add(pm)?;
 
-            let c_delta = U256::from(m).safe_mul(pm)?.safe_div(U256::from(m2))?;
-
-            c = c.safe_add(c_delta)?;
+            c_numerator = c_numerator.safe_add(U512::from(m).safe_mul(pm)?)?;
         }
 
-        let x0 = U256::from(amount_x)
+        let c = c_numerator.safe_div(U512::from(m2))?;
+
+        let x0 = U512::from(amount_x)
             .safe_shl(64)?
             .safe_div(b.safe_sub(c)?)?;
         let x0: i128 = x0.try_into().map_err(|_| ZapError::TypeCastFailed)?;
