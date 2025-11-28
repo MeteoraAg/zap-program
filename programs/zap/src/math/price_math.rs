@@ -1,10 +1,10 @@
 use anchor_lang::prelude::*;
 
-use crate::{error::ZapError, safe_math::SafeMath};
+use crate::{constants::MAX_BASIS_POINT, error::ZapError, safe_math::SafeMath};
 
 // Number of bits to scale. This will decide the position of the radix point.
 const SCALE_OFFSET: u8 = 64;
-const BASIS_POINT_MAX: i32 = 10000;
+
 // 1.0000... representation of 64x64
 pub const ONE: u128 = 1u128 << SCALE_OFFSET;
 const MAX_EXPONENTIAL: u32 = 0x80000; // 1048576
@@ -23,7 +23,7 @@ pub fn get_price_base_factor(bin_step: u16) -> Result<u128> {
     // Make bin_step into Q64x64, and divided by BASIS_POINT_MAX. If bin_step = 1, we get 0.0001 in Q64x64
     let bps = u128::from(bin_step)
         .safe_shl(SCALE_OFFSET.into())?
-        .safe_div(BASIS_POINT_MAX as u128)?;
+        .safe_div(MAX_BASIS_POINT as u128)?;
     // Add 1 to bps, we get 1.0001 in Q64.64
     let base = ONE.safe_add(bps)?;
     Ok(base)
