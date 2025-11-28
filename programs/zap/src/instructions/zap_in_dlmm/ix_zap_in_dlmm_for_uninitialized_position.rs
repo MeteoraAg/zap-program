@@ -20,7 +20,7 @@ pub struct ZapInDlmmForUnintializedPositionCtx<'info> {
 
     /// user position
     /// Check it is different from owner to advoid user to pass owner address wrongly
-    #[account(mut, constraint = position.key.ne(owner.key))]
+    #[account(mut, constraint = position.key.ne(owner.key) && position.key.ne(rent_payer.key))]
     pub position: Signer<'info>,
 
     /// CHECK: will be validated in dlmm program
