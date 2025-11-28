@@ -403,7 +403,7 @@ pub fn calculate_swap_amount(
         ) {
             // update swap amount
             swap_in_amount = amount_in;
-            swap_out_amount = swap_result.user_amount_out;
+            swap_out_amount = swap_result.user_amount_in;
 
             if let Ok(status) = validate_swap_result(
                 &swap_result,
