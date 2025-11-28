@@ -1,5 +1,6 @@
 use crate::{
     damm_v2_ultils::{get_liquidity_from_amount_a, get_liquidity_from_amount_b},
+    error::ZapError,
     math::safe_math::SafeMath,
     TransferFeeCalculator,
 };
@@ -22,14 +23,17 @@ impl UserLedger {
         pre_amount_b: u64,
         post_amount_b: u64,
     ) -> Result<()> {
-        self.amount_a = self
-            .amount_a
-            .safe_add(post_amount_a)?
-            .safe_sub(pre_amount_a)?;
-        self.amount_b = self
-            .amount_b
-            .safe_add(post_amount_b)?
-            .safe_sub(pre_amount_b)?;
+        self.amount_a = u128::from(self.amount_a)
+            .safe_add(post_amount_a.into())?
+            .safe_sub(pre_amount_a.into())?
+            .try_into()
+            .map_err(|_| ZapError::MathOverflow)?;
+
+        self.amount_b = u128::from(self.amount_b)
+            .safe_add(post_amount_b.into())?
+            .safe_sub(pre_amount_b.into())?
+            .try_into()
+            .map_err(|_| ZapError::MathOverflow)?;
         Ok(())
     }
     // only needed for damm v2 function
