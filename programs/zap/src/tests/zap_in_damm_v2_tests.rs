@@ -28,7 +28,7 @@ fn test_calculate_swap_result() {
         epoch_transfer_fee: TransferFee::default(),
         no_transfer_fee_extension: true,
     };
-    let swap_amount = calculate_swap_amount(
+    let (swap_amount, _swap_out_amount) = calculate_swap_amount(
         &pool,
         &transfer_fee_calculator,
         &transfer_fee_calculator,

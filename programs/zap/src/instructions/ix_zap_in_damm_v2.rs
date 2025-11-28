@@ -193,7 +193,7 @@ pub fn handle_zap_in_damm_v2(
     if remaining_amount > 0 {
         let pool = ctx.accounts.pool.load()?;
         let current_point = ActivationHandler::get_current_point(pool.activation_type)?;
-        let swap_amount = calculate_swap_amount(
+        let (swap_in_amount, swap_out_amount) = calculate_swap_amount(
             &pool,
             &token_a_transfer_fee_calculator,
             &token_b_transfer_fee_calculator,
@@ -201,9 +201,9 @@ pub fn handle_zap_in_damm_v2(
             trade_direction,
             current_point,
         )?;
-        if swap_amount > 0 {
+        if swap_in_amount > 0 && swap_out_amount > 0 {
             drop(pool);
-            ctx.accounts.swap(swap_amount, trade_direction)?;
+            ctx.accounts.swap(swap_in_amount, trade_direction)?;
         }
     }
 
