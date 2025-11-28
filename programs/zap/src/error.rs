@@ -25,4 +25,7 @@ pub enum ZapError {
 
     #[msg("Exceeded slippage tolerance")]
     ExceededSlippage,
+
+    #[msg("Invalid dlmm zap in parameters")]
+    InvalidDlmmZapInParameters,
 }

@@ -150,6 +150,11 @@ pub fn handle_zap_in_dlmm_for_uninitialized_position<'c: 'info, 'info>(
         strategy,
     };
 
+    require!(
+        min_delta_id <= max_delta_id,
+        ZapError::InvalidDlmmZapInParameters
+    );
+
     let UnparsedAddLiquidityParams {
         x0,
         y0,
