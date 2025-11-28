@@ -389,11 +389,8 @@ pub fn calculate_swap_amount(
     // For each loop program consumed ~ 5394.3 -> 5,395 CUs
     // So the 20 loops will consume maximum ~ 107,900 CUs
     for _i in 0..20 {
-        let amount_in = u128::from(max_swap_amount)
-            .safe_add(min_swap_amount.into())?
-            .safe_div(2)?
-            .try_into()
-            .map_err(|_| ZapError::MathOverflow)?;
+        let delta_half = max_swap_amount.safe_sub(min_swap_amount)? >> 1;
+        let amount_in = min_swap_amount.safe_add(delta_half)?;
 
         if let Ok(swap_result) = calculate_swap_result(
             pool,
