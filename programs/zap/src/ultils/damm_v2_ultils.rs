@@ -489,7 +489,7 @@ pub fn get_price_change_bps(pre_sqrt_price: u128, post_sqrt_price: u128) -> Resu
 
     let price_diff_prod = U192::from(price_diff).safe_mul(U192::from(MAX_BASIS_POINT))?;
 
-    let price_diff_bps = price_diff_prod.safe_div(U192::from(pre_sqrt_price))?;
+    let price_diff_bps = price_diff_prod.div_ceil(U192::from(pre_sqrt_price));
     Ok(price_diff_bps
         .try_into()
         .map_err(|_| ZapError::TypeCastFailed)?)
