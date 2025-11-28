@@ -376,6 +376,10 @@ pub fn calculate_swap_amount(
         let delta_half = max_swap_amount.safe_sub(min_swap_amount)? >> 1;
         let amount_in = min_swap_amount.safe_add(delta_half)?;
 
+        if amount_in == swap_in_amount {
+            break;
+        }
+
         let swap_result = calculate_swap_result(
             pool,
             token_a_transfer_fee_calculator,
