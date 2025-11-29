@@ -6,7 +6,7 @@ use damm_v2::{
 };
 
 use crate::{
-    damm_v2_ultils::{calculate_swap_amount, get_price_change_bps},
+    damm_v2_utils::{calculate_swap_amount, get_price_change_bps},
     error::ZapError,
     new_transfer_fee_calculator, UserLedger,
 };

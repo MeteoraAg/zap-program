@@ -1,4 +1,4 @@
-use anchor_lang::prelude::*;
+use anchor_lang::{prelude::*, solana_program::log::sol_log_compute_units};
 use damm_v2::{
     base_fee::{BaseFeeHandler, FeeRateLimiter},
     constants::fee::get_max_fee_numerator,
@@ -386,8 +386,8 @@ pub fn calculate_swap_amount(
     let (pool_amount_a, pool_amount_b) = pool.get_reserves_amount()?;
 
     // max 20 loops
-    // For each loop program consumed ~ 5.19 CUs
-    // So the 20 loops will consume maximum ~ 100 CUs
+    // For each loop program consumed ~ 5394.3 -> 5,395 CUs
+    // So the 20 loops will consume maximum ~ 107,900 CUs
     for _i in 0..20 {
         let amount_in = max_swap_amount.safe_add(min_swap_amount)?.safe_div(2)?;
 
