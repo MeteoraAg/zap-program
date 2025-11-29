@@ -373,10 +373,11 @@ pub fn calculate_swap_amount(
     remaining_amount: u64,
     trade_direction: TradeDirection,
     current_point: u64,
-) -> Result<u64> {
+) -> Result<(u64, u64)> {
     let mut max_swap_amount = remaining_amount;
     let mut min_swap_amount = 0;
-    let mut swap_amount = 0;
+    let mut swap_in_amount = 0;
+    let mut swap_out_amount = 0;
 
     let fee_handler = get_fee_handler(pool, current_point, trade_direction)?;
 
@@ -401,7 +402,9 @@ pub fn calculate_swap_amount(
             &fee_mode,
         ) {
             // update swap amount
-            swap_amount = amount_in;
+            swap_in_amount = amount_in;
+            swap_out_amount = swap_result.user_amount_in;
+
             if let Ok(status) = validate_swap_result(
                 &swap_result,
                 token_a_transfer_fee_calculator,
@@ -420,19 +423,19 @@ pub fn calculate_swap_amount(
                     SwapResultStatus::ExceededA => {
                         if trade_direction == TradeDirection::AtoB {
                             // need to increase swap amount
-                            min_swap_amount = swap_amount;
+                            min_swap_amount = swap_in_amount;
                         } else {
                             // need to decrease swap amount
-                            max_swap_amount = swap_amount;
+                            max_swap_amount = swap_in_amount;
                         }
                     }
                     SwapResultStatus::ExceededB => {
                         if trade_direction == TradeDirection::AtoB {
                             // need to decrease swap amount
-                            max_swap_amount = swap_amount;
+                            max_swap_amount = swap_in_amount;
                         } else {
                             // need to increase swap amount
-                            min_swap_amount = swap_amount;
+                            min_swap_amount = swap_in_amount;
                         }
                     }
                 }
@@ -450,7 +453,7 @@ pub fn calculate_swap_amount(
         }
     }
 
-    Ok(swap_amount)
+    Ok((swap_in_amount, swap_out_amount))
 }
 
 // Δa = L * (1 / √P_lower - 1 / √P_upper) => L = Δa / (1 / √P_lower - 1 / √P_upper)
