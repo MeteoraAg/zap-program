@@ -28,4 +28,7 @@ pub enum ZapError {
 
     #[msg("Invalid dlmm zap in parameters")]
     InvalidDlmmZapInParameters,
+
+    #[msg("Unsupported fee mode")]
+    UnsupportedFeeMode,
 }
