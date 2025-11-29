@@ -9,6 +9,33 @@ use crate::{
 const STRATEGY: StrategyType = StrategyType::Curve;
 
 #[test]
+fn test_strategy_only_ask_side_single_bin() {
+    let active_id = 100;
+    let bin_step = 100;
+    let total_amount_x = 100_000_000;
+    let min_delta_id = 100;
+    let max_delta_id = 100;
+    let favor_x_in_active_id = true;
+
+    let params = build_add_liquidity_params(
+        total_amount_x,
+        0,
+        active_id,
+        bin_step,
+        min_delta_id,
+        max_delta_id,
+        favor_x_in_active_id,
+        STRATEGY,
+    );
+
+    let amount_in_bins = get_bin_add_liquidity(&params, active_id, bin_step).unwrap();
+    let amount_in_bin = &amount_in_bins[0];
+
+    let diff = total_amount_x - amount_in_bin.amount_x;
+    assert_eq!(diff, 1);
+}
+
+#[test]
 fn test_strategy_only_bid_side_favour_x() {
     let active_id = 100;
     let bin_step = 10;
