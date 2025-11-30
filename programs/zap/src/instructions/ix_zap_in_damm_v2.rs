@@ -231,9 +231,6 @@ pub fn handle_zap_in_damm_v2(
                 return Ok(());
             }
         }
-
-        drop(pool);
-        ctx.accounts.swap(swap_in_amount, trade_direction)?;
     }
 
     // validate pool price after swap
