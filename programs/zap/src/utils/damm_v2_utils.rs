@@ -329,23 +329,7 @@ fn get_fee_handler(
                 }
             }
         }
-        _ => {
-            // otherwise, we just use cliff_fee_numerator
-            // that is in case the damm v2 update for the new base fee function
-            let base_fee_numerator = pool.pool_fees.base_fee.cliff_fee_numerator;
-            let total_fee_numerator = get_total_fee_numerator(
-                base_fee_numerator,
-                variable_fee_numerator,
-                max_fee_numerator,
-            )?;
-            Ok(FeeHandler {
-                rate_limiter_handler: FeeRateLimiter::default(),
-                variable_fee_numerator,
-                max_fee_numerator,
-                total_fee_numerator,
-                is_rate_limiter: false,
-            })
-        }
+        _ => Err(ZapError::UnsupportedFeeMode.into()),
     }
 }
 
