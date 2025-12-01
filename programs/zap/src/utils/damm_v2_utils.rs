@@ -1,4 +1,4 @@
-use anchor_lang::prelude::*;
+use anchor_lang::{prelude::*, solana_program::log::sol_log_compute_units};
 use damm_v2::{
     base_fee::{BaseFeeHandler, FeeRateLimiter},
     constants::fee::get_max_fee_numerator,
@@ -329,23 +329,7 @@ fn get_fee_handler(
                 }
             }
         }
-        _ => {
-            // otherwise, we just use cliff_fee_numerator
-            // that is in case the damm v2 update for the new base fee function
-            let base_fee_numerator = pool.pool_fees.base_fee.cliff_fee_numerator;
-            let total_fee_numerator = get_total_fee_numerator(
-                base_fee_numerator,
-                variable_fee_numerator,
-                max_fee_numerator,
-            )?;
-            Ok(FeeHandler {
-                rate_limiter_handler: FeeRateLimiter::default(),
-                variable_fee_numerator,
-                max_fee_numerator,
-                total_fee_numerator,
-                is_rate_limiter: false,
-            })
-        }
+        _ => Err(ZapError::UnsupportedFeeMode.into()),
     }
 }
 
@@ -373,10 +357,11 @@ pub fn calculate_swap_amount(
     remaining_amount: u64,
     trade_direction: TradeDirection,
     current_point: u64,
-) -> Result<u64> {
+) -> Result<(u64, u64)> {
     let mut max_swap_amount = remaining_amount;
     let mut min_swap_amount = 0;
-    let mut swap_amount = 0;
+    let mut swap_in_amount = 0;
+    let mut swap_out_amount = 0;
 
     let fee_handler = get_fee_handler(pool, current_point, trade_direction)?;
 
@@ -385,12 +370,17 @@ pub fn calculate_swap_amount(
     let (pool_amount_a, pool_amount_b) = pool.get_reserves_amount()?;
 
     // max 20 loops
-    // For each loop program consumed ~ 5.19 CUs
-    // So the 20 loops will consume maximum ~ 100 CUs
+    // For each loop program consumed ~ 5394.3 -> 5,395 CUs
+    // So the 20 loops will consume maximum ~ 107,900 CUs
     for _i in 0..20 {
-        let amount_in = max_swap_amount.safe_add(min_swap_amount)?.safe_div(2)?;
+        let delta_half = max_swap_amount.safe_sub(min_swap_amount)? >> 1;
+        let amount_in = min_swap_amount.safe_add(delta_half)?;
 
-        if let Ok(swap_result) = calculate_swap_result(
+        if amount_in == swap_in_amount {
+            break;
+        }
+
+        let swap_result = calculate_swap_result(
             pool,
             token_a_transfer_fee_calculator,
             token_b_transfer_fee_calculator,
@@ -399,58 +389,50 @@ pub fn calculate_swap_amount(
             trade_direction,
             &fee_handler,
             &fee_mode,
-        ) {
-            // update swap amount
-            swap_amount = amount_in;
-            if let Ok(status) = validate_swap_result(
-                &swap_result,
-                token_a_transfer_fee_calculator,
-                token_b_transfer_fee_calculator,
-                remaining_amount,
-                pool_amount_a,
-                pool_amount_b,
-                trade_direction,
-            ) {
-                match status {
-                    SwapResultStatus::Done => {
-                        #[cfg(test)]
-                        println!("Done calculate swap result {}", _i);
-                        break;
-                    }
-                    SwapResultStatus::ExceededA => {
-                        if trade_direction == TradeDirection::AtoB {
-                            // need to increase swap amount
-                            min_swap_amount = swap_amount;
-                        } else {
-                            // need to decrease swap amount
-                            max_swap_amount = swap_amount;
-                        }
-                    }
-                    SwapResultStatus::ExceededB => {
-                        if trade_direction == TradeDirection::AtoB {
-                            // need to decrease swap amount
-                            max_swap_amount = swap_amount;
-                        } else {
-                            // need to increase swap amount
-                            min_swap_amount = swap_amount;
-                        }
-                    }
-                }
-            } else {
+        )?;
+
+        // update swap amount
+        swap_in_amount = amount_in;
+        swap_out_amount = swap_result.user_amount_in;
+
+        let status = validate_swap_result(
+            &swap_result,
+            token_a_transfer_fee_calculator,
+            token_b_transfer_fee_calculator,
+            remaining_amount,
+            pool_amount_a,
+            pool_amount_b,
+            trade_direction,
+        )?;
+
+        match status {
+            SwapResultStatus::Done => {
                 #[cfg(test)]
-                println!("can't validate swap result {}", _i);
-
-                break; // if we can't validate swap result, then just break
+                println!("Done calculate swap result {}", _i);
+                break;
             }
-        } else {
-            #[cfg(test)]
-            println!("can't simulate swap result {}", _i);
-
-            break; // if we can't simulate swap result, then just break
+            SwapResultStatus::ExceededA => {
+                if trade_direction == TradeDirection::AtoB {
+                    // need to increase swap amount
+                    min_swap_amount = swap_in_amount;
+                } else {
+                    // need to decrease swap amount
+                    max_swap_amount = swap_in_amount;
+                }
+            }
+            SwapResultStatus::ExceededB => {
+                if trade_direction == TradeDirection::AtoB {
+                    // need to decrease swap amount
+                    max_swap_amount = swap_in_amount;
+                } else {
+                    // need to increase swap amount
+                    min_swap_amount = swap_in_amount;
+                }
+            }
         }
     }
 
-    Ok(swap_amount)
+    Ok((swap_in_amount, swap_out_amount))
 }
 
 // Δa = L * (1 / √P_lower - 1 / √P_upper) => L = Δa / (1 / √P_lower - 1 / √P_upper)
@@ -489,7 +471,7 @@ pub fn get_price_change_bps(pre_sqrt_price: u128, post_sqrt_price: u128) -> Resu
 
     let price_diff_prod = U192::from(price_diff).safe_mul(U192::from(MAX_BASIS_POINT))?;
 
-    let price_diff_bps = price_diff_prod.safe_div(U192::from(pre_sqrt_price))?;
+    let price_diff_bps = price_diff_prod.div_ceil(U192::from(pre_sqrt_price));
     Ok(price_diff_bps
         .try_into()
         .map_err(|_| ZapError::TypeCastFailed)?)

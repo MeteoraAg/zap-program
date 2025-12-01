@@ -19,8 +19,8 @@ pub struct ZapInDlmmForUnintializedPositionCtx<'info> {
     pub lb_pair: AccountLoader<'info, LbPair>,
 
     /// user position
-    /// Check it is different from owner to advoid user to pass owner address wrongly
-    #[account(mut, constraint = position.key.ne(owner.key))]
+    /// Check it is different from owner to avoid user to pass owner address wrongly
+    #[account(mut, constraint = position.key.ne(owner.key) && position.key.ne(rent_payer.key))]
     pub position: Signer<'info>,
 
     /// CHECK: will be validated in dlmm program
@@ -149,6 +149,11 @@ pub fn handle_zap_in_dlmm_for_uninitialized_position<'c: 'info, 'info>(
         favor_x_in_active_id,
         strategy,
     };
+
+    require!(
+        min_delta_id <= max_delta_id,
+        ZapError::InvalidDlmmZapInParameters
+    );
 
     let UnparsedAddLiquidityParams {
         x0,

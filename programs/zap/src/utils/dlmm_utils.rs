@@ -3,7 +3,7 @@ use anchor_lang::prelude::*;
 use std::ops::Neg;
 
 use damm_v2::safe_math::SafeMath;
-use ruint::aliases::U256;
+use ruint::aliases::{U256, U512};
 
 use crate::{error::ZapError, price_math::get_price_from_id};
 #[derive(AnchorSerialize, AnchorDeserialize, Eq, PartialEq, Clone, Debug)]
@@ -251,7 +251,7 @@ impl StrategyHandler for CurveHandler {
         // sum(amounts) = y0 * (m1-m2+1) - y0 * (m1 * (m1+1)/2 - m2 * (m2-1)/2) / m1
         // A = (m1-m2+1) - (m1 * (m1+1)/2 - m2 * (m2-1)/2) / m1
         // y0 = sum(amounts) / A
-        // advoid precision loss:
+        // avoid precision loss:
         // y0 = sum(amounts) * m1 / ((m1-m2+1) * m1 - (m1 * (m1+1)/2 - m2 * (m2-1)/2))
         // noted: y0 > 0 and delta_y < 0 in curve strategy
 
@@ -267,11 +267,11 @@ impl StrategyHandler for CurveHandler {
         let a = (m1 - m2 + 1) * m1 - (m1 * (m1 + 1) / 2 - m2 * (m2 - 1) / 2);
         let y0 = i128::from(amount_y) * m1 / a;
         // we round down delta_y firstly
-        // m1 can't be zero becase we've checked for min_delta_id  <= max_delta_id, and both delta id is smaller than or equa 0
+        // m1 can't be zero because we've checked for min_delta_id  <= max_delta_id, and both delta id is smaller than or equal 0
         let delta_y = -(y0 / m1);
 
         // then we update y0 to ensure the first amount (active_id - m1 = y0 + delta_y * m1) > 0
-        // delta_y is negative and round up, while y0 is possitive and round down
+        // delta_y is negative and round up, while y0 is positive and round down
         // it will ensure sum(amounts) <= amount_y
         // sum(amounts) = y0 * (m1-m2+1) + delta_y * (m1 * (m1+1)/2 - m2 * (m2-1)/2)
         // sum(amounts) = -(delta_y * m1) * (m1-m2+1) + delta_y * (m1 * (m1+1)/2 - m2 * (m2-1)/2)
@@ -304,12 +304,22 @@ impl StrategyHandler for CurveHandler {
         // B = (p(m1)+..+p(m2))
         // C = (m1 * p(m1) + ... + m2 * p(m2)) / m2
         // x0 = sum(amounts) / (B-C)
-        // noted: x0 > 0 and delta_x < 0 in curve strategy
+        // note: x0 >= 0 and delta_x <= 0 in curve strategy
+
+        if min_delta_id == max_delta_id {
+            let bin_id = active_id.safe_add(min_delta_id)?;
+            let pm = U256::from(get_price_from_id(bin_id, bin_step)?);
+            let x0 = U256::from(amount_x).safe_mul(pm)?.safe_shr(64)?;
+            let x0: i128 = x0.try_into().map_err(|_| ZapError::TypeCastFailed)?;
+            return Ok((x0, 0));
+        }
 
         let mut b = U256::ZERO;
-        let mut c = U256::ZERO;
+
         let m1 = min_delta_id;
         let m2 = max_delta_id;
+
+        let mut c_numerator = U256::ZERO;
 
         for m in m1..=m2 {
             let bin_id = active_id.safe_add(m)?;
@@ -317,17 +327,18 @@ impl StrategyHandler for CurveHandler {
 
             b = b.safe_add(pm)?;
 
-            let c_delta = U256::from(m).safe_mul(pm)?.safe_div(U256::from(m2))?;
-
-            c = c.safe_add(c_delta)?;
+            c_numerator = c_numerator.safe_add(U256::from(m).safe_mul(pm)?)?;
         }
+
+        let c = c_numerator.safe_div(U256::from(m2))?;
 
         let x0 = U256::from(amount_x)
             .safe_shl(64)?
             .safe_div(b.safe_sub(c)?)?;
         let x0: i128 = x0.try_into().map_err(|_| ZapError::TypeCastFailed)?;
         let m2: i128 = max_delta_id.into();
-        let delta_x = if m2 != 0 { -x0 / m2 } else { 0 };
+        // note: m2 impossible be zero because max_delta_id > min_delta_id >= 0
+        let delta_x = -x0 / m2;
 
         // same handle as get y0, delta_y
         let x0 = -(delta_x * m2);
@@ -392,8 +403,17 @@ impl StrategyHandler for BidAskHandler {
         // A = -m1 * (p(m1)+..+p(m2)) + (m1 * p(m1) + ... + m2 * p(m2))
         // B = m1 * (p(m1)+..+p(m2))
         // C = (m1 * p(m1) + ... + m2 * p(m2))
-        // x0 = sum(amounts) / (C-B)
-        // note: in bid ask strategy: x0 < 0 and delta_x > 0
+        // delta_x = sum(amounts) / (C-B)
+        // note: in bid ask strategy: x0 <= 0 and delta_x >= 0
+
+        if min_delta_id == max_delta_id {
+            let bin_id = active_id.safe_add(min_delta_id)?;
+            let pm = get_price_from_id(bin_id.neg(), bin_step)?;
+            let denominator = U256::from(min_delta_id).safe_mul(U256::from(pm))?;
+            let delta_x = U256::from(amount_x).safe_shl(64)?.safe_div(denominator)?;
+            let delta_x: i128 = delta_x.try_into().map_err(|_| ZapError::TypeCastFailed)?;
+            return Ok((0, delta_x));
+        }
 
         let mut b = U256::ZERO;
         let mut c = U256::ZERO;
