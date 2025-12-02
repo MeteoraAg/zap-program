@@ -233,6 +233,66 @@ describe("Zapin DLMM with initialize position", () => {
     });
   });
 
+  it("Zapin dlmm single bin with Curve strategy", async () => {
+    await initializeBinArrayBitmapExtension(svm, lbPair, admin);
+    const position = await createDlmmPosition(svm, user, lbPair, lowerBinId);
+
+    const amountTokenA = new BN(LAMPORTS_PER_SOL);
+    const amountSwap = amountTokenA.divn(2);
+
+    const binArrays = getBinArrayAccountMetaByBinRange(
+      lbPair,
+      new BN(lowerBinId),
+      new BN(upperBinId)
+    );
+
+    await zapInDlmmFullFlow({
+      svm,
+      user,
+      lbPair,
+      position,
+      inputTokenMint: tokenXMint,
+      outputTokenMint: tokenYMint,
+      totalAmount: amountTokenA,
+      amountSwap,
+      minDeltaId: 0,
+      maxDeltaId: 0,
+      strategy: StrategyType.Curve,
+      binArrays,
+      remainingAccountInfo: { slices: [] },
+    });
+  });
+
+  it("Zapin dlmm single bin with Bid/ask strategy", async () => {
+    await initializeBinArrayBitmapExtension(svm, lbPair, admin);
+    const position = await createDlmmPosition(svm, user, lbPair, lowerBinId);
+
+    const amountTokenA = new BN(LAMPORTS_PER_SOL);
+    const amountSwap = amountTokenA.divn(2);
+
+    const binArrays = getBinArrayAccountMetaByBinRange(
+      lbPair,
+      new BN(lowerBinId),
+      new BN(upperBinId)
+    );
+
+    await zapInDlmmFullFlow({
+      svm,
+      user,
+      lbPair,
+      position,
+      inputTokenMint: tokenXMint,
+      outputTokenMint: tokenYMint,
+      totalAmount: amountTokenA,
+      amountSwap,
+      minDeltaId: 0,
+      maxDeltaId: 0,
+      strategy: StrategyType.BidAsk,
+      binArrays,
+      remainingAccountInfo: { slices: [] },
+    });
+  });
+
   it("Zapin dlmm without bin array bitmap extension", async () => {
     const position = await createDlmmPosition(svm, user, lbPair, lowerBinId);
     const amountTokenA = new BN(LAMPORTS_PER_SOL);
@@ -370,5 +430,12 @@ async function zapInDlmmFullFlow(params: {
   expect(result).instanceOf(TransactionMetadata);
 
   let liquidities = getPositionTotalLiquidityAllBin(svm, position);
-  console.log(babar(liquidities));
+  if (liquidities.length > 1) {
+    // there is a bug in babar that we could draw single bin
+    console.log(babar(liquidities));
+  } else {
+    console.log("Liquidity distribution (bin_index, liquidity)");
+    console.log(liquidities);
+  }
+
 }

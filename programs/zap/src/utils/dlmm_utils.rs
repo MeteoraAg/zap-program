@@ -308,10 +308,7 @@ impl StrategyHandler for CurveHandler {
 
         if min_delta_id == max_delta_id {
             let bin_id = active_id.safe_add(min_delta_id)?;
-            let pm = U256::from(get_price_from_id(bin_id, bin_step)?);
-            let x0 = U256::from(amount_x).safe_mul(pm)?.safe_shr(64)?;
-            let x0: i128 = x0.try_into().map_err(|_| ZapError::TypeCastFailed)?;
-            return Ok((x0, 0));
+            return find_x0_and_delta_x_single_bin(bin_id, bin_step, amount_x);
         }
 
         let mut b = U256::ZERO;
@@ -405,14 +402,11 @@ impl StrategyHandler for BidAskHandler {
         // C = (m1 * p(m1) + ... + m2 * p(m2))
         // delta_x = sum(amounts) / (C-B)
         // note: in bid ask strategy: x0 <= 0 and delta_x >= 0
+        // except for the case min_delta_id == max_delta_id, x0 > 0 and delta_x = 0 (using the same result from curve strategy)
 
         if min_delta_id == max_delta_id {
             let bin_id = active_id.safe_add(min_delta_id)?;
-            let pm = get_price_from_id(bin_id.neg(), bin_step)?;
-            let denominator = U256::from(min_delta_id).safe_mul(U256::from(pm))?;
-            let delta_x = U256::from(amount_x).safe_shl(64)?.safe_div(denominator)?;
-            let delta_x: i128 = delta_x.try_into().map_err(|_| ZapError::TypeCastFailed)?;
-            return Ok((0, delta_x));
+            return find_x0_and_delta_x_single_bin(bin_id, bin_step, amount_x);
         }
 
         let mut b = U256::ZERO;
@@ -442,4 +436,15 @@ impl StrategyHandler for BidAskHandler {
         let x0 = delta_x * i128::from(min_delta_id).neg();
         Ok((x0, delta_x))
     }
+}
+
+fn find_x0_and_delta_x_single_bin(
+    bin_id: i32,
+    bin_step: u16,
+    amount_x: u64,
+) -> Result<(i128, i128)> {
+    let pm = U256::from(get_price_from_id(bin_id, bin_step)?);
+    let x0 = U256::from(amount_x).safe_mul(pm)?.safe_shr(64)?;
+    let x0: i128 = x0.try_into().map_err(|_| ZapError::TypeCastFailed)?;
+    return Ok((x0, 0));
 }
