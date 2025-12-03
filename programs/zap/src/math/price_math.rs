@@ -20,7 +20,7 @@ pub fn get_price_from_id(active_id: i32, bin_step: u16) -> Result<u128> {
 
 // get price base factor
 pub fn get_price_base_factor(bin_step: u16) -> Result<u128> {
-    // Make bin_step into Q64x64, and divided by BASIS_POINT_MAX. If bin_step = 1, we get 0.0001 in Q64x64
+    // Make bin_step into Q64x64, and divided by MAX_BASIS_POINT. If bin_step = 1, we get 0.0001 in Q64x64
     let bps = u128::from(bin_step)
         .safe_shl(SCALE_OFFSET.into())?
         .safe_div(MAX_BASIS_POINT as u128)?;
