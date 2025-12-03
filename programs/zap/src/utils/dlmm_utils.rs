@@ -3,7 +3,7 @@ use anchor_lang::prelude::*;
 use std::ops::Neg;
 
 use damm_v2::safe_math::SafeMath;
-use ruint::aliases::{U256, U512};
+use ruint::aliases::U256;
 
 use crate::{error::ZapError, price_math::get_price_from_id};
 #[derive(AnchorSerialize, AnchorDeserialize, Eq, PartialEq, Clone, Debug)]

@@ -1,4 +1,4 @@
-use anchor_lang::{prelude::*, solana_program::log::sol_log_compute_units};
+use anchor_lang::prelude::*;
 use damm_v2::{
     base_fee::{BaseFeeHandler, FeeRateLimiter},
     constants::fee::get_max_fee_numerator,
