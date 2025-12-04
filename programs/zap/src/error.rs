@@ -19,4 +19,16 @@ pub enum ZapError {
 
     #[msg("Amm program is not supported")]
     AmmIsNotSupported,
+
+    #[msg("Position is not empty")]
+    InvalidPosition,
+
+    #[msg("Exceeded slippage tolerance")]
+    ExceededSlippage,
+
+    #[msg("Invalid dlmm zap in parameters")]
+    InvalidDlmmZapInParameters,
+
+    #[msg("Unsupported fee mode")]
+    UnsupportedFeeMode,
 }

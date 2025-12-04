@@ -1,0 +1,9 @@
+[package]
+name = "dlmm"
+version = "0.10.1"
+description = "Created with Anchor"
+edition = "2021"
+
+[dependencies]
+anchor-lang = { workspace = true }
+bytemuck = { workspace = true, features = ["min_const_generics"] }

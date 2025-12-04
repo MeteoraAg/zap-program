@@ -1,46 +1,42 @@
 import { AnchorProvider, BN, Program, Wallet } from "@coral-xyz/anchor";
-import {
-  FailedTransactionMetadata,
-  LiteSVM,
-  TransactionMetadata,
-} from "litesvm";
+import { LiteSVM } from "litesvm";
 
-import ZapIDL from "../../target/idl/zap.json";
-import { Zap } from "../../target/types/zap";
-import {
-  createAssociatedTokenAccountInstruction,
-  getAssociatedTokenAddressSync,
-  TOKEN_PROGRAM_ID,
-} from "@solana/spl-token";
+import ZapIDL from "../../../target/idl/zap.json";
+import { Zap } from "../../../target/types/zap";
+import { getAssociatedTokenAddressSync } from "@solana/spl-token";
 import {
   clusterApiUrl,
   Connection,
   Keypair,
   PublicKey,
   Transaction,
-  TransactionInstruction,
 } from "@solana/web3.js";
 import {
   DAMM_V2_PROGRAM_ID,
   DAMM_V2_SWAP_DISC,
   getDammV2RemainingAccounts,
-} from "./damm_v2";
+} from "../damm_v2";
 import {
   DLMM_PROGRAM_ID_LOCAL,
   DLMM_SWAP_DISC,
   getDlmmRemainingAccounts,
   getLbPairState,
   MEMO_PROGRAM_ID,
-} from "./dlmm";
+} from "../dlmm";
 import { expect } from "chai";
 import {
   getJupRemainingAccounts,
   JUP_ROUTE_DISC,
   JUP_V6_PROGRAM_ID,
   RoutePlanStep,
-} from "./jup";
-import { getOrCreateAtA, getTokenBalance, getTokenProgram } from "./utils";
-import { getDammV2Pool } from "./pda";
+} from "../jup";
+import {
+  convertAccountTypeToNumber,
+  getOrCreateAtA,
+  getTokenBalance,
+  getTokenProgram,
+} from "../utils";
+import { getDammV2Pool } from "../pda";
 
 export const ZAP_PROGRAM_ID = new PublicKey(ZapIDL.address);
 
@@ -106,7 +102,7 @@ export async function zapOutDammv2(
       percentage: 100,
       offsetAmountIn: 8,
       preUserTokenBalance,
-      maxSwapAmount:  new BN("100000000000"),
+      maxSwapAmount: new BN("100000000000"),
       payloadData,
     })
     .accountsPartial({
@@ -189,7 +185,7 @@ export async function zapOutDlmm(
       percentage: 100,
       offsetAmountIn: 8, // disc then amount_in
       preUserTokenBalance,
-      maxSwapAmount:  new BN("100000000000"),
+      maxSwapAmount: new BN("100000000000"),
       payloadData,
     })
     .accountsPartial({
@@ -277,19 +273,4 @@ export async function zapOutJupV6(
     })
     .remainingAccounts(remainingAccounts)
     .transaction();
-}
-
-function convertAccountTypeToNumber(accountType: object): number {
-  if (JSON.stringify(accountType) === JSON.stringify({ transferHookX: {} })) {
-    return 0;
-  }
-
-  if (JSON.stringify(accountType) === JSON.stringify({ transferHookY: {} })) {
-    return 1;
-  }
-  if (
-    JSON.stringify(accountType) === JSON.stringify({ transferHookReward: {} })
-  ) {
-    return 2;
-  }
 }
