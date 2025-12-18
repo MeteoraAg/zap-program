@@ -86,12 +86,22 @@ pub fn handle_zap_in_dlmm_for_initialized_position<'c: 'info, 'info>(
     let pre_user_amount_x = accessor::amount(&token_x_account_ai)?;
     let pre_user_amount_y = accessor::amount(&token_y_account_ai)?;
 
-    let amount_x =
-        calculate_transfer_fee_excluded_amount(&ctx.accounts.token_x_mint, max_deposit_x_amount)?
-            .amount;
-    let amount_y =
-        calculate_transfer_fee_excluded_amount(&ctx.accounts.token_y_mint, max_deposit_y_amount)?
-            .amount;
+    let amount_x = calculate_transfer_fee_excluded_amount(
+        &ctx.accounts
+            .token_x_mint
+            .to_account_info()
+            .try_borrow_data()?,
+        max_deposit_x_amount,
+    )?
+    .amount;
+    let amount_y = calculate_transfer_fee_excluded_amount(
+        &ctx.accounts
+            .token_y_mint
+            .to_account_info()
+            .try_borrow_data()?,
+        max_deposit_y_amount,
+    )?
+    .amount;
 
     let lb_pair = ctx.accounts.lb_pair.load()?;
 
