@@ -26,5 +26,5 @@ dlmm = { path = "../../libs/dlmm" }
 damm-v2 = { git = "https://github.com/MeteoraAg/damm-v2", features = [
     "cpi",
     "no-entrypoint",
-], branch = "fix/feature-cpi-no-entrypoint-not-working", package="cp-amm" }
+], rev = "3f35fe1a8cef7b34b7e1adfe6c456f195ef3b8bc", package="cp-amm" }
 ruint = "1.3.0"
