@@ -130,8 +130,6 @@ fn calculate_swap_result(
     trade_direction: TradeDirection,
     fee_handler: &FeeHandler,
     fee_mode: &FeeMode,
-    init_sqrt_price: u128,
-    current_sqrt_price: u128,
 ) -> Result<SimulateSwapResult> {
     let excluded_fee_amount_in = if trade_direction == TradeDirection::AtoB {
         token_a_transfer_fee_calculator
@@ -147,8 +145,8 @@ fn calculate_swap_result(
         current_point,
         pool.activation_point,
         trade_direction,
-        init_sqrt_price,
-        current_sqrt_price,
+        pool.pool_fees.init_sqrt_price,
+        pool.sqrt_price,
     )?;
     let actual_amount_in = if fee_mode.fees_on_input {
         let FeeOnAmountResult { amount, .. } = pool.pool_fees.get_fee_on_amount(
@@ -296,8 +294,6 @@ fn get_fee_handler(
     pool: &Pool,
     current_point: u64,
     trade_direction: TradeDirection,
-    init_sqrt_price: u128,
-    current_sqrt_price: u128,
 ) -> Result<FeeHandler> {
     let variable_fee_numerator = pool.pool_fees.dynamic_fee.get_variable_fee()?;
     let max_fee_numerator = get_max_fee_numerator(pool.version)?;
@@ -322,8 +318,8 @@ fn get_fee_handler(
                             pool.activation_point,
                             trade_direction,
                             0,
-                            init_sqrt_price,
-                            current_sqrt_price,
+                            pool.pool_fees.init_sqrt_price,
+                            pool.sqrt_price,
                         )?;
 
                     let total_fee_numerator = get_total_fee_numerator(
@@ -379,21 +375,13 @@ pub fn calculate_swap_amount(
     remaining_amount: u64,
     trade_direction: TradeDirection,
     current_point: u64,
-    init_sqrt_price: u128,
-    current_sqrt_price: u128,
 ) -> Result<(u64, u64)> {
     let mut max_swap_amount = remaining_amount;
     let mut min_swap_amount = 0;
     let mut swap_in_amount = 0;
     let mut swap_out_amount = 0;
 
-    let fee_handler = get_fee_handler(
-        pool,
-        current_point,
-        trade_direction,
-        init_sqrt_price,
-        current_sqrt_price,
-    )?;
+    let fee_handler = get_fee_handler(pool, current_point, trade_direction)?;
 
     let fee_mode = FeeMode::get_fee_mode(pool.collect_fee_mode, trade_direction, false)?;
 
@@ -419,8 +407,6 @@ pub fn calculate_swap_amount(
             trade_direction,
             &fee_handler,
             &fee_mode,
-            init_sqrt_price,
-            current_sqrt_price,
         )?;
 
         // update swap amount

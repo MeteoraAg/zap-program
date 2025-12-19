@@ -200,8 +200,6 @@ pub fn handle_zap_in_damm_v2(
             remaining_amount,
             trade_direction,
             current_point,
-            pool.pool_fees.init_sqrt_price,
-            pool.sqrt_price,
         );
         match swap_result {
             Ok((swap_in_amount, swap_out_amount)) => {
