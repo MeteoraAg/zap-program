@@ -730,7 +730,7 @@ checksum = "7c74b8349d32d297c9134b8c88677813a227df8f779daa29bfc29c183fe3dca6"
 [[package]]
 name = "cp-amm"
 version = "0.1.6"
-source = "git+https://github.com/MeteoraAg/damm-v2?rev=6def8801bbc98a12b7e2d19e2a9ff723203263cc#6def8801bbc98a12b7e2d19e2a9ff723203263cc"
+source = "git+https://github.com/MeteoraAg/damm-v2?rev=d9cef5aaec9cfa1a6d3b0b28d213c87c285127de#d9cef5aaec9cfa1a6d3b0b28d213c87c285127de"
 dependencies = [
  "anchor-lang",
  "anchor-spl",
