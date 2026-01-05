@@ -21,6 +21,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Breaking Changes
 
+## zap [0.2.1] [PR #15](https://github.com/MeteoraAg/zap-program/pull/41)
+
+### Fixed
+- Fix zap in damm-v2 with new base fee mode
+
+
 ## zap [0.2.0] [PR #15](https://github.com/MeteoraAg/zap-program/pull/15)
 
 ### Added
