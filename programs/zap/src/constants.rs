@@ -3,7 +3,7 @@ use anchor_lang::{prelude::Pubkey, pubkey};
 
 #[constant]
 pub const DAMM_V1: Pubkey = pubkey!("Eo7WjKq67rjJQSZxS6z3YkapzY3eMj6Xy8X5EQVn5UaB");
-// https://github.com/MeteoraAg/zap-program/blob/main/idls/damm_v2.json#L3512-L3521
+// https://github.com/MeteoraAg/zap-program/blob/d8a3b5c8115842f95d6df51d7ccce500f5da5127/idls/damm_v1.json#L2865
 #[constant]
 pub const DAMM_V1_SWAP_DISC: [u8; 8] = [248, 198, 158, 145, 225, 117, 135, 200];
 
