@@ -37,6 +37,12 @@ import {
   getTokenProgram,
 } from "../utils";
 import { getDammV2Pool } from "../pda";
+import {
+  DAMM_V1_PROGRAM_ID,
+  DAMM_V1_SWAP_DISC,
+  getDammV1Pool,
+  getDammV1RemainingAccounts,
+} from "../damm_v1";
 
 export const ZAP_PROGRAM_ID = new PublicKey(ZapIDL.address);
 
@@ -51,6 +57,71 @@ export function createZapProgram(): ZapProgram {
   );
   const program = new Program<Zap>(ZapIDL as Zap, provider);
   return program;
+}
+
+export async function zapOutDammv1(
+  svm: LiteSVM,
+  user: PublicKey,
+  inputTokenMint: PublicKey,
+  pool: PublicKey
+): Promise<Transaction> {
+  const zapProgram = createZapProgram();
+
+  const poolState = getDammV1Pool(svm, pool);
+  const isTokenA = poolState.tokenAMint.equals(inputTokenMint);
+  const outputTokenMint = isTokenA
+    ? poolState.tokenBMint
+    : poolState.tokenAMint;
+  const protocolTokenFee = isTokenA
+    ? poolState.protocolTokenAFee
+    : poolState.protocolTokenBFee;
+  const inputTokenProgram = getTokenProgram(svm, inputTokenMint);
+  const outputTokenProgram = getTokenProgram(svm, outputTokenMint);
+
+  const userTokenInAccount = getAssociatedTokenAddressSync(
+    inputTokenMint,
+    user,
+    true,
+    inputTokenProgram
+  );
+  const userTokenOutAccount = getAssociatedTokenAddressSync(
+    outputTokenMint,
+    user,
+    true,
+    outputTokenProgram
+  );
+
+  const preUserTokenBalance = getTokenBalance(svm, userTokenInAccount);
+
+  const remainingAccounts = getDammV1RemainingAccounts(
+    svm,
+    pool,
+    user,
+    userTokenInAccount,
+    userTokenOutAccount,
+    protocolTokenFee
+  );
+  const minAmountOutBuffer = new BN(10).toArrayLike(Buffer, "le", 8);
+  const amount = new BN(0).toArrayLike(Buffer, "le", 8);
+  const payloadData = Buffer.concat([
+    Buffer.from(DAMM_V1_SWAP_DISC),
+    amount,
+    minAmountOutBuffer,
+  ]);
+  return await zapProgram.methods
+    .zapOut({
+      percentage: 100,
+      offsetAmountIn: 8,
+      preUserTokenBalance,
+      maxSwapAmount: new BN("100000000000"),
+      payloadData,
+    })
+    .accountsPartial({
+      userTokenInAccount,
+      ammProgram: DAMM_V1_PROGRAM_ID,
+    })
+    .remainingAccounts(remainingAccounts)
+    .transaction();
 }
 
 export async function zapOutDammv2(

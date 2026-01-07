@@ -253,3 +253,17 @@ export function warpSlotBy(svm: LiteSVM, slots: BN) {
   const clock = svm.getClock();
   svm.warpToSlot(clock.slot + BigInt(slots.toString()));
 }
+
+export function sendTransaction(
+  svm: LiteSVM,
+  transaction: Transaction,
+  signers: Keypair[]
+) {
+  transaction.recentBlockhash = svm.latestBlockhash();
+  transaction.sign(...signers);
+  const result = svm.sendTransaction(transaction);
+  if (result instanceof FailedTransactionMetadata) {
+    console.log(result.meta().logs());
+  }
+  expect(result).instanceOf(TransactionMetadata);
+}
