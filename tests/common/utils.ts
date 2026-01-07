@@ -266,4 +266,5 @@ export function sendTransaction(
     console.log(result.meta().logs());
   }
   expect(result).instanceOf(TransactionMetadata);
+  svm.expireBlockhash();
 }

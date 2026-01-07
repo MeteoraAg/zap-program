@@ -462,8 +462,6 @@ export const addBalanceLiquidity = async (
       TOKEN_PROGRAM_ID
     ),
   ]);
-  const account = svm.getAccount(userPoolLp);
-  console.log("userPoolLpAmount in", userPoolLp.toBase58());
 
   const aVault = getVaultAccount(svm, poolAccount.aVault);
   const bVault = getVaultAccount(svm, poolAccount.bVault);
