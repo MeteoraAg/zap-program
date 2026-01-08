@@ -82,9 +82,9 @@ pub fn handle_zap_out<'c: 'info, 'info>(
 ) -> Result<()> {
     // validate params
     params.validate()?;
-    let disciminator = &params.payload_data[..8]; // first 8 bytes is discriminator
+    let discriminator = &params.payload_data[..8]; // first 8 bytes is discriminator
     require!(
-        is_support_amm_program(ctx.accounts.amm_program.key, disciminator),
+        is_support_amm_program(ctx.accounts.amm_program.key, discriminator),
         ZapError::AmmIsNotSupported
     );
     let post_user_token_balance = ctx.accounts.user_token_in_account.amount;
