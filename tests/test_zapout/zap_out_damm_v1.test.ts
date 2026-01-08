@@ -10,7 +10,7 @@ import {
   createToken,
   mintToken,
   ZapProgram,
-  zapOutDammv1,
+  zapOutDammV1,
   sendTransaction,
   getTokenBalance,
 } from "../common";
@@ -141,7 +141,7 @@ describe("Zap out damm V1", () => {
       userKeypair: user,
     });
 
-    const zapOutTx = await zapOutDammv1(
+    const zapOutTx = await zapOutDammV1(
       svm,
       user.publicKey,
       inputTokenMint,

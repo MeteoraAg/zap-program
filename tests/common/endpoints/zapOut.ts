@@ -59,7 +59,7 @@ export function createZapProgram(): ZapProgram {
   return program;
 }
 
-export async function zapOutDammv1(
+export async function zapOutDammV1(
   svm: LiteSVM,
   user: PublicKey,
   inputTokenMint: PublicKey,
@@ -124,7 +124,7 @@ export async function zapOutDammv1(
     .transaction();
 }
 
-export async function zapOutDammv2(
+export async function zapOutDammV2(
   svm: LiteSVM,
   user: PublicKey,
   inputTokenMint: PublicKey,

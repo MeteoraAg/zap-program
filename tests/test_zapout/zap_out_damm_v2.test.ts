@@ -14,7 +14,7 @@ import {
   createToken,
   mintToken,
   ZapProgram,
-  zapOutDammv2,
+  zapOutDammV2,
 } from "../common";
 import { TOKEN_PROGRAM_ID } from "@coral-xyz/anchor/dist/cjs/utils/token";
 import { expect } from "chai";
@@ -88,7 +88,7 @@ describe("Zap out damm V2", () => {
       tokenBAccount
     );
 
-    const zapOutTx = await zapOutDammv2(
+    const zapOutTx = await zapOutDammV2(
       svm,
       user.publicKey,
       inputTokenMint,
