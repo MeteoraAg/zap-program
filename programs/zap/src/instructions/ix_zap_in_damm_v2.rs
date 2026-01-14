@@ -67,7 +67,12 @@ pub struct ZapInDammv2Ctx<'info> {
 }
 
 impl<'info> ZapInDammv2Ctx<'info> {
-    fn swap(&self, amount: u64, trade_direction: TradeDirection) -> Result<()> {
+    fn swap(
+        &self,
+        amount: u64,
+        trade_direction: TradeDirection,
+        remaining_accounts: &[AccountInfo<'info>],
+    ) -> Result<()> {
         let (input_token_account, output_token_account) = if trade_direction == TradeDirection::AtoB
         {
             (
@@ -99,7 +104,8 @@ impl<'info> ZapInDammv2Ctx<'info> {
                     payer: self.owner.to_account_info(),
                     referral_token_account: None, // TODO check whether it should be some(damm_program)
                 },
-            ),
+            )
+            .with_remaining_accounts(remaining_accounts.to_vec()),
             SwapParameters2 {
                 amount_0: amount,
                 amount_1: 0,
@@ -140,8 +146,8 @@ impl<'info> ZapInDammv2Ctx<'info> {
     }
 }
 
-pub fn handle_zap_in_damm_v2(
-    ctx: Context<ZapInDammv2Ctx>,
+pub fn handle_zap_in_damm_v2<'c: 'info, 'info>(
+    ctx: Context<'_, '_, 'c, 'info, ZapInDammv2Ctx<'info>>,
     pre_sqrt_price: u128,           // sqrt price user observe in local
     max_sqrt_price_change_bps: u32, // max sqrt price change after swap
 ) -> Result<()> {
@@ -216,7 +222,8 @@ pub fn handle_zap_in_damm_v2(
                     return Ok(()); // no need to swap, just return
                 }
                 drop(pool);
-                ctx.accounts.swap(swap_in_amount, trade_direction)?;
+                ctx.accounts
+                    .swap(swap_in_amount, trade_direction, &ctx.remaining_accounts)?;
             }
             Err(err) => {
                 // if calculation fail, we just skip swap and add liquidity with remaining amount

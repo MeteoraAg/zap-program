@@ -23,6 +23,7 @@ import {
   warpSlotBy,
   TOKEN_DECIMALS,
   U64_MAX,
+  U32_MAX,
 } from "../common";
 
 import ZapIDL from "../../target/idl/zap.json";
@@ -378,7 +379,6 @@ describe("Zap In damm V2", () => {
     );
 
     // zapin
-
     const zapInTx = await zapInDammv2({
       svm,
       user: user.publicKey,
@@ -389,7 +389,88 @@ describe("Zap In damm V2", () => {
       maxSqrtPriceChangeBps: 5000,
     });
 
-    // close ledge
+    // close ledger
+    const closeLedgerTx = await closeLedgerAccount(user.publicKey);
+
+    const finalTx = new Transaction()
+      .add(initializeLedgerTx)
+      .add(setLedgerBalanceTx)
+      .add(updateLedgerBalanceAfterSwapTx)
+      .add(zapInTx)
+      .add(closeLedgerTx);
+
+    finalTx.recentBlockhash = svm.latestBlockhash();
+    finalTx.sign(user);
+
+    const result = svm.sendTransaction(finalTx);
+    if (result instanceof FailedTransactionMetadata) {
+      console.log(result.meta().logs());
+    }
+    expect(result).instanceOf(TransactionMetadata);
+  });
+
+  it("zap in without external swap with rate limiter and remaining accounts", async () => {
+    const baseFee = encodeFeeRateLimiterParams(
+      new BN(10_000_00), // 1% cliff fee
+      1, // 10 bps fee increment
+      10, // max limiter duration
+      5000, // 50% max fee
+      new BN(LAMPORTS_PER_SOL) // reference amount: 1 SOL
+    );
+
+    const pool = await createDammV2Pool(
+      svm,
+      admin,
+      tokenAMint,
+      tokenBMint,
+      new BN(LAMPORTS_PER_SOL),
+      new BN(LAMPORTS_PER_SOL),
+      baseFee
+    );
+
+    const { position, positionNftAccount } = await createDammV2Position(
+      svm,
+      user,
+      pool
+    );
+
+    let poolState = getDammV2Pool(svm, pool);
+
+    const totalAmountB = new BN(LAMPORTS_PER_SOL / 2); // 0.5 SOL
+    const initializeLedgerTx = await initializeLedgerAccount(user.publicKey);
+
+    // swap BtoA to trigger remaining account validation in dammv2
+    const setLedgerBalanceTx = await setLedgerBalance(
+      user.publicKey,
+      totalAmountB,
+      false
+    );
+
+    const tokenAAccount = getAssociatedTokenAddressSync(
+      tokenAMint,
+      user.publicKey
+    );
+
+    const updateLedgerBalanceAfterSwapTx = await updateLedgerBalanceAfterSwap(
+      user.publicKey,
+      tokenAAccount,
+      new BN(0), // no token A
+      U64_MAX,
+      false
+    );
+
+    // zapin
+    const zapInTx = await zapInDammv2({
+      svm,
+      user: user.publicKey,
+      pool,
+      position,
+      positionNftAccount,
+      preSqrtPrice: poolState.sqrtPrice,
+      maxSqrtPriceChangeBps: U32_MAX.toNumber(),
+    });
+
+    // close ledger
     const closeLedgerTx = await closeLedgerAccount(user.publicKey);
 
     const finalTx = new Transaction()
