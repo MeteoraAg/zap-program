@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fix zap in damm-v2 with new base fee mode
+- Add missing instructions sysvar in remaining accounts for `zap_in_damm_v2` which is used in rate limited DAMM v2 Pool for single swap validation
 
 ## zap [0.2.0] [PR #15](https://github.com/MeteoraAg/zap-program/pull/15)
 
