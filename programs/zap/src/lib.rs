@@ -57,8 +57,8 @@ pub mod zap {
         )
     }
 
-    pub fn zap_in_damm_v2(
-        ctx: Context<ZapInDammv2Ctx>,
+    pub fn zap_in_damm_v2<'c: 'info, 'info>(
+        ctx: Context<'_, '_, 'c, 'info, ZapInDammv2Ctx<'info>>,
         pre_sqrt_price: u128,
         max_sqrt_price_change_bps: u32,
     ) -> Result<()> {

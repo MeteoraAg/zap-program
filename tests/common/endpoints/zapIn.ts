@@ -4,6 +4,7 @@ import {
   AccountMeta,
   PublicKey,
   SystemProgram,
+  SYSVAR_INSTRUCTIONS_PUBKEY,
   Transaction,
 } from "@solana/web3.js";
 import { DAMM_V2_PROGRAM_ID } from "../damm_v2";
@@ -14,15 +15,12 @@ import {
   deriveLedgerAccount,
   getDammV2Pool,
 } from "../pda";
-import { createZapProgram, ZAP_PROGRAM_ID } from "./zapOut";
+import { createZapProgram } from "./zapOut";
 import { getAssociatedTokenAddressSync } from "@solana/spl-token";
 import {
   DLMM_PROGRAM_ID_LOCAL,
-  getBinArrayAccountMetaByBinRange,
   getLbPairState,
   MEMO_PROGRAM_ID,
-  SET_COMPUTE_UNIT_LIMIT_IX,
-  StrategyType,
 } from "../dlmm";
 
 export async function zapInDammv2(params: {
@@ -87,6 +85,13 @@ export async function zapInDammv2(params: {
       dammProgram: DAMM_V2_PROGRAM_ID,
       dammEventAuthority: deriveDammV2EventAuthority(),
     })
+    .remainingAccounts([
+      {
+        isSigner: false,
+        isWritable: false,
+        pubkey: SYSVAR_INSTRUCTIONS_PUBKEY,
+      },
+    ])
     .transaction();
 }
 
