@@ -1,0 +1,11 @@
+[package]
+name = "protocol-zap"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anchor-lang = { workspace = true }
+anchor-spl = { workspace = true }
+const-crypto = "0.3.0"
+jupiter = { path = "../libs/jupiter" }
+ruint = { workspace = true }

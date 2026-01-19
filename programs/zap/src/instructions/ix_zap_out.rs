@@ -1,45 +1,11 @@
-use std::cmp::min;
-
 use anchor_lang::{
     prelude::*,
     solana_program::{instruction::Instruction, program::invoke},
 };
 use anchor_spl::token_interface::TokenAccount;
+use protocol_zap::ZapOutParameters;
 
 use crate::{constants::WHITELISTED_AMM_PROGRAMS, error::ZapError, safe_math::SafeMath};
-
-#[derive(AnchorSerialize, AnchorDeserialize)]
-pub struct ZapOutParameters {
-    pub percentage: u8,
-    pub offset_amount_in: u16,
-    pub pre_user_token_balance: u64,
-    pub max_swap_amount: u64, // avoid the issue someone send token to user token account when user zap out
-    pub payload_data: Vec<u8>,
-}
-
-impl ZapOutParameters {
-    fn validate(&self) -> Result<()> {
-        require!(
-            self.percentage <= 100 && self.percentage > 0,
-            ZapError::InvalidZapOutParameters
-        );
-
-        Ok(())
-    }
-
-    fn get_swap_amount(&self, balance_change_amount: u64) -> Result<u64> {
-        let swap_amount = if self.percentage == 100 {
-            balance_change_amount
-        } else {
-            let amount = u128::from(balance_change_amount)
-                .safe_mul(self.percentage.into())?
-                .safe_div(100)?;
-            u64::try_from(amount).map_err(|_| ZapError::TypeCastFailed)?
-        };
-
-        Ok(min(swap_amount, self.max_swap_amount))
-    }
-}
 
 pub fn is_support_amm_program(amm_program: &Pubkey, discriminator: &[u8]) -> bool {
     WHITELISTED_AMM_PROGRAMS

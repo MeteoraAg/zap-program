@@ -1546,6 +1546,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "protocol-zap"
+version = "0.1.0"
+dependencies = [
+ "anchor-lang",
+ "anchor-spl",
+ "const-crypto",
+ "jupiter",
+ "ruint",
+]
+
+[[package]]
 name = "qstring"
 version = "0.7.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3564,6 +3575,7 @@ dependencies = [
  "bytemuck",
  "cp-amm",
  "dlmm",
+ "protocol-zap",
  "ruint",
 ]
 
