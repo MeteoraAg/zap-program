@@ -1,0 +1,8 @@
+[package]
+name = "jupiter"
+version = "0.10.1"
+description = "Created with Anchor"
+edition = "2021"
+
+[dependencies]
+anchor-lang = { workspace = true }
