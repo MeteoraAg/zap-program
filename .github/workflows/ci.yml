@@ -4,8 +4,7 @@ on:
   pull_request:
     branches:
       - main
-      - release_0.2.0
-      - zap_in
+      - release_0.2.1
 
 env:
   SOLANA_CLI_VERSION: 2.1.0

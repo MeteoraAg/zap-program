@@ -1,6 +1,7 @@
 import {
   AnchorProvider,
   BN,
+  BorshCoder,
   IdlAccounts,
   IdlTypes,
   Program,
@@ -168,7 +169,7 @@ export async function createDammV2Pool(
   tokenBMint: PublicKey,
   amountA?: BN,
   amountB?: BN,
-  baseFeeParams?: any
+  baseFeeParams?: Buffer
 ): Promise<PublicKey> {
   const program = createDammV2Program();
 
@@ -217,17 +218,23 @@ export async function createDammV2Pool(
     liquidityDelta = BN.min(liquidityFromA, liquidityFromB);
   }
 
+  const baseFee = {
+    data: Array.from(
+      baseFeeParams ??
+        encodeFeeTimeSchedulerParams(
+          new BN(2_500_000),
+          0,
+          new BN(0),
+          new BN(0),
+          BaseFeeMode.FeeTimeSchedulerLinear
+        )
+    ),
+  };
+
   const transaction = await program.methods
     .initializeCustomizablePool({
       poolFees: {
-        baseFee: baseFeeParams ?? {
-          cliffFeeNumerator: new BN(2_500_000),
-          firstFactor: 0,
-          secondFactor: Array.from(new BN(0).toArrayLike(Buffer, "le", 8)),
-          thirdFactor: new BN(0),
-          baseFeeMode: 0,
-        },
-        padding: [],
+        baseFee,
         dynamicFee: null,
       },
       sqrtMinPrice: MIN_SQRT_PRICE,
@@ -510,12 +517,76 @@ export async function swap(params: {
     .transaction();
 }
 
-export function convertToRateLimiterSecondFactor(
-  maxLimiterDuration: BN,
-  maxFeeBps: BN
-): number[] {
-  const buffer1 = maxLimiterDuration.toArrayLike(Buffer, "le", 4);
-  const buffer2 = maxFeeBps.toArrayLike(Buffer, "le", 4);
-  const buffer = Buffer.concat([buffer1, buffer2]);
-  return Array.from(buffer);
+const FEE_PADDING = Array.from(Buffer.alloc(3));
+const cpAmmCoder = new BorshCoder(CpAmmIDL as CpAmm);
+
+export enum BaseFeeMode {
+  FeeTimeSchedulerLinear,
+  FeeTimeSchedulerExponential,
+  RateLimiter,
+  FeeMarketCapSchedulerLinear,
+  FeeMarketCapSchedulerExponential,
+}
+
+export function encodeFeeTimeSchedulerParams(
+  cliffFeeNumerator: BN,
+  numberOfPeriod: number,
+  periodFrequency: BN,
+  reductionFactor: BN,
+  baseFeeMode: BaseFeeMode
+): Buffer {
+  const feeTimeScheduler = {
+    cliff_fee_numerator: new BN(cliffFeeNumerator.toString()),
+    number_of_period: numberOfPeriod,
+    period_frequency: new BN(periodFrequency.toString()),
+    reduction_factor: new BN(reductionFactor.toString()),
+    base_fee_mode: baseFeeMode,
+    padding: FEE_PADDING,
+  };
+
+  return cpAmmCoder.types.encode("BorshFeeTimeScheduler", feeTimeScheduler);
+}
+
+export function encodeFeeMarketCapSchedulerParams(
+  cliffFeeNumerator: BN,
+  numberOfPeriod: number,
+  sqrtPriceStepBps: number,
+  schedulerExpirationDuration: number,
+  reductionFactor: BN,
+  baseFeeMode: BaseFeeMode
+): Buffer {
+  const feeMarketCapScheduler = {
+    cliff_fee_numerator: new BN(cliffFeeNumerator.toString()),
+    number_of_period: numberOfPeriod,
+    sqrt_price_step_bps: sqrtPriceStepBps,
+    scheduler_expiration_duration: schedulerExpirationDuration,
+    reduction_factor: new BN(reductionFactor.toString()),
+    base_fee_mode: baseFeeMode,
+    padding: FEE_PADDING,
+  };
+
+  return cpAmmCoder.types.encode(
+    "BorshFeeMarketCapScheduler",
+    feeMarketCapScheduler
+  );
+}
+
+export function encodeFeeRateLimiterParams(
+  cliffFeeNumerator: BN,
+  feeIncrementBps: number,
+  maxLimiterDuration: number,
+  maxFeeBps: number,
+  referenceAmount: BN
+): Buffer {
+  const feeRateLimiter = {
+    cliff_fee_numerator: new BN(cliffFeeNumerator.toString()),
+    fee_increment_bps: feeIncrementBps,
+    max_limiter_duration: maxLimiterDuration,
+    max_fee_bps: maxFeeBps,
+    reference_amount: new BN(referenceAmount.toString()),
+    base_fee_mode: BaseFeeMode.RateLimiter,
+    padding: FEE_PADDING,
+  };
+
+  return cpAmmCoder.types.encode("BorshFeeRateLimiter", feeRateLimiter);
 }

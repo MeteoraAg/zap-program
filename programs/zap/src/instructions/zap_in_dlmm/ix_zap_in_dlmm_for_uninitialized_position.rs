@@ -132,12 +132,22 @@ pub fn handle_zap_in_dlmm_for_uninitialized_position<'c: 'info, 'info>(
     let lb_pair = ctx.accounts.lb_pair.load()?;
     let lb_pair_active_id = lb_pair.active_id;
 
-    let amount_x =
-        calculate_transfer_fee_excluded_amount(&ctx.accounts.token_x_mint, max_deposit_x_amount)?
-            .amount;
-    let amount_y =
-        calculate_transfer_fee_excluded_amount(&ctx.accounts.token_y_mint, max_deposit_y_amount)?
-            .amount;
+    let amount_x = calculate_transfer_fee_excluded_amount(
+        &ctx.accounts
+            .token_x_mint
+            .to_account_info()
+            .try_borrow_data()?,
+        max_deposit_x_amount,
+    )?
+    .amount;
+    let amount_y = calculate_transfer_fee_excluded_amount(
+        &ctx.accounts
+            .token_y_mint
+            .to_account_info()
+            .try_borrow_data()?,
+        max_deposit_y_amount,
+    )?
+    .amount;
 
     let params = ZapInRebalancingParams {
         amount_x,

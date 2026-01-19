@@ -23,12 +23,12 @@ import {
   warpSlotBy,
   TOKEN_DECIMALS,
   U64_MAX,
+  U32_MAX,
 } from "../common";
 
 import ZapIDL from "../../target/idl/zap.json";
 import DAMMV2IDL from "../../idls/damm_v2.json";
 import {
-  convertToRateLimiterSecondFactor,
   createDammV2Pool,
   createDammV2Position,
   swap,
@@ -37,12 +37,16 @@ import { getAssociatedTokenAddressSync } from "@solana/spl-token";
 import { BN } from "@coral-xyz/anchor";
 import { getDammV2Pool, getDammV2Position } from "../common/pda";
 import { expect } from "chai";
-import fs from "fs";
+import {
+  BaseFeeMode,
+  encodeFeeMarketCapSchedulerParams,
+  encodeFeeRateLimiterParams,
+  encodeFeeTimeSchedulerParams,
+} from "../common/damm_v2";
 
 describe("Zap In damm V2", () => {
   let zapProgram: ZapProgram;
   let svm: LiteSVM;
-  let tokenMint: PublicKey;
   let user: Keypair;
   let admin: Keypair;
   let tokenAMint: PublicKey;
@@ -97,15 +101,55 @@ describe("Zap In damm V2", () => {
     });
   });
 
-  it("zap in with pool has fee scheduler", async () => {
-    const baseFee = {
-      cliffFeeNumerator: new BN(500_000_000), // 50 %
-      firstFactor: 100, // 100 periods
-      secondFactor: Array.from(new BN(1).toArrayLike(Buffer, "le", 8)),
-      thirdFactor: new BN(4875000),
-      baseFeeMode: 0, // fee scheduler Linear mode
-    };
+  it("zap in with pool has fee time scheduler linear", async () => {
+    const baseFee = encodeFeeTimeSchedulerParams(
+      new BN(500_000_000), // 50% cliff fee
+      100, // 100 periods
+      new BN(1), // period frequency in slots
+      new BN(4875000), // 0.4875% reduction per period
+      BaseFeeMode.FeeTimeSchedulerLinear
+    );
+    warpSlotBy(svm, new BN(10));
 
+    const pool = await createDammV2Pool(
+      svm,
+      admin,
+      tokenAMint,
+      tokenBMint,
+      undefined,
+      undefined,
+      baseFee
+    );
+
+    const { position, positionNftAccount } = await createDammV2Position(
+      svm,
+      user,
+      pool
+    );
+
+    const amountTokenA = new BN(LAMPORTS_PER_SOL);
+    const amountSwap = amountTokenA.divn(2);
+    await zapInFullFlow({
+      svm,
+      user,
+      pool,
+      position,
+      positionNftAccount,
+      inputTokenMint: tokenAMint,
+      outputTokenMint: tokenBMint,
+      totalAmount: amountTokenA,
+      amountSwap,
+    });
+  });
+
+  it("zap in with pool has fee time scheduler exponential", async () => {
+    const baseFee = encodeFeeTimeSchedulerParams(
+      new BN(990_000_000), // 99% cliff fee
+      10, // 10 periods
+      new BN(1), // period frequency in slots
+      new BN(1_000), // 10% decay per period
+      BaseFeeMode.FeeTimeSchedulerExponential
+    );
     warpSlotBy(svm, new BN(10));
 
     const pool = await createDammV2Pool(
@@ -140,18 +184,13 @@ describe("Zap In damm V2", () => {
   });
 
   it("zap in with pool has rate limiter", async () => {
-    let maxRateLimiterDuration = new BN(10);
-    let maxFeeBps = new BN(5000);
-    const baseFee = {
-      cliffFeeNumerator: new BN(10_000_000), // 100bps
-      firstFactor: 10, // 10 bps
-      secondFactor: convertToRateLimiterSecondFactor(
-        maxRateLimiterDuration,
-        maxFeeBps
-      ),
-      thirdFactor: new BN(LAMPORTS_PER_SOL), // 1 SOL,
-      baseFeeMode: 2, // rate limiter mode
-    };
+    const baseFee = encodeFeeRateLimiterParams(
+      new BN(10_000_000), // 1% cliff fee
+      10, // 10 bps fee increment
+      10, // max limiter duration
+      5000, // 50% max fee
+      new BN(LAMPORTS_PER_SOL) // reference amount: 1 SOL
+    );
 
     const pool = await createDammV2Pool(
       svm,
@@ -170,6 +209,88 @@ describe("Zap In damm V2", () => {
     );
 
     const amountTokenA = new BN(5 * LAMPORTS_PER_SOL); // 5 SOL
+    const amountSwap = amountTokenA.divn(2);
+    await zapInFullFlow({
+      svm,
+      user,
+      pool,
+      position,
+      positionNftAccount,
+      inputTokenMint: tokenAMint,
+      outputTokenMint: tokenBMint,
+      totalAmount: amountTokenA,
+      amountSwap,
+    });
+  });
+
+  it("zap in with pool has fee market cap scheduler linear", async () => {
+    const baseFee = encodeFeeMarketCapSchedulerParams(
+      new BN(50_000_000), // 5% cliff fee
+      20, // 20 periods
+      50, // 0.5% price step
+      5000, // scheduler expires after 5000 slots
+      new BN(1_000_000), // 0.1% reduction per period
+      BaseFeeMode.FeeMarketCapSchedulerLinear
+    );
+
+    const pool = await createDammV2Pool(
+      svm,
+      admin,
+      tokenAMint,
+      tokenBMint,
+      undefined,
+      undefined,
+      baseFee
+    );
+
+    const { position, positionNftAccount } = await createDammV2Position(
+      svm,
+      user,
+      pool
+    );
+
+    const amountTokenA = new BN(LAMPORTS_PER_SOL);
+    const amountSwap = amountTokenA.divn(2);
+    await zapInFullFlow({
+      svm,
+      user,
+      pool,
+      position,
+      positionNftAccount,
+      inputTokenMint: tokenAMint,
+      outputTokenMint: tokenBMint,
+      totalAmount: amountTokenA,
+      amountSwap,
+    });
+  });
+
+  it("zap in with pool has fee market cap scheduler exponential", async () => {
+    const baseFee = encodeFeeMarketCapSchedulerParams(
+      new BN(990_000_000), // 99% cliff fee
+      10, // 10 periods
+      50, // 0.5% sqrt price step between tiers (in bps)
+      1000, // scheduler expires after 1000 slots
+      new BN(1_000), // 10% decay per period (1000/10000 in bps scale)
+      BaseFeeMode.FeeMarketCapSchedulerExponential
+    );
+
+    const pool = await createDammV2Pool(
+      svm,
+      admin,
+      tokenAMint,
+      tokenBMint,
+      undefined,
+      undefined,
+      baseFee
+    );
+
+    const { position, positionNftAccount } = await createDammV2Position(
+      svm,
+      user,
+      pool
+    );
+
+    const amountTokenA = new BN(LAMPORTS_PER_SOL);
     const amountSwap = amountTokenA.divn(2);
     await zapInFullFlow({
       svm,
@@ -258,7 +379,6 @@ describe("Zap In damm V2", () => {
     );
 
     // zapin
-
     const zapInTx = await zapInDammv2({
       svm,
       user: user.publicKey,
@@ -269,7 +389,88 @@ describe("Zap In damm V2", () => {
       maxSqrtPriceChangeBps: 5000,
     });
 
-    // close ledge
+    // close ledger
+    const closeLedgerTx = await closeLedgerAccount(user.publicKey);
+
+    const finalTx = new Transaction()
+      .add(initializeLedgerTx)
+      .add(setLedgerBalanceTx)
+      .add(updateLedgerBalanceAfterSwapTx)
+      .add(zapInTx)
+      .add(closeLedgerTx);
+
+    finalTx.recentBlockhash = svm.latestBlockhash();
+    finalTx.sign(user);
+
+    const result = svm.sendTransaction(finalTx);
+    if (result instanceof FailedTransactionMetadata) {
+      console.log(result.meta().logs());
+    }
+    expect(result).instanceOf(TransactionMetadata);
+  });
+
+  it("zap in without external swap with rate limiter and remaining accounts", async () => {
+    const baseFee = encodeFeeRateLimiterParams(
+      new BN(10_000_00), // 1% cliff fee
+      1, // 10 bps fee increment
+      10, // max limiter duration
+      5000, // 50% max fee
+      new BN(LAMPORTS_PER_SOL) // reference amount: 1 SOL
+    );
+
+    const pool = await createDammV2Pool(
+      svm,
+      admin,
+      tokenAMint,
+      tokenBMint,
+      new BN(LAMPORTS_PER_SOL),
+      new BN(LAMPORTS_PER_SOL),
+      baseFee
+    );
+
+    const { position, positionNftAccount } = await createDammV2Position(
+      svm,
+      user,
+      pool
+    );
+
+    let poolState = getDammV2Pool(svm, pool);
+
+    const totalAmountB = new BN(LAMPORTS_PER_SOL / 2); // 0.5 SOL
+    const initializeLedgerTx = await initializeLedgerAccount(user.publicKey);
+
+    // swap BtoA to trigger remaining account validation in dammv2
+    const setLedgerBalanceTx = await setLedgerBalance(
+      user.publicKey,
+      totalAmountB,
+      false
+    );
+
+    const tokenAAccount = getAssociatedTokenAddressSync(
+      tokenAMint,
+      user.publicKey
+    );
+
+    const updateLedgerBalanceAfterSwapTx = await updateLedgerBalanceAfterSwap(
+      user.publicKey,
+      tokenAAccount,
+      new BN(0), // no token A
+      U64_MAX,
+      false
+    );
+
+    // zapin
+    const zapInTx = await zapInDammv2({
+      svm,
+      user: user.publicKey,
+      pool,
+      position,
+      positionNftAccount,
+      preSqrtPrice: poolState.sqrtPrice,
+      maxSqrtPriceChangeBps: U32_MAX.toNumber(),
+    });
+
+    // close ledger
     const closeLedgerTx = await closeLedgerAccount(user.publicKey);
 
     const finalTx = new Transaction()

@@ -1,6 +1,9 @@
 use anchor_lang::prelude::*;
 use damm_v2::{
-    base_fee::{BaseFeeHandler, FeeRateLimiter},
+    base_fee::{
+        fee_rate_limiter::PodAlignedFeeRateLimiter, BaseFeeEnumReader, BaseFeeHandler,
+        BaseFeeHandlerBuilder,
+    },
     constants::fee::get_max_fee_numerator,
     curve::{
         get_delta_amount_a_unsigned, get_delta_amount_b_unsigned, get_next_sqrt_price_from_input,
@@ -142,6 +145,8 @@ fn calculate_swap_result(
         current_point,
         pool.activation_point,
         trade_direction,
+        pool.pool_fees.init_sqrt_price,
+        pool.sqrt_price,
     )?;
     let actual_amount_in = if fee_mode.fees_on_input {
         let FeeOnAmountResult { amount, .. } = pool.pool_fees.get_fee_on_amount(
@@ -245,7 +250,7 @@ fn validate_swap_result(
 }
 
 struct FeeHandler {
-    pub rate_limiter_handler: FeeRateLimiter, // avoid copy
+    pub rate_limiter_handler: PodAlignedFeeRateLimiter, // avoid copy
     pub variable_fee_numerator: u128,
     pub max_fee_numerator: u64,
     pub total_fee_numerator: u64,
@@ -259,6 +264,8 @@ impl FeeHandler {
         current_point: u64,
         activation_point: u64,
         trade_direction: TradeDirection,
+        init_sqrt_price: u128,
+        current_sqrt_price: u128,
     ) -> Result<u64> {
         if self.is_rate_limiter {
             let base_fee_numerator = self
@@ -268,6 +275,8 @@ impl FeeHandler {
                     activation_point,
                     trade_direction,
                     input_amount,
+                    init_sqrt_price,
+                    current_sqrt_price,
                 )?;
 
             get_total_fee_numerator(
@@ -289,12 +298,19 @@ fn get_fee_handler(
     let variable_fee_numerator = pool.pool_fees.dynamic_fee.get_variable_fee()?;
     let max_fee_numerator = get_max_fee_numerator(pool.version)?;
 
-    let base_fee_mode = pool.pool_fees.base_fee.base_fee_mode;
+    let base_fee_mode = pool.pool_fees.base_fee.base_fee_info.get_base_fee_mode()?;
     match BaseFeeMode::try_from(base_fee_mode) {
         Ok(value) => {
             match value {
-                BaseFeeMode::FeeSchedulerLinear | BaseFeeMode::FeeSchedulerExponential => {
-                    let base_fee_handler = pool.pool_fees.base_fee.get_base_fee_handler()?;
+                BaseFeeMode::FeeTimeSchedulerLinear
+                | BaseFeeMode::FeeTimeSchedulerExponential
+                | BaseFeeMode::FeeMarketCapSchedulerLinear
+                | BaseFeeMode::FeeMarketCapSchedulerExponential => {
+                    let base_fee_handler = pool
+                        .pool_fees
+                        .base_fee
+                        .base_fee_info
+                        .get_base_fee_handler()?;
                     // fee scheduler doesn't care for amount
                     let base_fee_numerator = base_fee_handler
                         .get_base_fee_numerator_from_included_fee_amount(
@@ -302,6 +318,8 @@ fn get_fee_handler(
                             pool.activation_point,
                             trade_direction,
                             0,
+                            pool.pool_fees.init_sqrt_price,
+                            pool.sqrt_price,
                         )?;
 
                     let total_fee_numerator = get_total_fee_numerator(
@@ -310,7 +328,7 @@ fn get_fee_handler(
                         max_fee_numerator,
                     )?;
                     Ok(FeeHandler {
-                        rate_limiter_handler: FeeRateLimiter::default(),
+                        rate_limiter_handler: PodAlignedFeeRateLimiter::default(),
                         variable_fee_numerator,
                         max_fee_numerator,
                         total_fee_numerator,
@@ -318,7 +336,7 @@ fn get_fee_handler(
                     })
                 }
                 BaseFeeMode::RateLimiter => {
-                    let rate_limiter_handler = pool.pool_fees.base_fee.get_fee_rate_limiter()?;
+                    let rate_limiter_handler = pool.pool_fees.base_fee.to_fee_rate_limiter()?;
                     Ok(FeeHandler {
                         rate_limiter_handler,
                         total_fee_numerator: 0,

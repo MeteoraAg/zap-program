@@ -729,8 +729,8 @@ checksum = "7c74b8349d32d297c9134b8c88677813a227df8f779daa29bfc29c183fe3dca6"
 
 [[package]]
 name = "cp-amm"
-version = "0.1.5"
-source = "git+https://github.com/MeteoraAg/damm-v2?rev=689a3264484799d833c505523f4ff4e4990690aa#689a3264484799d833c505523f4ff4e4990690aa"
+version = "0.1.6"
+source = "git+https://github.com/MeteoraAg/damm-v2?rev=d9cef5aaec9cfa1a6d3b0b28d213c87c285127de#d9cef5aaec9cfa1a6d3b0b28d213c87c285127de"
 dependencies = [
  "anchor-lang",
  "anchor-spl",
@@ -739,6 +739,9 @@ dependencies = [
  "num",
  "num-traits",
  "num_enum",
+ "pinocchio",
+ "pinocchio-token",
+ "pinocchio-token-2022",
  "ruint",
  "spl-token-metadata-interface",
  "static_assertions",
@@ -1426,6 +1429,39 @@ checksum = "989e7521a040efde50c3ab6bbadafbe15ab6dc042686926be59ac35d74607df4"
 dependencies = [
  "memchr",
  "ucd-trie",
+]
+
+[[package]]
+name = "pinocchio"
+version = "0.9.0"
+source = "git+https://github.com/anza-xyz/pinocchio.git?rev=17b0e862c01a868ea07ef81a2f8a9b4a504bdfed#17b0e862c01a868ea07ef81a2f8a9b4a504bdfed"
+
+[[package]]
+name = "pinocchio-pubkey"
+version = "0.3.0"
+source = "git+https://github.com/anza-xyz/pinocchio.git?rev=17b0e862c01a868ea07ef81a2f8a9b4a504bdfed#17b0e862c01a868ea07ef81a2f8a9b4a504bdfed"
+dependencies = [
+ "five8_const",
+ "pinocchio",
+ "sha2-const-stable",
+]
+
+[[package]]
+name = "pinocchio-token"
+version = "0.4.0"
+source = "git+https://github.com/anza-xyz/pinocchio.git?rev=17b0e862c01a868ea07ef81a2f8a9b4a504bdfed#17b0e862c01a868ea07ef81a2f8a9b4a504bdfed"
+dependencies = [
+ "pinocchio",
+ "pinocchio-pubkey",
+]
+
+[[package]]
+name = "pinocchio-token-2022"
+version = "0.1.0"
+source = "git+https://github.com/anza-xyz/pinocchio.git?rev=17b0e862c01a868ea07ef81a2f8a9b4a504bdfed#17b0e862c01a868ea07ef81a2f8a9b4a504bdfed"
+dependencies = [
+ "pinocchio",
+ "pinocchio-pubkey",
 ]
 
 [[package]]
@@ -3514,7 +3550,7 @@ dependencies = [
 
 [[package]]
 name = "zap"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "anchor-lang",
  "anchor-spl",
