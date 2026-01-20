@@ -1,3 +1,5 @@
+use std::collections::{BTreeMap, BTreeSet};
+
 use crate::{
     constants::{
         JUP_V6_ROUTE_AMOUNT_IN_REVERSE_OFFSET, JUP_V6_ROUTE_DESTINATION_ACCOUNT_INDEX,
@@ -36,6 +38,43 @@ fn ensure_whitelisted_swap_leg(route_plan_steps: &[RoutePlanStep]) -> Result<()>
             _ => return Err(ProtocolZapError::InvalidZapOutParameters.into()),
         }
     }
+
+    Ok(())
+}
+
+/// Validates that the route plan fully converges
+/// - Every input index (original and intermediate) must be 100% consumed
+/// - All swap paths must converge to exactly one terminal output  
+fn ensure_route_plan_fully_converges(route_plan_steps: &[RoutePlanStep]) -> Result<()> {
+    let mut input_index_percent: BTreeMap<u8, u8> = BTreeMap::new();
+    let mut output_indices: BTreeSet<u8> = BTreeSet::new();
+
+    for step in route_plan_steps {
+        // sum percent for each input_index
+        let total = input_index_percent.entry(step.input_index).or_insert(0);
+        *total = total
+            .checked_add(step.percent)
+            .ok_or(ProtocolZapError::MathOverflow)?;
+
+        output_indices.insert(step.output_index);
+    }
+
+    // every input index must be 100% consumed
+    require!(
+        input_index_percent.values().all(|percent| *percent == 100),
+        ProtocolZapError::InvalidZapOutParameters
+    );
+
+    // exactly one terminal output (meaning output that's never used as input for another step)
+    let terminal_count = output_indices
+        .iter()
+        .filter(|index| !input_index_percent.contains_key(index))
+        .count();
+
+    require!(
+        terminal_count == 1,
+        ProtocolZapError::InvalidZapOutParameters
+    );
 
     Ok(())
 }
