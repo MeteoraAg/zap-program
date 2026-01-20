@@ -1,5 +1,3 @@
-use std::collections::{BTreeMap, BTreeSet};
-
 use crate::{
     constants::{
         JUP_V6_ROUTE_AMOUNT_IN_REVERSE_OFFSET, JUP_V6_ROUTE_DESTINATION_ACCOUNT_INDEX,
@@ -44,31 +42,43 @@ fn ensure_whitelisted_swap_leg(route_plan_steps: &[RoutePlanStep]) -> Result<()>
 
 /// Validates that the route plan fully converges
 /// - Every input index (original and intermediate) must be 100% consumed
-/// - All swap paths must converge to exactly one terminal output  
+/// - All swap paths must converge to exactly one terminal output
 fn ensure_route_plan_fully_converges(route_plan_steps: &[RoutePlanStep]) -> Result<()> {
-    let mut input_index_percent: BTreeMap<u8, u8> = BTreeMap::new();
-    let mut output_indices: BTreeSet<u8> = BTreeSet::new();
+    // Verify each unique input_index sums to exactly 100%
+    for (i, step) in route_plan_steps.iter().enumerate() {
+        // Only process first occurrence of each input_index
+        let seen = route_plan_steps[..i]
+            .iter()
+            .any(|s| s.input_index == step.input_index);
+        if seen {
+            continue;
+        }
 
-    for step in route_plan_steps {
-        // sum percent for each input_index
-        let total = input_index_percent.entry(step.input_index).or_insert(0);
-        *total = total
-            .checked_add(step.percent)
+        let percent_sum = route_plan_steps
+            .iter()
+            .filter(|s| s.input_index == step.input_index)
+            .try_fold(0u8, |acc, s| acc.checked_add(s.percent))
             .ok_or(ProtocolZapError::MathOverflow)?;
 
-        output_indices.insert(step.output_index);
+        require!(
+            percent_sum == 100,
+            ProtocolZapError::InvalidZapOutParameters
+        );
     }
 
-    // every input index must be 100% consumed
-    require!(
-        input_index_percent.values().all(|percent| *percent == 100),
-        ProtocolZapError::InvalidZapOutParameters
-    );
-
-    // exactly one terminal output (meaning output that's never used as input for another step)
-    let terminal_count = output_indices
+    // Count terminal outputs: unique outputs never used as inputs
+    let terminal_count = route_plan_steps
         .iter()
-        .filter(|index| !input_index_percent.contains_key(index))
+        .enumerate()
+        .filter(|(i, step)| {
+            let is_first = !route_plan_steps[..*i]
+                .iter()
+                .any(|s| s.output_index == step.output_index);
+            let is_terminal = !route_plan_steps
+                .iter()
+                .any(|s| s.input_index == step.output_index);
+            is_first && is_terminal
+        })
         .count();
 
     require!(
