@@ -7,29 +7,11 @@ pub enum ProtocolZapError {
     #[msg("Math operation overflow")]
     MathOverflow,
 
-    #[msg("Invalid offset")]
-    InvalidOffset,
-
     #[msg("Invalid zapout parameters")]
     InvalidZapOutParameters,
 
     #[msg("Type cast error")]
     TypeCastFailed,
-
-    #[msg("Amm program is not supported")]
-    AmmIsNotSupported,
-
-    #[msg("Position is not empty")]
-    InvalidPosition,
-
-    #[msg("Exceeded slippage tolerance")]
-    ExceededSlippage,
-
-    #[msg("Invalid dlmm zap in parameters")]
-    InvalidDlmmZapInParameters,
-
-    #[msg("Unsupported fee mode")]
-    UnsupportedFeeMode,
 
     #[msg("Missing zap out instruction")]
     MissingZapOutInstruction,

@@ -8,7 +8,7 @@ use anchor_lang::solana_program::sysvar::instructions::{
 };
 use anchor_spl::token::accessor;
 
-pub fn validate_zap_parameters<'info>(
+fn validate_zap_parameters<'info>(
     zap_params: &ZapOutParameters,
     max_claim_amount: u64,
     amount_in_offset: u16,
@@ -43,7 +43,7 @@ pub fn validate_zap_parameters<'info>(
 }
 
 // Search for zap out instruction in the next instruction after the current one
-pub fn search_and_validate_zap_out_instruction<'info>(
+fn search_and_validate_zap_out_instruction<'info>(
     current_index: u16,
     max_claim_amount: u64,
     sysvar_instructions_account: &AccountInfo<'info>,
@@ -151,7 +151,7 @@ pub struct ZapOutAmmInfo {
     pub amount_in_offset: u16,
 }
 
-pub fn extract_amm_accounts_and_info(
+fn extract_amm_accounts_and_info(
     zap_params: &ZapOutParameters,
     zap_account: &[AccountMeta],
     supported_zap_amm_programs: &[ZapAmmProgram],

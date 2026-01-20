@@ -11,14 +11,8 @@ pub trait SafeMath<T>: Sized {
     fn safe_mul(self, rhs: Self) -> Result<Self, ProtocolZapError>;
     /// safe div
     fn safe_div(self, rhs: Self) -> Result<Self, ProtocolZapError>;
-    /// safe rem
-    fn safe_rem(self, rhs: Self) -> Result<Self, ProtocolZapError>;
     /// safe sub
     fn safe_sub(self, rhs: Self) -> Result<Self, ProtocolZapError>;
-    /// safe shl
-    fn safe_shl(self, offset: T) -> Result<Self, ProtocolZapError>;
-    /// safe shr
-    fn safe_shr(self, offset: T) -> Result<Self, ProtocolZapError>;
 }
 
 macro_rules! checked_impl {
@@ -63,42 +57,6 @@ macro_rules! checked_impl {
             #[inline(always)]
             fn safe_div(self, v: $t) -> Result<$t, ProtocolZapError> {
                 match self.checked_div(v) {
-                    Some(result) => Ok(result),
-                    None => {
-                        let caller = Location::caller();
-                        msg!("Math error thrown at {}:{}", caller.file(), caller.line());
-                        Err(ProtocolZapError::MathOverflow)
-                    }
-                }
-            }
-
-            #[inline(always)]
-            fn safe_rem(self, v: $t) -> Result<$t, ProtocolZapError> {
-                match self.checked_rem(v) {
-                    Some(result) => Ok(result),
-                    None => {
-                        let caller = Location::caller();
-                        msg!("Math error thrown at {}:{}", caller.file(), caller.line());
-                        Err(ProtocolZapError::MathOverflow)
-                    }
-                }
-            }
-
-            #[inline(always)]
-            fn safe_shl(self, v: $offset) -> Result<$t, ProtocolZapError> {
-                match self.checked_shl(v) {
-                    Some(result) => Ok(result),
-                    None => {
-                        let caller = Location::caller();
-                        msg!("Math error thrown at {}:{}", caller.file(), caller.line());
-                        Err(ProtocolZapError::MathOverflow)
-                    }
-                }
-            }
-
-            #[inline(always)]
-            fn safe_shr(self, v: $offset) -> Result<$t, ProtocolZapError> {
-                match self.checked_shr(v) {
                     Some(result) => Ok(result),
                     None => {
                         let caller = Location::caller();
@@ -175,19 +133,5 @@ mod tests {
         assert_eq!(100u64.safe_div(0u64).is_err(), true);
         assert_eq!(200u64.safe_div(100u64).is_ok(), true);
         assert_eq!(200u64.safe_div(100u64), Ok(2u64));
-    }
-
-    #[test]
-    fn safe_shl() {
-        assert_eq!(1u128.safe_shl(8).is_ok(), true);
-        assert_eq!(100u128.safe_shl(128).is_err(), true);
-        assert_eq!(100u128.safe_shl(8), Ok(25600))
-    }
-
-    #[test]
-    fn safe_shr() {
-        assert_eq!(100u128.safe_shr(1).is_ok(), true);
-        assert_eq!(200u128.safe_shr(129).is_err(), true);
-        assert_eq!(200u128.safe_shr(1), Ok(100))
     }
 }
