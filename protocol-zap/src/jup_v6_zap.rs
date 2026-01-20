@@ -44,6 +44,13 @@ impl ZapInfoProcessor for ZapJupV6RouteInfoProcessor {
     fn validate_payload(&self, payload: &[u8]) -> Result<()> {
         let route_params = jupiter::client::args::Route::try_from_slice(payload)?;
         ensure_whitelisted_swap_leg(&route_params.route_plan)?;
+        ensure_route_plan_fully_converges(&route_params.route_plan)?;
+
+        // Ensure no platform_fee_bps is 0, so operator can't steal funds by providing their account as platform_fee_account
+        require!(
+            route_params.platform_fee_bps == 0,
+            ProtocolZapError::InvalidZapOutParameters
+        );
 
         Ok(())
     }
@@ -72,6 +79,14 @@ impl ZapInfoProcessor for ZapJupV6SharedRouteInfoProcessor {
     fn validate_payload(&self, payload: &[u8]) -> Result<()> {
         let route_params = jupiter::client::args::SharedAccountsRoute::try_from_slice(payload)?;
         ensure_whitelisted_swap_leg(&route_params.route_plan)?;
+        ensure_route_plan_fully_converges(&route_params.route_plan)?;
+
+        // Ensure no platform_fee_bps is 0, so operator can't steal funds by providing their account as platform_fee_account
+        require!(
+            route_params.platform_fee_bps == 0,
+            ProtocolZapError::InvalidZapOutParameters
+        );
+
         Ok(())
     }
 
