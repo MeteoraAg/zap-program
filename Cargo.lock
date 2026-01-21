@@ -1550,7 +1550,6 @@ name = "protocol-zap"
 version = "0.1.0"
 dependencies = [
  "borsh 0.10.4",
- "const-crypto",
  "jupiter",
  "ruint",
  "solana-account-info",
@@ -1559,7 +1558,6 @@ dependencies = [
  "solana-program-error",
  "solana-pubkey",
  "spl-associated-token-account",
- "spl-token",
  "thiserror 2.0.12",
 ]
 

@@ -1,4 +1,4 @@
-use crate::constants::{TREASURY_SOL_ADDRESS, TREASURY_USDC_ADDRESS};
+use crate::constants::{SOL_ADDRESS, USDC_ADDRESS};
 use crate::error::ProtocolZapError;
 use crate::safe_math::SafeMath;
 use crate::{constants, get_zap_amm_processor, RawZapOutAmmInfo, ZapOutParameters};
@@ -10,6 +10,7 @@ use solana_program::sysvar::instructions::{
 };
 use solana_program_error::{ProgramError, ProgramResult};
 use solana_pubkey::Pubkey;
+use spl_associated_token_account::get_associated_token_address;
 
 fn validate_zap_parameters<'info>(
     zap_params: &ZapOutParameters,
@@ -47,6 +48,7 @@ fn search_and_validate_zap_out_instruction<'info>(
     max_claim_amount: u64,
     sysvar_instructions_account: &AccountInfo<'info>,
     claimer_token_account: &AccountInfo<'info>,
+    treasury_address: Pubkey,
     treasury_paired_destination_token_address: Pubkey,
 ) -> ProgramResult {
     // Zap out instruction must be next to current instruction
@@ -95,10 +97,13 @@ fn search_and_validate_zap_out_instruction<'info>(
         return Err(ProtocolZapError::InvalidZapAccounts.into());
     }
 
+    let treasury_usdc_address = get_associated_token_address(&treasury_address, &USDC_ADDRESS);
+    let treasury_sol_address = get_associated_token_address(&treasury_address, &SOL_ADDRESS);
+
     // Zap to paired mint in the pool, or SOL, or USDC treasury
-    if !(destination_token_address == treasury_paired_destination_token_address
-        || destination_token_address == TREASURY_USDC_ADDRESS
-        || destination_token_address == TREASURY_SOL_ADDRESS)
+    if destination_token_address != treasury_paired_destination_token_address
+        || destination_token_address != treasury_usdc_address
+        || destination_token_address != treasury_sol_address
     {
         return Err(ProtocolZapError::InvalidZapAccounts.into());
     }
@@ -108,10 +113,11 @@ fn search_and_validate_zap_out_instruction<'info>(
 
 pub fn validate_zap_out_to_treasury<'info>(
     claimed_amount: u64,
-    claimer_token_account: &AccountInfo<'info>,
-    treasury_paired_destination_token_address: Pubkey,
-    sysvar_instructions_account: &AccountInfo<'info>,
     calling_program_id: Pubkey,
+    claimer_token_account: &AccountInfo<'info>,
+    sysvar_instructions_account: &AccountInfo<'info>,
+    treasury_address: Pubkey,
+    treasury_paired_destination_token_address: Pubkey,
 ) -> ProgramResult {
     let current_index = load_current_index_checked(sysvar_instructions_account)?;
 
@@ -128,6 +134,7 @@ pub fn validate_zap_out_to_treasury<'info>(
         claimed_amount,
         sysvar_instructions_account,
         claimer_token_account,
+        treasury_address,
         treasury_paired_destination_token_address,
     )?;
 

@@ -5,7 +5,6 @@ edition = "2021"
 
 [dependencies]
 borsh = "0.10"
-const-crypto = "0.3.0"
 jupiter = { path = "../libs/jupiter" }
 ruint = { workspace = true }
 solana-account-info = "2"
@@ -14,5 +13,4 @@ solana-program = "2"
 solana-program-error = "2"
 solana-pubkey = "2"
 spl-associated-token-account = "6"
-spl-token = "7"
 thiserror = "2"

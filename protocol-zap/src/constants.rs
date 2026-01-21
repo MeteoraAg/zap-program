@@ -1,7 +1,4 @@
-use const_crypto::ed25519;
 use solana_pubkey::Pubkey;
-use spl_associated_token_account::ID as ASSOCIATED_TOKEN_PROGRAM_ID;
-use spl_token::ID as TOKEN_PROGRAM_ID;
 
 pub const JUP_V6_SHARED_ACCOUNT_ROUTE_AMOUNT_IN_REVERSE_OFFSET: usize = 1 + 2 + 8 + 8; // Due to jupiter parameters have dynamic length type (vec), we have to do parameters_data.length - JUP_V6_SHARED_ACCOUNT_ROUTE_AMOUNT_IN_REVERSE_OFFSET
 pub const JUP_V6_SHARED_ACCOUNT_ROUTE_SOURCE_ACCOUNT_INDEX: usize = 3;
@@ -43,29 +40,3 @@ pub const SOL_ADDRESS: Pubkey =
     Pubkey::from_str_const("So11111111111111111111111111111111111111112");
 
 pub const MINTS_DISALLOWED_TO_ZAP_OUT: [Pubkey; 2] = [USDC_ADDRESS, SOL_ADDRESS];
-
-pub const TREASURY: Pubkey = Pubkey::from_str_const("6aYhxiNGmG8AyU25rh2R7iFu4pBrqnQHpNUGhmsEXRcm");
-
-pub const TREASURY_USDC_ADDRESS: Pubkey = Pubkey::new_from_array(
-    ed25519::derive_program_address(
-        &[
-            &TREASURY.to_bytes(),
-            &TOKEN_PROGRAM_ID.to_bytes(),
-            &USDC_ADDRESS.to_bytes(),
-        ],
-        &ASSOCIATED_TOKEN_PROGRAM_ID.to_bytes(),
-    )
-    .0,
-);
-
-pub const TREASURY_SOL_ADDRESS: Pubkey = Pubkey::new_from_array(
-    ed25519::derive_program_address(
-        &[
-            &TREASURY.to_bytes(),
-            &TOKEN_PROGRAM_ID.to_bytes(),
-            &SOL_ADDRESS.to_bytes(),
-        ],
-        &ASSOCIATED_TOKEN_PROGRAM_ID.to_bytes(),
-    )
-    .0,
-);
