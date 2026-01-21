@@ -1546,22 +1546,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "protocol-zap"
-version = "0.1.0"
-dependencies = [
- "borsh 0.10.4",
- "jupiter",
- "ruint",
- "solana-account-info",
- "solana-instruction",
- "solana-program",
- "solana-program-error",
- "solana-pubkey",
- "spl-associated-token-account",
- "thiserror 2.0.12",
-]
-
-[[package]]
 name = "qstring"
 version = "0.7.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3580,8 +3564,24 @@ dependencies = [
  "bytemuck",
  "cp-amm",
  "dlmm",
- "protocol-zap",
  "ruint",
+ "zap-sdk",
+]
+
+[[package]]
+name = "zap-sdk"
+version = "0.1.0"
+dependencies = [
+ "borsh 0.10.4",
+ "jupiter",
+ "ruint",
+ "solana-account-info",
+ "solana-instruction",
+ "solana-program",
+ "solana-program-error",
+ "solana-pubkey",
+ "spl-associated-token-account",
+ "thiserror 2.0.12",
 ]
 
 [[package]]

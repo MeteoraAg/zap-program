@@ -5,7 +5,7 @@ use crate::{
         JUP_V6_SHARED_ACCOUNT_ROUTE_DESTINATION_ACCOUNT_INDEX,
         JUP_V6_SHARED_ACCOUNT_ROUTE_SOURCE_ACCOUNT_INDEX,
     },
-    error::ProtocolZapError,
+    error::ZapSdkError,
     safe_math::{SafeCast, SafeMath},
     RawZapOutAmmInfo, ZapInfoProcessor, ZapOutParameters,
 };
@@ -34,7 +34,7 @@ fn ensure_whitelisted_swap_leg(route_plan_steps: &[RoutePlanStep]) -> ProgramRes
             | Swap::RaydiumClmmV2 => {
                 // whitelisted swap leg
             }
-            _ => return Err(ProtocolZapError::InvalidZapOutParameters.into()),
+            _ => return Err(ZapSdkError::InvalidZapOutParameters.into()),
         }
     }
 
@@ -61,10 +61,10 @@ pub(crate) fn ensure_route_plan_fully_converges(
             .iter()
             .filter(|s| s.input_index == step.input_index)
             .try_fold(0u8, |acc, s| acc.checked_add(s.percent))
-            .ok_or(ProtocolZapError::MathOverflow)?;
+            .ok_or(ZapSdkError::MathOverflow)?;
 
         if percent_sum != 100 {
-            return Err(ProtocolZapError::InvalidZapOutParameters.into());
+            return Err(ZapSdkError::InvalidZapOutParameters.into());
         }
     }
 
@@ -84,7 +84,7 @@ pub(crate) fn ensure_route_plan_fully_converges(
         .count();
 
     if terminal_count != 1 {
-        return Err(ProtocolZapError::InvalidZapOutParameters.into());
+        return Err(ZapSdkError::InvalidZapOutParameters.into());
     }
 
     Ok(())
@@ -98,7 +98,7 @@ impl ZapInfoProcessor for ZapJupV6RouteInfoProcessor {
 
         // Ensure no platform_fee_bps is 0, so operator can't steal funds by providing their account as platform_fee_account
         if route_params.platform_fee_bps != 0 {
-            return Err(ProtocolZapError::InvalidZapOutParameters.into());
+            return Err(ZapSdkError::InvalidZapOutParameters.into());
         }
 
         Ok(())
@@ -132,7 +132,7 @@ impl ZapInfoProcessor for ZapJupV6SharedRouteInfoProcessor {
 
         // Ensure no platform_fee_bps is 0, so operator can't steal funds by providing their account as platform_fee_account
         if route_params.platform_fee_bps != 0 {
-            return Err(ProtocolZapError::InvalidZapOutParameters.into());
+            return Err(ZapSdkError::InvalidZapOutParameters.into());
         }
 
         Ok(())

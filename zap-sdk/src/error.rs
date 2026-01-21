@@ -3,7 +3,7 @@ use thiserror::Error;
 
 #[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
 #[repr(u32)]
-pub enum ProtocolZapError {
+pub enum ZapSdkError {
     #[error("Math operation overflow")]
     MathOverflow = 0,
 
@@ -29,7 +29,7 @@ pub enum ProtocolZapError {
     InvalidZapAccounts = 7,
 }
 
-impl ProtocolZapError {
+impl ZapSdkError {
     pub fn name(&self) -> String {
         match self {
             Self::MathOverflow => "MathOverflow",
@@ -45,14 +45,14 @@ impl ProtocolZapError {
     }
 }
 
-impl From<ProtocolZapError> for u32 {
-    fn from(e: ProtocolZapError) -> Self {
+impl From<ZapSdkError> for u32 {
+    fn from(e: ZapSdkError) -> Self {
         e as u32
     }
 }
 
-impl From<ProtocolZapError> for ProgramError {
-    fn from(e: ProtocolZapError) -> Self {
+impl From<ZapSdkError> for ProgramError {
+    fn from(e: ZapSdkError) -> Self {
         ProgramError::Custom(e as u32)
     }
 }

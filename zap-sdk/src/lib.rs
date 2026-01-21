@@ -10,7 +10,7 @@ use solana_program_error::ProgramError;
 use solana_pubkey::Pubkey;
 
 use crate::{
-    error::ProtocolZapError,
+    error::ZapSdkError,
     jup_v6_zap::{ZapJupV6RouteInfoProcessor, ZapJupV6SharedRouteInfoProcessor},
 };
 pub mod error;
@@ -58,6 +58,6 @@ pub fn get_zap_amm_processor(
         (JUP_V6_SHARED_ACCOUNT_ROUTE_DISC_REF, JUP_V6) => {
             Ok(Box::new(ZapJupV6SharedRouteInfoProcessor))
         }
-        _ => Err(ProtocolZapError::InvalidZapOutParameters.into()),
+        _ => Err(ZapSdkError::InvalidZapOutParameters.into()),
     }
 }

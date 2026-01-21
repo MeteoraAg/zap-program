@@ -1,7 +1,7 @@
 use anchor_lang::constant;
 use anchor_lang::prelude::Pubkey;
 
-use protocol_zap::constants::{
+use zap_sdk::constants::{
     DAMM_V2, DAMM_V2_SWAP_DISC, DLMM, DLMM_SWAP2_DISC, JUP_V6, JUP_V6_ROUTE_DISC,
     JUP_V6_SHARED_ACCOUNT_ROUTE_DISC,
 };
