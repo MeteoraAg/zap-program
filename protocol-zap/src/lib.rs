@@ -13,6 +13,7 @@ use crate::{error::ProtocolZapError, jup_v6_zap::ZapJupV6RouteInfoProcessor, saf
 pub mod error;
 pub mod jup_v6_zap;
 pub mod safe_math;
+pub mod tests;
 pub mod utils;
 
 #[derive(AnchorSerialize, AnchorDeserialize)]
