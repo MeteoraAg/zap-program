@@ -1,7 +1,8 @@
+use num_enum::{IntoPrimitive, TryFromPrimitive};
 use solana_program::program_error::ProgramError;
 use thiserror::Error;
 
-#[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Error, Clone, Copy, PartialEq, Eq, TryFromPrimitive, IntoPrimitive)]
 #[repr(u32)]
 pub enum ZapSdkError {
     #[error("Math operation overflow")]
@@ -42,12 +43,6 @@ impl ZapSdkError {
             Self::InvalidZapAccounts => "InvalidZapAccounts",
         }
         .to_string()
-    }
-}
-
-impl From<ZapSdkError> for u32 {
-    fn from(e: ZapSdkError) -> Self {
-        e as u32
     }
 }
 
