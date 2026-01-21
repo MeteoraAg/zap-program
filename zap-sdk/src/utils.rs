@@ -102,8 +102,8 @@ fn search_and_validate_zap_out_instruction<'info>(
 
     // Zap to paired mint in the pool, or SOL, or USDC treasury
     if destination_token_address != treasury_paired_destination_token_address
-        || destination_token_address != treasury_usdc_address
-        || destination_token_address != treasury_sol_address
+        && destination_token_address != treasury_usdc_address
+        && destination_token_address != treasury_sol_address
     {
         return Err(ZapSdkError::InvalidZapAccounts.into());
     }
