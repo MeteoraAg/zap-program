@@ -9,13 +9,14 @@ use crate::{
     safe_math::{SafeCast, SafeMath},
     RawZapOutAmmInfo, ZapInfoProcessor, ZapOutParameters,
 };
-use anchor_lang::prelude::*;
+use borsh::BorshDeserialize;
 use jupiter::types::RoutePlanStep;
 use jupiter::types::Swap;
+use solana_program_error::{ProgramError, ProgramResult};
 
 pub struct ZapJupV6RouteInfoProcessor;
 
-fn ensure_whitelisted_swap_leg(route_plan_steps: &[RoutePlanStep]) -> Result<()> {
+fn ensure_whitelisted_swap_leg(route_plan_steps: &[RoutePlanStep]) -> ProgramResult {
     for step in route_plan_steps {
         match step.swap {
             Swap::Meteora
@@ -43,7 +44,9 @@ fn ensure_whitelisted_swap_leg(route_plan_steps: &[RoutePlanStep]) -> Result<()>
 /// Validates that the route plan fully converges
 /// - Every input index (original and intermediate) must be 100% consumed
 /// - All swap paths must converge to exactly one terminal output
-pub(crate) fn ensure_route_plan_fully_converges(route_plan_steps: &[RoutePlanStep]) -> Result<()> {
+pub(crate) fn ensure_route_plan_fully_converges(
+    route_plan_steps: &[RoutePlanStep],
+) -> ProgramResult {
     // Verify each unique input_index sums to exactly 100%
     for (i, step) in route_plan_steps.iter().enumerate() {
         // Only process first occurrence of each input_index
@@ -60,10 +63,9 @@ pub(crate) fn ensure_route_plan_fully_converges(route_plan_steps: &[RoutePlanSte
             .try_fold(0u8, |acc, s| acc.checked_add(s.percent))
             .ok_or(ProtocolZapError::MathOverflow)?;
 
-        require!(
-            percent_sum == 100,
-            ProtocolZapError::InvalidZapOutParameters
-        );
+        if percent_sum != 100 {
+            return Err(ProtocolZapError::InvalidZapOutParameters.into());
+        }
     }
 
     // Count terminal outputs: unique outputs never used as inputs
@@ -81,25 +83,23 @@ pub(crate) fn ensure_route_plan_fully_converges(route_plan_steps: &[RoutePlanSte
         })
         .count();
 
-    require!(
-        terminal_count == 1,
-        ProtocolZapError::InvalidZapOutParameters
-    );
+    if terminal_count != 1 {
+        return Err(ProtocolZapError::InvalidZapOutParameters.into());
+    }
 
     Ok(())
 }
 
 impl ZapInfoProcessor for ZapJupV6RouteInfoProcessor {
-    fn validate_payload(&self, payload: &[u8]) -> Result<()> {
+    fn validate_payload(&self, payload: &[u8]) -> ProgramResult {
         let route_params = jupiter::client::args::Route::try_from_slice(payload)?;
         ensure_whitelisted_swap_leg(&route_params.route_plan)?;
         ensure_route_plan_fully_converges(&route_params.route_plan)?;
 
         // Ensure no platform_fee_bps is 0, so operator can't steal funds by providing their account as platform_fee_account
-        require!(
-            route_params.platform_fee_bps == 0,
-            ProtocolZapError::InvalidZapOutParameters
-        );
+        if route_params.platform_fee_bps != 0 {
+            return Err(ProtocolZapError::InvalidZapOutParameters.into());
+        }
 
         Ok(())
     }
@@ -107,7 +107,7 @@ impl ZapInfoProcessor for ZapJupV6RouteInfoProcessor {
     fn extract_raw_zap_out_amm_info(
         &self,
         zap_params: &ZapOutParameters,
-    ) -> Result<RawZapOutAmmInfo> {
+    ) -> Result<RawZapOutAmmInfo, ProgramError> {
         let amount_in_offset = zap_params
             .payload_data
             .len()
@@ -125,16 +125,15 @@ impl ZapInfoProcessor for ZapJupV6RouteInfoProcessor {
 pub struct ZapJupV6SharedRouteInfoProcessor;
 
 impl ZapInfoProcessor for ZapJupV6SharedRouteInfoProcessor {
-    fn validate_payload(&self, payload: &[u8]) -> Result<()> {
+    fn validate_payload(&self, payload: &[u8]) -> ProgramResult {
         let route_params = jupiter::client::args::SharedAccountsRoute::try_from_slice(payload)?;
         ensure_whitelisted_swap_leg(&route_params.route_plan)?;
         ensure_route_plan_fully_converges(&route_params.route_plan)?;
 
         // Ensure no platform_fee_bps is 0, so operator can't steal funds by providing their account as platform_fee_account
-        require!(
-            route_params.platform_fee_bps == 0,
-            ProtocolZapError::InvalidZapOutParameters
-        );
+        if route_params.platform_fee_bps != 0 {
+            return Err(ProtocolZapError::InvalidZapOutParameters.into());
+        }
 
         Ok(())
     }
@@ -142,7 +141,7 @@ impl ZapInfoProcessor for ZapJupV6SharedRouteInfoProcessor {
     fn extract_raw_zap_out_amm_info(
         &self,
         zap_params: &ZapOutParameters,
-    ) -> Result<RawZapOutAmmInfo> {
+    ) -> Result<RawZapOutAmmInfo, ProgramError> {
         let amount_in_offset = zap_params
             .payload_data
             .len()

@@ -1,30 +1,58 @@
-use anchor_lang::prelude::*;
+use solana_program::program_error::ProgramError;
+use thiserror::Error;
 
-// Anchor custom user error codes start at 6000. Adding 1000 to avoid conflict with calling program error codes
-#[error_code(offset = 7000)]
-#[derive(PartialEq)]
+#[derive(Debug, Error, Clone, Copy, PartialEq, Eq)]
+#[repr(u32)]
 pub enum ProtocolZapError {
-    #[msg("Math operation overflow")]
-    MathOverflow,
+    #[error("Math operation overflow")]
+    MathOverflow = 0,
 
-    #[msg("Invalid zapout parameters")]
-    InvalidZapOutParameters,
+    #[error("Invalid zapout parameters")]
+    InvalidZapOutParameters = 1,
 
-    #[msg("Type cast error")]
-    TypeCastFailed,
+    #[error("Type cast error")]
+    TypeCastFailed = 2,
 
-    #[msg("Missing zap out instruction")]
-    MissingZapOutInstruction,
+    #[error("Missing zap out instruction")]
+    MissingZapOutInstruction = 3,
 
-    #[msg("Invalid withdraw protocol fee zap accounts")]
-    InvalidWithdrawProtocolFeeZapAccounts,
+    #[error("Invalid withdraw protocol fee zap accounts")]
+    InvalidWithdrawProtocolFeeZapAccounts = 4,
 
-    #[msg("SOL,USDC protocol fee cannot be withdrawn via zap")]
-    MintRestrictedFromZap,
+    #[error("SOL,USDC protocol fee cannot be withdrawn via zap")]
+    MintRestrictedFromZap = 5,
 
-    #[msg("CPI disabled")]
-    CpiDisabled,
+    #[error("CPI disabled")]
+    CpiDisabled = 6,
 
-    #[msg("Invalid zap accounts")]
-    InvalidZapAccounts,
+    #[error("Invalid zap accounts")]
+    InvalidZapAccounts = 7,
+}
+
+impl ProtocolZapError {
+    pub fn name(&self) -> String {
+        match self {
+            Self::MathOverflow => "MathOverflow",
+            Self::InvalidZapOutParameters => "InvalidZapOutParameters",
+            Self::TypeCastFailed => "TypeCastFailed",
+            Self::MissingZapOutInstruction => "MissingZapOutInstruction",
+            Self::InvalidWithdrawProtocolFeeZapAccounts => "InvalidWithdrawProtocolFeeZapAccounts",
+            Self::MintRestrictedFromZap => "MintRestrictedFromZap",
+            Self::CpiDisabled => "CpiDisabled",
+            Self::InvalidZapAccounts => "InvalidZapAccounts",
+        }
+        .to_string()
+    }
+}
+
+impl From<ProtocolZapError> for u32 {
+    fn from(e: ProtocolZapError) -> Self {
+        e as u32
+    }
+}
+
+impl From<ProtocolZapError> for ProgramError {
+    fn from(e: ProtocolZapError) -> Self {
+        ProgramError::Custom(e as u32)
+    }
 }

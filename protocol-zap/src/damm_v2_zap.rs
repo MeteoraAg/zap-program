@@ -5,19 +5,20 @@ use crate::{
     },
     RawZapOutAmmInfo, ZapInfoProcessor, ZapOutParameters,
 };
-use anchor_lang::prelude::*;
+use solana_program::entrypoint_deprecated::ProgramResult;
+use solana_program_error::ProgramError;
 
 pub struct ZapDammV2InfoProcessor;
 
 impl ZapInfoProcessor for ZapDammV2InfoProcessor {
-    fn validate_payload(&self, _payload: &[u8]) -> Result<()> {
+    fn validate_payload(&self, _payload: &[u8]) -> ProgramResult {
         Ok(())
     }
 
     fn extract_raw_zap_out_amm_info(
         &self,
         _zap_params: &ZapOutParameters,
-    ) -> Result<RawZapOutAmmInfo> {
+    ) -> Result<RawZapOutAmmInfo, ProgramError> {
         Ok(RawZapOutAmmInfo {
             source_index: DAMM_V2_SWAP_SOURCE_ACCOUNT_INDEX,
             destination_index: DAMM_V2_SWAP_DESTINATION_ACCOUNT_INDEX,

@@ -1549,11 +1549,18 @@ dependencies = [
 name = "protocol-zap"
 version = "0.1.0"
 dependencies = [
- "anchor-lang",
- "anchor-spl",
+ "borsh 0.10.4",
  "const-crypto",
  "jupiter",
  "ruint",
+ "solana-account-info",
+ "solana-instruction",
+ "solana-program",
+ "solana-program-error",
+ "solana-pubkey",
+ "spl-associated-token-account",
+ "spl-token",
+ "thiserror 2.0.12",
 ]
 
 [[package]]
