@@ -30,22 +30,6 @@ pub enum ZapSdkError {
     InvalidZapAccounts = 7,
 }
 
-impl ZapSdkError {
-    pub fn name(&self) -> String {
-        match self {
-            Self::MathOverflow => "MathOverflow",
-            Self::InvalidZapOutParameters => "InvalidZapOutParameters",
-            Self::TypeCastFailed => "TypeCastFailed",
-            Self::MissingZapOutInstruction => "MissingZapOutInstruction",
-            Self::InvalidWithdrawProtocolFeeZapAccounts => "InvalidWithdrawProtocolFeeZapAccounts",
-            Self::MintRestrictedFromZap => "MintRestrictedFromZap",
-            Self::CpiDisabled => "CpiDisabled",
-            Self::InvalidZapAccounts => "InvalidZapAccounts",
-        }
-        .to_string()
-    }
-}
-
 impl From<ZapSdkError> for ProgramError {
     fn from(e: ZapSdkError) -> Self {
         ProgramError::Custom(e as u32)
