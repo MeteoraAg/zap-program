@@ -1,6 +1,6 @@
 use crate::error::ZapSdkError;
+use pinocchio::msg;
 use ruint::aliases::U256;
-use solana_program::msg;
 use std::panic::Location;
 
 /// safe math module
@@ -24,7 +24,11 @@ macro_rules! checked_impl {
                     Some(result) => Ok(result),
                     None => {
                         let caller = Location::caller();
-                        msg!("Math error thrown at {}:{}", caller.file(), caller.line());
+                        msg!(&format!(
+                            "Math error thrown at {}:{}",
+                            caller.file(),
+                            caller.line()
+                        ));
                         Err(ZapSdkError::MathOverflow)
                     }
                 }
@@ -36,7 +40,11 @@ macro_rules! checked_impl {
                     Some(result) => Ok(result),
                     None => {
                         let caller = Location::caller();
-                        msg!("Math error thrown at {}:{}", caller.file(), caller.line());
+                        msg!(&format!(
+                            "Math error thrown at {}:{}",
+                            caller.file(),
+                            caller.line()
+                        ));
                         Err(ZapSdkError::MathOverflow)
                     }
                 }
@@ -48,7 +56,11 @@ macro_rules! checked_impl {
                     Some(result) => Ok(result),
                     None => {
                         let caller = Location::caller();
-                        msg!("Math error thrown at {}:{}", caller.file(), caller.line());
+                        msg!(&format!(
+                            "Math error thrown at {}:{}",
+                            caller.file(),
+                            caller.line()
+                        ));
                         Err(ZapSdkError::MathOverflow)
                     }
                 }
@@ -60,7 +72,11 @@ macro_rules! checked_impl {
                     Some(result) => Ok(result),
                     None => {
                         let caller = Location::caller();
-                        msg!("Math error thrown at {}:{}", caller.file(), caller.line());
+                        msg!(&format!(
+                            "Math error thrown at {}:{}",
+                            caller.file(),
+                            caller.line()
+                        ));
                         Err(ZapSdkError::MathOverflow)
                     }
                 }
@@ -92,7 +108,11 @@ macro_rules! try_into_impl {
                     Ok(result) => Ok(result),
                     Err(_) => {
                         let caller = Location::caller();
-                        msg!("TypeCast is failed at {}:{}", caller.file(), caller.line());
+                        msg!(&format!(
+                            "TypeCast is failed at {}:{}",
+                            caller.file(),
+                            caller.line()
+                        ));
                         Err(ZapSdkError::TypeCastFailed)
                     }
                 }

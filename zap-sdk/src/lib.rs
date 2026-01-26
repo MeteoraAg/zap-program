@@ -1,13 +1,11 @@
 use borsh::{BorshDeserialize, BorshSerialize};
-use solana_program::entrypoint::ProgramResult;
+use pinocchio::pubkey::Pubkey;
 pub mod constants;
 use constants::*;
 pub mod damm_v2_zap;
 use damm_v2_zap::*;
 pub mod dlmm_zap;
 use dlmm_zap::ZapDlmmInfoProcessor;
-use solana_program_error::ProgramError;
-use solana_pubkey::Pubkey;
 
 use crate::{
     error::ZapSdkError,
@@ -35,11 +33,11 @@ pub struct RawZapOutAmmInfo {
 }
 
 pub trait ZapInfoProcessor {
-    fn validate_payload(&self, payload: &[u8]) -> ProgramResult;
+    fn validate_payload(&self, payload: &[u8]) -> Result<(), ZapSdkError>;
     fn extract_raw_zap_out_amm_info(
         &self,
         zap_params: &ZapOutParameters,
-    ) -> Result<RawZapOutAmmInfo, ProgramError>;
+    ) -> Result<RawZapOutAmmInfo, ZapSdkError>;
 }
 
 const DAMM_V2_SWAP_DISC_REF: &[u8] = &DAMM_V2_SWAP_DISC;
@@ -50,7 +48,7 @@ const JUP_V6_SHARED_ACCOUNT_ROUTE_DISC_REF: &[u8] = &JUP_V6_SHARED_ACCOUNT_ROUTE
 pub fn get_zap_amm_processor(
     amm_disc: &[u8],
     amm_program_address: Pubkey,
-) -> Result<Box<dyn ZapInfoProcessor>, ProgramError> {
+) -> Result<Box<dyn ZapInfoProcessor>, ZapSdkError> {
     match (amm_disc, amm_program_address) {
         (DLMM_SWAP2_DISC_REF, DLMM) => Ok(Box::new(ZapDlmmInfoProcessor)),
         (DAMM_V2_SWAP_DISC_REF, DAMM_V2) => Ok(Box::new(ZapDammV2InfoProcessor)),
@@ -58,6 +56,6 @@ pub fn get_zap_amm_processor(
         (JUP_V6_SHARED_ACCOUNT_ROUTE_DISC_REF, JUP_V6) => {
             Ok(Box::new(ZapJupV6SharedRouteInfoProcessor))
         }
-        _ => Err(ZapSdkError::InvalidZapOutParameters.into()),
+        _ => Err(ZapSdkError::InvalidZapOutParameters),
     }
 }

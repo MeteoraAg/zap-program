@@ -12,11 +12,10 @@ use crate::{
 use borsh::BorshDeserialize;
 use jupiter::types::RoutePlanStep;
 use jupiter::types::Swap;
-use solana_program_error::{ProgramError, ProgramResult};
 
 pub struct ZapJupV6RouteInfoProcessor;
 
-fn ensure_whitelisted_swap_leg(route_plan_steps: &[RoutePlanStep]) -> ProgramResult {
+fn ensure_whitelisted_swap_leg(route_plan_steps: &[RoutePlanStep]) -> Result<(), ZapSdkError> {
     for step in route_plan_steps {
         match step.swap {
             Swap::Meteora
@@ -34,7 +33,7 @@ fn ensure_whitelisted_swap_leg(route_plan_steps: &[RoutePlanStep]) -> ProgramRes
             | Swap::RaydiumClmmV2 => {
                 // whitelisted swap leg
             }
-            _ => return Err(ZapSdkError::InvalidZapOutParameters.into()),
+            _ => return Err(ZapSdkError::InvalidZapOutParameters),
         }
     }
 
@@ -46,7 +45,7 @@ fn ensure_whitelisted_swap_leg(route_plan_steps: &[RoutePlanStep]) -> ProgramRes
 /// - All swap paths must converge to exactly one terminal output
 pub(crate) fn ensure_route_plan_fully_converges(
     route_plan_steps: &[RoutePlanStep],
-) -> ProgramResult {
+) -> Result<(), ZapSdkError> {
     // Verify each unique input_index sums to exactly 100%
     for (i, step) in route_plan_steps.iter().enumerate() {
         // Only process first occurrence of each input_index
@@ -64,7 +63,7 @@ pub(crate) fn ensure_route_plan_fully_converges(
             .ok_or(ZapSdkError::MathOverflow)?;
 
         if percent_sum != 100 {
-            return Err(ZapSdkError::InvalidZapOutParameters.into());
+            return Err(ZapSdkError::InvalidZapOutParameters);
         }
     }
 
@@ -84,21 +83,22 @@ pub(crate) fn ensure_route_plan_fully_converges(
         .count();
 
     if terminal_count != 1 {
-        return Err(ZapSdkError::InvalidZapOutParameters.into());
+        return Err(ZapSdkError::InvalidZapOutParameters);
     }
 
     Ok(())
 }
 
 impl ZapInfoProcessor for ZapJupV6RouteInfoProcessor {
-    fn validate_payload(&self, payload: &[u8]) -> ProgramResult {
-        let route_params = jupiter::client::args::Route::try_from_slice(payload)?;
+    fn validate_payload(&self, payload: &[u8]) -> Result<(), ZapSdkError> {
+        let route_params = jupiter::client::args::Route::try_from_slice(payload)
+            .map_err(|_| ZapSdkError::InvalidZapOutParameters)?;
         ensure_whitelisted_swap_leg(&route_params.route_plan)?;
         ensure_route_plan_fully_converges(&route_params.route_plan)?;
 
         // Ensure no platform_fee_bps is 0, so operator can't steal funds by providing their account as platform_fee_account
         if route_params.platform_fee_bps != 0 {
-            return Err(ZapSdkError::InvalidZapOutParameters.into());
+            return Err(ZapSdkError::InvalidZapOutParameters);
         }
 
         Ok(())
@@ -107,7 +107,7 @@ impl ZapInfoProcessor for ZapJupV6RouteInfoProcessor {
     fn extract_raw_zap_out_amm_info(
         &self,
         zap_params: &ZapOutParameters,
-    ) -> Result<RawZapOutAmmInfo, ProgramError> {
+    ) -> Result<RawZapOutAmmInfo, ZapSdkError> {
         let amount_in_offset = zap_params
             .payload_data
             .len()
@@ -125,14 +125,15 @@ impl ZapInfoProcessor for ZapJupV6RouteInfoProcessor {
 pub struct ZapJupV6SharedRouteInfoProcessor;
 
 impl ZapInfoProcessor for ZapJupV6SharedRouteInfoProcessor {
-    fn validate_payload(&self, payload: &[u8]) -> ProgramResult {
-        let route_params = jupiter::client::args::SharedAccountsRoute::try_from_slice(payload)?;
+    fn validate_payload(&self, payload: &[u8]) -> Result<(), ZapSdkError> {
+        let route_params = jupiter::client::args::SharedAccountsRoute::try_from_slice(payload)
+            .map_err(|_| ZapSdkError::InvalidZapOutParameters)?;
         ensure_whitelisted_swap_leg(&route_params.route_plan)?;
         ensure_route_plan_fully_converges(&route_params.route_plan)?;
 
         // Ensure no platform_fee_bps is 0, so operator can't steal funds by providing their account as platform_fee_account
         if route_params.platform_fee_bps != 0 {
-            return Err(ZapSdkError::InvalidZapOutParameters.into());
+            return Err(ZapSdkError::InvalidZapOutParameters);
         }
 
         Ok(())
@@ -141,7 +142,7 @@ impl ZapInfoProcessor for ZapJupV6SharedRouteInfoProcessor {
     fn extract_raw_zap_out_amm_info(
         &self,
         zap_params: &ZapOutParameters,
-    ) -> Result<RawZapOutAmmInfo, ProgramError> {
+    ) -> Result<RawZapOutAmmInfo, ZapSdkError> {
         let amount_in_offset = zap_params
             .payload_data
             .len()
