@@ -7,6 +7,7 @@ use anchor_lang::{
 use anchor_spl::token_interface::TokenAccount;
 
 use crate::{constants::WHITELISTED_AMM_PROGRAMS, error::ZapError, safe_math::SafeMath};
+
 #[derive(AnchorSerialize, AnchorDeserialize)]
 pub struct ZapOutParameters {
     pub percentage: u8,
