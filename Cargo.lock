@@ -1563,6 +1563,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "protocol-zap"
+version = "0.1.0"
+dependencies = [
+ "borsh 0.10.4",
+ "jupiter",
+ "num_enum",
+ "pinocchio 0.9.2",
+ "pinocchio-pubkey 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "ruint",
+ "thiserror 2.0.12",
+ "zap-sdk",
+]
+
+[[package]]
 name = "qstring"
 version = "0.7.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3589,13 +3603,7 @@ dependencies = [
 name = "zap-sdk"
 version = "0.1.0"
 dependencies = [
- "borsh 0.10.4",
- "jupiter",
- "num_enum",
- "pinocchio 0.9.2",
- "pinocchio-pubkey 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "ruint",
- "thiserror 2.0.12",
+ "solana-pubkey",
 ]
 
 [[package]]

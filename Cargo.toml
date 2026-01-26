@@ -1,5 +1,5 @@
 [workspace]
-members = ["programs/*", "libs/*", "zap-sdk"]
+members = ["programs/*", "libs/*", "zap-sdk", "protocol-zap"]
 resolver = "2"
 
 [profile.release]

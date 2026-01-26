@@ -4,7 +4,7 @@ use thiserror::Error;
 
 #[derive(Debug, Error, Clone, Copy, PartialEq, Eq, TryFromPrimitive, IntoPrimitive)]
 #[repr(u32)]
-pub enum ZapSdkError {
+pub enum ProtozolZapError {
     #[error("Math operation overflow")]
     MathOverflow = 0,
 
@@ -30,8 +30,8 @@ pub enum ZapSdkError {
     InvalidZapAccounts = 7,
 }
 
-impl From<ZapSdkError> for ProgramError {
-    fn from(e: ZapSdkError) -> Self {
+impl From<ProtozolZapError> for ProgramError {
+    fn from(e: ProtozolZapError) -> Self {
         ProgramError::Custom(e as u32)
     }
 }

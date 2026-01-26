@@ -4,10 +4,4 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-borsh = "0.10"
-jupiter = { path = "../libs/jupiter" }
-ruint = { workspace = true }
-num_enum = "0.7"
-pinocchio = "0.9"
-pinocchio-pubkey = "0.3"
-thiserror = "2"
+solana-pubkey = "2"
