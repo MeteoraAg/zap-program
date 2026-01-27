@@ -1,5 +1,5 @@
 [package]
-name = "dlmm"
+name = "jupiter"
 version = "0.10.1"
 description = "Created with Anchor"
 edition = "2021"
@@ -9,4 +9,3 @@ doctest = false
 
 [dependencies]
 anchor-lang = { workspace = true }
-bytemuck = { workspace = true, features = ["min_const_generics"] }

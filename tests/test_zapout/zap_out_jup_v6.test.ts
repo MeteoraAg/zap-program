@@ -46,7 +46,7 @@ describe("Zap out Jup V6", () => {
       "./target/deploy/zap.so"
     );
     svm.addProgramFromFile(DAMM_V2_PROGRAM_ID, "./tests/fixtures/damm_v2.so");
-    svm.addProgramFromFile(JUP_V6_PROGRAM_ID, "./tests/fixtures/jup_v6.so");
+    svm.addProgramFromFile(JUP_V6_PROGRAM_ID, "./tests/fixtures/jupiter.so");
 
     user = Keypair.generate();
     admin = Keypair.generate();

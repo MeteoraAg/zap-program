@@ -1,8 +1,8 @@
 import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import { PublicKey } from "@solana/web3.js";
 import { LiteSVM } from "litesvm";
-import { Jupiter } from "./idl/jup_v6";
-import JupIDL from "../../idls/jup_v6.json";
+import { Jupiter } from "./idl/jupiter";
+import JupIDL from "../../idls/jupiter.json";
 import { IdlTypes } from "@coral-xyz/anchor";
 import { DAMM_V2_PROGRAM_ID } from "./damm_v2";
 import {
