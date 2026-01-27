@@ -10,7 +10,7 @@ env:
   SOLANA_CLI_VERSION: 2.1.0
   NODE_VERSION: 22.15.0
   ANCHOR_CLI_VERSION: 0.31.1
-  TOOLCHAIN: 1.76.0
+  TOOLCHAIN: 1.85.0
 
 jobs:
   program_changed_files:
@@ -27,6 +27,8 @@ jobs:
         with:
           files: |
             programs/zap
+            protocol-zap
+            zap-sdk
 
   anchor_build:
     runs-on: ubuntu-latest
@@ -57,20 +59,20 @@ jobs:
     if: needs.program_changed_files.outputs.program == 'true'
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
       - uses: ./.github/actions/setup-solana
       - uses: ./.github/actions/setup-dep
       - uses: ./.github/actions/setup-anchor
       # Install pnpm
-      - uses: pnpm/action-setup@v3 # docs https://pnpm.io/continuous-integration#github-actions
-        with:
-          version: 9.5.0 # Optional: specify a pnpm version
+      - uses: pnpm/action-setup@v4 # docs https://pnpm.io/continuous-integration#github-actions
       # Install rust + toolchain
       - uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: ${{ env.TOOLCHAIN }}
           components: clippy
       # Cache rust, cargo
-      - uses: Swatinem/rust-cache@v1
+      - uses: Swatinem/rust-cache@v2
       # Cache node_modules
       - uses: actions/cache@v4
         id: cache-node-modules
