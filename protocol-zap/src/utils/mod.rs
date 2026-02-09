@@ -31,7 +31,7 @@ fn validate_zap_parameters(
         return Err(ProtozolZapError::InvalidZapOutParameters);
     }
 
-    if zap_params.max_swap_amount < max_claim_amount {
+    if zap_params.max_swap_amount >= max_claim_amount {
         return Err(ProtozolZapError::InvalidZapOutParameters);
     }
 
@@ -158,13 +158,13 @@ fn extract_amm_accounts_and_info(
 
     let zap_user_token_in_address = zap_in_instruction
         .get_account_meta_at(0)
-        .map(|acc| *acc.to_account_meta().pubkey)
-        .map_err(|_| ProtozolZapError::InvalidZapAccounts)?;
+        .map_err(|_| ProtozolZapError::InvalidZapAccounts)?
+        .key;
 
     let zap_amm_program_address = zap_in_instruction
         .get_account_meta_at(1)
-        .map(|acc| *acc.to_account_meta().pubkey)
-        .map_err(|_| ProtozolZapError::InvalidZapAccounts)?;
+        .map_err(|_| ProtozolZapError::InvalidZapAccounts)?
+        .key;
 
     let amm_disc = zap_params
         .payload_data
@@ -189,14 +189,14 @@ fn extract_amm_accounts_and_info(
     let offset_source_index = ZAP_OUT_ACCOUNTS_LEN.safe_add(source_index)?;
     let source_token_address = zap_in_instruction
         .get_account_meta_at(offset_source_index)
-        .map(|acc| *acc.to_account_meta().pubkey)
-        .map_err(|_| ProtozolZapError::InvalidZapAccounts)?;
+        .map_err(|_| ProtozolZapError::InvalidZapAccounts)?
+        .key;
 
     let offset_destination_index = ZAP_OUT_ACCOUNTS_LEN.safe_add(destination_index)?;
     let destination_token_address = zap_in_instruction
         .get_account_meta_at(offset_destination_index)
-        .map(|acc| *acc.to_account_meta().pubkey)
-        .map_err(|_| ProtozolZapError::InvalidZapAccounts)?;
+        .map_err(|_| ProtozolZapError::InvalidZapAccounts)?
+        .key;
 
     Ok(ZapOutAmmInfo {
         zap_user_token_in_address,

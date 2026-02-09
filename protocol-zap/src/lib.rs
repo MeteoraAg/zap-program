@@ -1,21 +1,15 @@
 use borsh::{BorshDeserialize, BorshSerialize};
 use pinocchio::pubkey::Pubkey;
 pub mod constants;
-pub mod damm_v2_zap;
-use damm_v2_zap::*;
-pub mod dlmm_zap;
-use dlmm_zap::ZapDlmmInfoProcessor;
+pub mod processors;
+pub use processors::*;
 use zap_sdk::constants::{
     DAMM_V2, DAMM_V2_SWAP_DISC, DLMM, DLMM_SWAP2_DISC, JUP_V6, JUP_V6_ROUTE_DISC,
     JUP_V6_SHARED_ACCOUNT_ROUTE_DISC,
 };
 
-use crate::{
-    error::ProtozolZapError,
-    jup_v6_zap::{ZapJupV6RouteInfoProcessor, ZapJupV6SharedRouteInfoProcessor},
-};
+use crate::error::ProtozolZapError;
 pub mod error;
-pub mod jup_v6_zap;
 pub mod safe_math;
 pub mod tests;
 pub mod utils;
