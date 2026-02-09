@@ -42,10 +42,10 @@ fn validate_zap_parameters(
 fn search_and_validate_zap_out_instruction(
     max_claim_amount: u64,
     sysvar_instructions: &Instructions<&[u8]>,
-    claimer_token_account_key: &[u8; 32],
+    claimer_token_account_key: &Pubkey,
     claimer_token_account_data: &[u8],
-    treasury_address: [u8; 32],
-    treasury_paired_destination_token_address: [u8; 32],
+    treasury_address: &Pubkey,
+    treasury_paired_destination_token_address: &Pubkey,
 ) -> Result<(), ProtozolZapError> {
     // Zap out instruction must be next to current instruction
     let ix = sysvar_instructions
@@ -99,7 +99,7 @@ fn search_and_validate_zap_out_instruction(
     let treasury_sol_address = get_associated_token_address(&treasury_address, &SOL_ADDRESS);
 
     // Zap to paired mint in the pool, or SOL, or USDC treasury
-    if destination_token_address != treasury_paired_destination_token_address
+    if destination_token_address != *treasury_paired_destination_token_address
         && destination_token_address != treasury_usdc_address
         && destination_token_address != treasury_sol_address
     {
@@ -111,12 +111,12 @@ fn search_and_validate_zap_out_instruction(
 
 pub fn validate_zap_out_to_treasury(
     claimed_amount: u64,
-    calling_program_id: [u8; 32],
-    claimer_token_account_key: &[u8; 32],
+    calling_program_id: &Pubkey,
+    claimer_token_account_key: &Pubkey,
     claimer_token_account_data: &[u8],
     sysvar_instructions_data: &[u8],
-    treasury_address: [u8; 32],
-    treasury_paired_destination_token_address: [u8; 32],
+    treasury_address: &Pubkey,
+    treasury_paired_destination_token_address: &Pubkey,
 ) -> Result<(), ProtozolZapError> {
     let sysvar_instructions = unsafe { Instructions::new_unchecked(sysvar_instructions_data) };
     let current_index = sysvar_instructions.load_current_index();
@@ -126,7 +126,7 @@ pub fn validate_zap_out_to_treasury(
         .map_err(|_| ProtozolZapError::InvalidZapAccounts)?;
 
     // Ensure the instruction is direct instruction call
-    if *current_instruction.get_program_id() != calling_program_id {
+    if *current_instruction.get_program_id() != *calling_program_id {
         return Err(ProtozolZapError::CpiDisabled);
     }
 

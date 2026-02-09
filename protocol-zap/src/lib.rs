@@ -48,9 +48,9 @@ const DLMM_SWAP2_DISC_REF: &[u8] = &DLMM_SWAP2_DISC;
 const JUP_V6_ROUTE_DISC_REF: &[u8] = &JUP_V6_ROUTE_DISC;
 const JUP_V6_SHARED_ACCOUNT_ROUTE_DISC_REF: &[u8] = &JUP_V6_SHARED_ACCOUNT_ROUTE_DISC;
 
-const DLMM_ADDRESS: [u8; 32] = DLMM.to_bytes();
-const DAMM_V2_ADDRESS: [u8; 32] = DAMM_V2.to_bytes();
-const JUP_V6_ADDRESS: [u8; 32] = JUP_V6.to_bytes();
+const DLMM_ADDRESS: Pubkey = DLMM.to_bytes();
+const DAMM_V2_ADDRESS: Pubkey = DAMM_V2.to_bytes();
+const JUP_V6_ADDRESS: Pubkey = JUP_V6.to_bytes();
 
 pub fn get_zap_amm_processor(
     amm_disc: &[u8],
