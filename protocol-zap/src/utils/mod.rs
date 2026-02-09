@@ -31,7 +31,7 @@ fn validate_zap_parameters(
         return Err(ProtozolZapError::InvalidZapOutParameters);
     }
 
-    if zap_params.max_swap_amount >= max_claim_amount {
+    if zap_params.max_swap_amount != max_claim_amount {
         return Err(ProtozolZapError::InvalidZapOutParameters);
     }
 
