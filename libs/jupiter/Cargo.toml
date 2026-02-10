@@ -1,6 +1,6 @@
 [package]
 name = "jupiter"
-version = "0.10.1"
+version = "0.1.0"
 description = "Created with Anchor"
 edition = "2021"
 

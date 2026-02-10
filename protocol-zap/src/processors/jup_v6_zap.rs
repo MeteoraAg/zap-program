@@ -1,3 +1,5 @@
+use std::collections::{HashMap, HashSet};
+
 use crate::{
     constants::{
         JUP_V6_ROUTE_AMOUNT_IN_REVERSE_OFFSET, JUP_V6_ROUTE_DESTINATION_ACCOUNT_INDEX,
@@ -46,40 +48,26 @@ fn ensure_whitelisted_swap_leg(route_plan_steps: &[RoutePlanStep]) -> Result<(),
 pub(crate) fn ensure_route_plan_fully_converges(
     route_plan_steps: &[RoutePlanStep],
 ) -> Result<(), ProtozolZapError> {
-    // Verify each unique input_index sums to exactly 100%
-    for (i, step) in route_plan_steps.iter().enumerate() {
-        // Only process first occurrence of each input_index
-        let seen = route_plan_steps[..i]
-            .iter()
-            .any(|s| s.input_index == step.input_index);
-        if seen {
-            continue;
-        }
+    let mut input_percent: HashMap<u8, u8> = HashMap::new();
+    let mut output_indices = HashSet::new();
 
-        let percent_sum = route_plan_steps
-            .iter()
-            .filter(|s| s.input_index == step.input_index)
-            .try_fold(0u8, |acc, s| acc.checked_add(s.percent))
+    for step in route_plan_steps {
+        let percent = input_percent.entry(step.input_index).or_insert(0);
+        *percent = percent
+            .checked_add(step.percent)
             .ok_or(ProtozolZapError::MathOverflow)?;
+        output_indices.insert(step.output_index);
+    }
 
-        if percent_sum != 100 {
-            return Err(ProtozolZapError::InvalidZapOutParameters);
-        }
+    // Verify each unique input_index sums to exactly 100%
+    if input_percent.values().any(|value| *value != 100) {
+        return Err(ProtozolZapError::InvalidZapOutParameters);
     }
 
     // Count terminal outputs: unique outputs never used as inputs
-    let terminal_count = route_plan_steps
+    let terminal_count = output_indices
         .iter()
-        .enumerate()
-        .filter(|(i, step)| {
-            let is_first = !route_plan_steps[..*i]
-                .iter()
-                .any(|s| s.output_index == step.output_index);
-            let is_terminal = !route_plan_steps
-                .iter()
-                .any(|s| s.input_index == step.output_index);
-            is_first && is_terminal
-        })
+        .filter(|idx| !input_percent.contains_key(idx))
         .count();
 
     if terminal_count != 1 {
