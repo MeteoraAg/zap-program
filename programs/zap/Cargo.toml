@@ -1,6 +1,6 @@
 [package]
 name = "zap"
-version = "0.2.1"
+version = "0.2.2"
 description = "Created with Anchor"
 edition = "2021"
 
@@ -26,4 +26,5 @@ dlmm = { path = "../../libs/dlmm" }
 damm-v2 = { git = "https://github.com/MeteoraAg/damm-v2", features = [
     "cpi",
 ], rev = "d9cef5aaec9cfa1a6d3b0b28d213c87c285127de", package = "cp-amm" }
-ruint = "1.3.0"
+ruint = { workspace = true }
+zap-sdk = { path = "../../zap-sdk" }
