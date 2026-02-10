@@ -61,7 +61,7 @@ fn search_and_validate_zap_out_instruction(
     let disc = ix
         .get_instruction_data()
         .get(..8)
-        .ok_or(ProtozolZapError::InvalidZapOutParameters)?;
+        .ok_or_else(|| ProtozolZapError::InvalidZapOutParameters)?;
 
     if disc != constants::ZAP_OUT_DISC {
         return Err(ProtozolZapError::MissingZapOutInstruction);

@@ -55,7 +55,7 @@ pub(crate) fn ensure_route_plan_fully_converges(
         let percent = input_percent.entry(step.input_index).or_insert(0);
         *percent = percent
             .checked_add(step.percent)
-            .ok_or(ProtozolZapError::MathOverflow)?;
+            .ok_or_else(|| ProtozolZapError::MathOverflow)?;
         output_indices.insert(step.output_index);
     }
 
