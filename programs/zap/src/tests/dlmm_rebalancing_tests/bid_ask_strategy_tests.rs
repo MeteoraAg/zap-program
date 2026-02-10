@@ -32,7 +32,7 @@ fn test_strategy_only_ask_side_single_bin() {
     let amount_in_bin = &amount_in_bins[0];
 
     let diff = total_amount_x - amount_in_bin.amount_x;
-    assert_eq!(diff, 12);
+    assert_eq!(diff, 1);
 }
 
 #[test]

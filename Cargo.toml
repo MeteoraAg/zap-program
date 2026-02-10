@@ -1,7 +1,5 @@
 [workspace]
-members = [
-    "programs/*"
-]
+members = ["programs/*", "libs/*", "zap-sdk", "protocol-zap"]
 resolver = "2"
 
 [profile.release]
@@ -17,3 +15,4 @@ codegen-units = 1
 anchor-lang = "0.31.1"
 anchor-spl = "0.31.1"
 bytemuck = "1.20.0"
+ruint = "1.3.0"
