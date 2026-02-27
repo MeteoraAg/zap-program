@@ -8,7 +8,7 @@ use zap_sdk::constants::{
     JUP_V6_SHARED_ACCOUNT_ROUTE_DISC,
 };
 
-use crate::error::ProtozolZapError;
+use crate::error::ProtocolZapError;
 pub mod error;
 pub mod safe_math;
 pub mod tests;
@@ -30,11 +30,11 @@ pub struct RawZapOutAmmInfo {
 }
 
 pub trait ZapInfoProcessor {
-    fn validate_payload(&self, payload: &[u8]) -> Result<(), ProtozolZapError>;
+    fn validate_payload(&self, payload: &[u8]) -> Result<(), ProtocolZapError>;
     fn extract_raw_zap_out_amm_info(
         &self,
         zap_params: &ZapOutParameters,
-    ) -> Result<RawZapOutAmmInfo, ProtozolZapError>;
+    ) -> Result<RawZapOutAmmInfo, ProtocolZapError>;
 }
 
 const DAMM_V2_SWAP_DISC_REF: &[u8] = &DAMM_V2_SWAP_DISC;
@@ -49,7 +49,7 @@ const JUP_V6_ADDRESS: Pubkey = JUP_V6.to_bytes();
 pub fn get_zap_amm_processor(
     amm_disc: &[u8],
     amm_program_address: Pubkey,
-) -> Result<Box<dyn ZapInfoProcessor>, ProtozolZapError> {
+) -> Result<Box<dyn ZapInfoProcessor>, ProtocolZapError> {
     match (amm_disc, amm_program_address) {
         (DLMM_SWAP2_DISC_REF, DLMM_ADDRESS) => Ok(Box::new(ZapDlmmInfoProcessor)),
         (DAMM_V2_SWAP_DISC_REF, DAMM_V2_ADDRESS) => Ok(Box::new(ZapDammV2InfoProcessor)),
@@ -57,6 +57,6 @@ pub fn get_zap_amm_processor(
         (JUP_V6_SHARED_ACCOUNT_ROUTE_DISC_REF, JUP_V6_ADDRESS) => {
             Ok(Box::new(ZapJupV6SharedRouteInfoProcessor))
         }
-        _ => Err(ProtozolZapError::InvalidZapOutParameters),
+        _ => Err(ProtocolZapError::InvalidZapOutParameters),
     }
 }

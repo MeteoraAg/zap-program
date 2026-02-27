@@ -3,21 +3,21 @@ use crate::{
         DAMM_V2_SWAP_AMOUNT_IN_OFFSET, DAMM_V2_SWAP_DESTINATION_ACCOUNT_INDEX,
         DAMM_V2_SWAP_SOURCE_ACCOUNT_INDEX,
     },
-    error::ProtozolZapError,
+    error::ProtocolZapError,
     RawZapOutAmmInfo, ZapInfoProcessor, ZapOutParameters,
 };
 
 pub struct ZapDammV2InfoProcessor;
 
 impl ZapInfoProcessor for ZapDammV2InfoProcessor {
-    fn validate_payload(&self, _payload: &[u8]) -> Result<(), ProtozolZapError> {
+    fn validate_payload(&self, _payload: &[u8]) -> Result<(), ProtocolZapError> {
         Ok(())
     }
 
     fn extract_raw_zap_out_amm_info(
         &self,
         _zap_params: &ZapOutParameters,
-    ) -> Result<RawZapOutAmmInfo, ProtozolZapError> {
+    ) -> Result<RawZapOutAmmInfo, ProtocolZapError> {
         Ok(RawZapOutAmmInfo {
             source_index: DAMM_V2_SWAP_SOURCE_ACCOUNT_INDEX,
             destination_index: DAMM_V2_SWAP_DESTINATION_ACCOUNT_INDEX,
