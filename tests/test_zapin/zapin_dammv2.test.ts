@@ -24,6 +24,8 @@ import {
   TOKEN_DECIMALS,
   U64_MAX,
   U32_MAX,
+  MIN_SQRT_PRICE,
+  MAX_SQRT_PRICE,
 } from "../common";
 
 import ZapIDL from "../../target/idl/zap.json";
@@ -390,6 +392,151 @@ describe("Zap In damm V2", () => {
     });
 
     // close ledger
+    const closeLedgerTx = await closeLedgerAccount(user.publicKey);
+
+    const finalTx = new Transaction()
+      .add(initializeLedgerTx)
+      .add(setLedgerBalanceTx)
+      .add(updateLedgerBalanceAfterSwapTx)
+      .add(zapInTx)
+      .add(closeLedgerTx);
+
+    finalTx.recentBlockhash = svm.latestBlockhash();
+    finalTx.sign(user);
+
+    const result = svm.sendTransaction(finalTx);
+    if (result instanceof FailedTransactionMetadata) {
+      console.log(result.meta().logs());
+    }
+    expect(result).instanceOf(TransactionMetadata);
+  });
+
+  it("zap in when sqrt_price is at sqrt_min_price (single-sided A)", async () => {
+    const pool = await createDammV2Pool(
+      svm,
+      admin,
+      tokenAMint,
+      tokenBMint,
+      new BN(LAMPORTS_PER_SOL),
+      undefined,
+      undefined,
+      MIN_SQRT_PRICE
+    );
+
+    const poolState = getDammV2Pool(svm, pool);
+
+    expect(poolState.sqrtPrice.eq(MIN_SQRT_PRICE)).to.be.true;
+
+    const { position, positionNftAccount } = await createDammV2Position(
+      svm,
+      user,
+      pool
+    );
+
+    const initializeLedgerTx = await initializeLedgerAccount(user.publicKey);
+
+    const totalAmountA = new BN(LAMPORTS_PER_SOL / 2);
+    const setLedgerBalanceTx = await setLedgerBalance(
+      user.publicKey,
+      totalAmountA,
+      true
+    );
+
+    const tokenBAccount = getAssociatedTokenAddressSync(
+      tokenBMint,
+      user.publicKey
+    );
+    const preTokenBBalance = getTokenBalance(svm, tokenBAccount);
+    const updateLedgerBalanceAfterSwapTx = await updateLedgerBalanceAfterSwap(
+      user.publicKey,
+      tokenBAccount,
+      preTokenBBalance,
+      U64_MAX,
+      false
+    );
+
+    const zapInTx = await zapInDammv2({
+      svm,
+      user: user.publicKey,
+      pool,
+      position,
+      positionNftAccount,
+      preSqrtPrice: poolState.sqrtPrice,
+      maxSqrtPriceChangeBps: U32_MAX.toNumber(),
+    });
+
+    const closeLedgerTx = await closeLedgerAccount(user.publicKey);
+
+    const finalTx = new Transaction()
+      .add(initializeLedgerTx)
+      .add(setLedgerBalanceTx)
+      .add(updateLedgerBalanceAfterSwapTx)
+      .add(zapInTx)
+      .add(closeLedgerTx);
+    finalTx.recentBlockhash = svm.latestBlockhash();
+    finalTx.sign(user);
+
+    const result = svm.sendTransaction(finalTx);
+    if (result instanceof FailedTransactionMetadata) {
+      console.log(result.meta().logs());
+    }
+    expect(result).instanceOf(TransactionMetadata);
+  });
+
+  it("zap in when sqrt_price is at sqrt_max_price (single-sided B)", async () => {
+    const pool = await createDammV2Pool(
+      svm,
+      admin,
+      tokenAMint,
+      tokenBMint,
+      undefined,
+      new BN(LAMPORTS_PER_SOL),
+      undefined,
+      MAX_SQRT_PRICE
+    );
+
+    const poolState = getDammV2Pool(svm, pool);
+
+    expect(poolState.sqrtPrice.eq(MAX_SQRT_PRICE)).to.be.true;
+
+    const { position, positionNftAccount } = await createDammV2Position(
+      svm,
+      user,
+      pool
+    );
+
+    const initializeLedgerTx = await initializeLedgerAccount(user.publicKey);
+
+    const totalAmountB = new BN(LAMPORTS_PER_SOL / 2);
+    const setLedgerBalanceTx = await setLedgerBalance(
+      user.publicKey,
+      totalAmountB,
+      false
+    );
+
+    const tokenAAccount = getAssociatedTokenAddressSync(
+      tokenAMint,
+      user.publicKey
+    );
+    const preTokenABalance = getTokenBalance(svm, tokenAAccount);
+    const updateLedgerBalanceAfterSwapTx = await updateLedgerBalanceAfterSwap(
+      user.publicKey,
+      tokenAAccount,
+      preTokenABalance,
+      U64_MAX,
+      true
+    );
+
+    const zapInTx = await zapInDammv2({
+      svm,
+      user: user.publicKey,
+      pool,
+      position,
+      positionNftAccount,
+      preSqrtPrice: poolState.sqrtPrice,
+      maxSqrtPriceChangeBps: U32_MAX.toNumber(),
+    });
+
     const closeLedgerTx = await closeLedgerAccount(user.publicKey);
 
     const finalTx = new Transaction()

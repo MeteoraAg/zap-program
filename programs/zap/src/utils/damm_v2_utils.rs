@@ -459,6 +459,10 @@ pub fn get_liquidity_from_amount_a(
     sqrt_max_price: u128,
     sqrt_price: u128,
 ) -> Result<u128> {
+    if sqrt_price == sqrt_max_price {
+        // Single-sided B position: no token A needed, return max so A is always surplus
+        return Ok(u128::MAX);
+    }
     let price_delta = U512::from(sqrt_max_price.safe_sub(sqrt_price)?);
     let prod = U512::from(amount_a)
         .safe_mul(U512::from(sqrt_price))?
@@ -473,6 +477,10 @@ pub fn get_liquidity_from_amount_b(
     sqrt_min_price: u128,
     sqrt_price: u128,
 ) -> Result<u128> {
+    if sqrt_price == sqrt_min_price {
+        // Single-sided A position: no token B needed, return max so B is always surplus
+        return Ok(u128::MAX);
+    }
     let price_delta = U256::from(sqrt_price.safe_sub(sqrt_min_price)?);
     let quote_amount = U256::from(amount_b).safe_shl(128)?;
     let liquidity = quote_amount.safe_div(price_delta)?; // round down

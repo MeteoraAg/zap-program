@@ -21,6 +21,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Breaking Changes
 
+## zap [0.2.2] [PR #46](https://github.com/MeteoraAg/zap-program/pull/46)
+
+### Fixed
+
+- Fix `zap_in_damm_v2` endpoint when the damm-v2 pool is single-sided, meaning it only has token A or only has token B
+
 ## zap [0.2.1] [PR #41](https://github.com/MeteoraAg/zap-program/pull/41)
 
 ### Fixed

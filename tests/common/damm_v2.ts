@@ -169,9 +169,14 @@ export async function createDammV2Pool(
   tokenBMint: PublicKey,
   amountA?: BN,
   amountB?: BN,
-  baseFeeParams?: Buffer
+  baseFeeParams?: Buffer,
+  customInitSqrtPrice?: BN
 ): Promise<PublicKey> {
   const program = createDammV2Program();
+
+  const sqrtMinPrice = MIN_SQRT_PRICE;
+  const sqrtMaxPrice = MAX_SQRT_PRICE;
+  const sqrtPrice = customInitSqrtPrice ?? INIT_PRICE;
 
   const poolAuthority = deriveDammV2PoolAuthority();
   const pool = deriveDammV2CustomizablePoolAddress(tokenAMint, tokenBMint);
@@ -205,17 +210,29 @@ export async function createDammV2Pool(
   if (amountA && amountB) {
     const liquidityFromA = getLiquidityDeltaFromAmountA(
       amountA,
-      INIT_PRICE,
-      MAX_SQRT_PRICE
+      sqrtPrice,
+      sqrtMaxPrice
     );
-
     const liquidityFromB = getLiquidityDeltaFromAmountB(
       amountB,
-      MIN_SQRT_PRICE,
-      INIT_PRICE
+      sqrtMinPrice,
+      sqrtPrice
     );
-
     liquidityDelta = BN.min(liquidityFromA, liquidityFromB);
+  } else if (amountA) {
+    // one sided pool A
+    liquidityDelta = getLiquidityDeltaFromAmountA(
+      amountA,
+      sqrtPrice,
+      sqrtMaxPrice
+    );
+  } else if (amountB) {
+    // one sided pool B
+    liquidityDelta = getLiquidityDeltaFromAmountB(
+      amountB,
+      sqrtMinPrice,
+      sqrtPrice
+    );
   }
 
   const baseFee = {
@@ -237,11 +254,11 @@ export async function createDammV2Pool(
         baseFee,
         dynamicFee: null,
       },
-      sqrtMinPrice: MIN_SQRT_PRICE,
-      sqrtMaxPrice: MAX_SQRT_PRICE,
+      sqrtMinPrice,
+      sqrtMaxPrice,
       hasAlphaVault: false,
       liquidity: liquidityDelta,
-      sqrtPrice: INIT_PRICE,
+      sqrtPrice,
       activationType: 0,
       collectFeeMode: 1,
       activationPoint: null,
@@ -280,8 +297,12 @@ export async function createDammV2Pool(
 
   const vaultBBalance = Number(AccountLayout.decode(tokenBVaultData).amount);
 
-  expect(vaultABalance).greaterThan(0);
-  expect(vaultBBalance).greaterThan(0);
+  if (!sqrtPrice.eq(sqrtMaxPrice)) {
+    expect(vaultABalance).greaterThan(0);
+  }
+  if (!sqrtPrice.eq(sqrtMinPrice)) {
+    expect(vaultBBalance).greaterThan(0);
+  }
 
   return pool;
 }
