@@ -14,8 +14,20 @@ use crate::{
 use borsh::BorshDeserialize;
 use jupiter::types::RoutePlanStep;
 use jupiter::types::Swap;
+use pinocchio::sysvars::instructions::IntrospectedInstruction;
 
-pub struct ZapJupV6RouteInfoProcessor;
+pub struct ZapJupV6RouteInfoProcessor {
+    route_params: jupiter::client::args::Route,
+}
+
+impl ZapJupV6RouteInfoProcessor {
+    pub fn new(payload: &[u8]) -> Result<Self, ProtocolZapError> {
+        let route_params = jupiter::client::args::Route::try_from_slice(payload)
+            .map_err(|_| ProtocolZapError::InvalidZapOutParameters)?;
+
+        Ok(Self { route_params })
+    }
+}
 
 fn ensure_whitelisted_swap_leg(route_plan_steps: &[RoutePlanStep]) -> Result<(), ProtocolZapError> {
     for step in route_plan_steps {
@@ -78,16 +90,9 @@ pub(crate) fn ensure_route_plan_fully_converges(
 }
 
 impl ZapInfoProcessor for ZapJupV6RouteInfoProcessor {
-    fn validate_payload(&self, payload: &[u8]) -> Result<(), ProtocolZapError> {
-        let route_params = jupiter::client::args::Route::try_from_slice(payload)
-            .map_err(|_| ProtocolZapError::InvalidZapOutParameters)?;
-        ensure_whitelisted_swap_leg(&route_params.route_plan)?;
-        ensure_route_plan_fully_converges(&route_params.route_plan)?;
-
-        // Ensure no platform_fee_bps is 0, so operator can't steal funds by providing their account as platform_fee_account
-        if route_params.platform_fee_bps != 0 {
-            return Err(ProtocolZapError::InvalidZapOutParameters);
-        }
+    fn validate_payload(&self) -> Result<(), ProtocolZapError> {
+        ensure_whitelisted_swap_leg(&self.route_params.route_plan)?;
+        ensure_route_plan_fully_converges(&self.route_params.route_plan)?;
 
         Ok(())
     }
@@ -108,21 +113,38 @@ impl ZapInfoProcessor for ZapJupV6RouteInfoProcessor {
             amount_in_offset,
         })
     }
-}
 
-pub struct ZapJupV6SharedRouteInfoProcessor;
-
-impl ZapInfoProcessor for ZapJupV6SharedRouteInfoProcessor {
-    fn validate_payload(&self, payload: &[u8]) -> Result<(), ProtocolZapError> {
-        let route_params = jupiter::client::args::SharedAccountsRoute::try_from_slice(payload)
-            .map_err(|_| ProtocolZapError::InvalidZapOutParameters)?;
-        ensure_whitelisted_swap_leg(&route_params.route_plan)?;
-        ensure_route_plan_fully_converges(&route_params.route_plan)?;
-
-        // Ensure no platform_fee_bps is 0, so operator can't steal funds by providing their account as platform_fee_account
-        if route_params.platform_fee_bps != 0 {
+    fn ensure_no_referral_fee(
+        &self,
+        _zap_out_instruction: &IntrospectedInstruction<'_>,
+    ) -> Result<(), ProtocolZapError> {
+        // In Jupiter, once platform_fee_bps is set to 0, the platform_fee_account is not read at all
+        // Ensure platform_fee_bps is 0, so operator can't steal funds by providing their account as platform_fee_account
+        if self.route_params.platform_fee_bps != 0 {
             return Err(ProtocolZapError::InvalidZapOutParameters);
         }
+
+        Ok(())
+    }
+}
+
+pub struct ZapJupV6SharedRouteInfoProcessor {
+    route_params: jupiter::client::args::SharedAccountsRoute,
+}
+
+impl ZapJupV6SharedRouteInfoProcessor {
+    pub fn new(payload: &[u8]) -> Result<Self, ProtocolZapError> {
+        let route_params = jupiter::client::args::SharedAccountsRoute::try_from_slice(payload)
+            .map_err(|_| ProtocolZapError::InvalidZapOutParameters)?;
+
+        Ok(Self { route_params })
+    }
+}
+
+impl ZapInfoProcessor for ZapJupV6SharedRouteInfoProcessor {
+    fn validate_payload(&self) -> Result<(), ProtocolZapError> {
+        ensure_whitelisted_swap_leg(&self.route_params.route_plan)?;
+        ensure_route_plan_fully_converges(&self.route_params.route_plan)?;
 
         Ok(())
     }
@@ -142,5 +164,18 @@ impl ZapInfoProcessor for ZapJupV6SharedRouteInfoProcessor {
             destination_index: JUP_V6_SHARED_ACCOUNT_ROUTE_DESTINATION_ACCOUNT_INDEX,
             amount_in_offset,
         })
+    }
+
+    fn ensure_no_referral_fee(
+        &self,
+        _zap_out_instruction: &IntrospectedInstruction<'_>,
+    ) -> Result<(), ProtocolZapError> {
+        // In Jupiter, once platform_fee_bps is set to 0, the platform_fee_account is not read at all
+        // Ensure platform_fee_bps is 0, so operator can't steal funds by providing their account as platform_fee_account
+        if self.route_params.platform_fee_bps != 0 {
+            return Err(ProtocolZapError::InvalidZapOutParameters);
+        }
+
+        Ok(())
     }
 }

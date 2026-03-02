@@ -28,6 +28,9 @@ pub enum ProtocolZapError {
 
     #[error("Invalid zap accounts")]
     InvalidZapAccounts = 7,
+
+    #[error("Referral fee is not allowed in protocol zap out")]
+    ReferralFeeNotAllowed = 8,
 }
 
 impl From<ProtocolZapError> for ProgramError {

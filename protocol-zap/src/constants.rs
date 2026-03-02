@@ -12,10 +12,12 @@ pub const JUP_V6_ROUTE_DESTINATION_ACCOUNT_INDEX: usize = 4;
 pub const DLMM_SWAP2_AMOUNT_IN_OFFSET: u16 = 8;
 pub const DLMM_SWAP2_SOURCE_ACCOUNT_INDEX: usize = 4;
 pub const DLMM_SWAP2_DESTINATION_ACCOUNT_INDEX: usize = 5;
+pub const DLMM_SWAP2_REFERRAL_FEE_ACCOUNT_INDEX: usize = 9;
 
 pub const DAMM_V2_SWAP_AMOUNT_IN_OFFSET: u16 = 8;
 pub const DAMM_V2_SWAP_SOURCE_ACCOUNT_INDEX: usize = 2;
 pub const DAMM_V2_SWAP_DESTINATION_ACCOUNT_INDEX: usize = 3;
+pub const DAMM_V2_SWAP_REFERRAL_FEE_ACCOUNT_INDEX: usize = 11;
 
 pub const ZAP: Pubkey = pubkey!("zapvX9M3uf5pvy4wRPAbQgdQsM1xmuiFnkfHKPvwMiz");
 pub const ZAP_OUT_DISC: [u8; 8] = [155, 108, 185, 112, 104, 210, 161, 64];

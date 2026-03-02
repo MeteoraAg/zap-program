@@ -1,5 +1,5 @@
 use borsh::{BorshDeserialize, BorshSerialize};
-use pinocchio::pubkey::Pubkey;
+use pinocchio::{pubkey::Pubkey, sysvars::instructions::IntrospectedInstruction};
 pub mod constants;
 pub mod processors;
 pub use processors::*;
@@ -30,11 +30,15 @@ pub struct RawZapOutAmmInfo {
 }
 
 pub trait ZapInfoProcessor {
-    fn validate_payload(&self, payload: &[u8]) -> Result<(), ProtocolZapError>;
+    fn validate_payload(&self) -> Result<(), ProtocolZapError>;
     fn extract_raw_zap_out_amm_info(
         &self,
         zap_params: &ZapOutParameters,
     ) -> Result<RawZapOutAmmInfo, ProtocolZapError>;
+    fn ensure_no_referral_fee(
+        &self,
+        zap_out_instruction: &IntrospectedInstruction<'_>,
+    ) -> Result<(), ProtocolZapError>;
 }
 
 const DAMM_V2_SWAP_DISC_REF: &[u8] = &DAMM_V2_SWAP_DISC;
@@ -49,13 +53,16 @@ const JUP_V6_ADDRESS: Pubkey = JUP_V6.to_bytes();
 pub fn get_zap_amm_processor(
     amm_disc: &[u8],
     amm_program_address: Pubkey,
+    payload: &[u8],
 ) -> Result<Box<dyn ZapInfoProcessor>, ProtocolZapError> {
     match (amm_disc, amm_program_address) {
         (DLMM_SWAP2_DISC_REF, DLMM_ADDRESS) => Ok(Box::new(ZapDlmmInfoProcessor)),
         (DAMM_V2_SWAP_DISC_REF, DAMM_V2_ADDRESS) => Ok(Box::new(ZapDammV2InfoProcessor)),
-        (JUP_V6_ROUTE_DISC_REF, JUP_V6_ADDRESS) => Ok(Box::new(ZapJupV6RouteInfoProcessor)),
+        (JUP_V6_ROUTE_DISC_REF, JUP_V6_ADDRESS) => {
+            Ok(Box::new(ZapJupV6RouteInfoProcessor::new(payload)?))
+        }
         (JUP_V6_SHARED_ACCOUNT_ROUTE_DISC_REF, JUP_V6_ADDRESS) => {
-            Ok(Box::new(ZapJupV6SharedRouteInfoProcessor))
+            Ok(Box::new(ZapJupV6SharedRouteInfoProcessor::new(payload)?))
         }
         _ => Err(ProtocolZapError::InvalidZapOutParameters),
     }

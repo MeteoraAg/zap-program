@@ -153,17 +153,14 @@ pub struct ZapOutAmmInfo {
 
 fn extract_amm_accounts_and_info(
     zap_params: &ZapOutParameters,
-    zap_in_instruction: IntrospectedInstruction<'_>,
+    zap_out_instruction: IntrospectedInstruction<'_>,
 ) -> Result<ZapOutAmmInfo, ProtocolZapError> {
-    // Accounts in ZapOutCtx
-    const ZAP_OUT_ACCOUNTS_LEN: usize = 2;
-
-    let zap_user_token_in_address = zap_in_instruction
+    let zap_user_token_in_address = zap_out_instruction
         .get_account_meta_at(0)
         .map_err(|_| ProtocolZapError::InvalidZapAccounts)?
         .key;
 
-    let zap_amm_program_address = zap_in_instruction
+    let zap_amm_program_address = zap_out_instruction
         .get_account_meta_at(1)
         .map_err(|_| ProtocolZapError::InvalidZapAccounts)?
         .key;
@@ -173,14 +170,16 @@ fn extract_amm_accounts_and_info(
         .get(..8)
         .ok_or_else(|| ProtocolZapError::InvalidZapOutParameters)?;
 
-    let zap_info_processor = get_zap_amm_processor(amm_disc, zap_amm_program_address)?;
-
     let amm_payload = zap_params
         .payload_data
         .get(8..)
         .ok_or_else(|| ProtocolZapError::InvalidZapOutParameters)?;
 
-    zap_info_processor.validate_payload(amm_payload)?;
+    let zap_info_processor = get_zap_amm_processor(amm_disc, zap_amm_program_address, amm_payload)?;
+
+    zap_info_processor.validate_payload()?;
+    // Prevent operator to steal zap out protocol fund using referral fee feature of AMMs
+    zap_info_processor.ensure_no_referral_fee(&zap_out_instruction)?;
 
     let RawZapOutAmmInfo {
         source_index,
@@ -188,14 +187,14 @@ fn extract_amm_accounts_and_info(
         amount_in_offset,
     } = zap_info_processor.extract_raw_zap_out_amm_info(zap_params)?;
 
-    let offset_source_index = ZAP_OUT_ACCOUNTS_LEN.safe_add(source_index)?;
-    let source_token_address = zap_in_instruction
+    let offset_source_index = get_account_index_in_instruction(source_index)?;
+    let source_token_address = zap_out_instruction
         .get_account_meta_at(offset_source_index)
         .map_err(|_| ProtocolZapError::InvalidZapAccounts)?
         .key;
 
-    let offset_destination_index = ZAP_OUT_ACCOUNTS_LEN.safe_add(destination_index)?;
-    let destination_token_address = zap_in_instruction
+    let offset_destination_index = get_account_index_in_instruction(destination_index)?;
+    let destination_token_address = zap_out_instruction
         .get_account_meta_at(offset_destination_index)
         .map_err(|_| ProtocolZapError::InvalidZapAccounts)?
         .key;
@@ -206,4 +205,12 @@ fn extract_amm_accounts_and_info(
         amm_destination_token_address: destination_token_address,
         amount_in_offset,
     })
+}
+
+/// Append accounts length in `ZapOutCtx` to get the correct account index in the instruction accounts.
+#[inline(always)]
+pub fn get_account_index_in_instruction(index: usize) -> Result<usize, ProtocolZapError> {
+    // Accounts in ZapOutCtx
+    const ZAP_OUT_ACCOUNTS_LEN: usize = 2;
+    ZAP_OUT_ACCOUNTS_LEN.safe_add(index)
 }
