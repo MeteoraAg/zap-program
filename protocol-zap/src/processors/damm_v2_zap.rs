@@ -1,4 +1,4 @@
-use pinocchio::{pubkey::Pubkey, sysvars::instructions::IntrospectedInstruction};
+use pinocchio::sysvars::instructions::IntrospectedInstruction;
 
 use crate::{
     constants::{
