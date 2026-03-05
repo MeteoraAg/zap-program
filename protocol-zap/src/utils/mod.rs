@@ -179,7 +179,7 @@ fn extract_amm_accounts_and_info(
 
     zap_info_processor.validate_payload()?;
     // Prevent operator to steal zap out protocol fund using referral fee feature of AMMs
-    zap_info_processor.ensure_no_referral_fee(&zap_out_instruction)?;
+    zap_info_processor.validate_route_plan(&zap_out_instruction)?;
 
     let RawZapOutAmmInfo {
         source_index,

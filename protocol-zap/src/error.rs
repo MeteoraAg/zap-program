@@ -31,6 +31,12 @@ pub enum ProtocolZapError {
 
     #[error("Referral fee is not allowed in protocol zap out")]
     ReferralFeeNotAllowed = 8,
+
+    #[error("Undetermined error")]
+    UndeterminedError = 9,
+
+    #[error("Non whitelisted swap step in Jupiter route")]
+    NonWhitelistedSwapStep = 10,
 }
 
 impl From<ProtocolZapError> for ProgramError {

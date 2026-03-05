@@ -35,7 +35,8 @@ pub trait ZapInfoProcessor {
         &self,
         zap_params: &ZapOutParameters,
     ) -> Result<RawZapOutAmmInfo, ProtocolZapError>;
-    fn ensure_no_referral_fee(
+    // Validate the route plan to make sure that only whitelisted AMMs are allowed, and no referral fee allowed
+    fn validate_route_plan(
         &self,
         zap_out_instruction: &IntrospectedInstruction<'_>,
     ) -> Result<(), ProtocolZapError>;

@@ -28,7 +28,7 @@ impl ZapInfoProcessor for ZapDlmmInfoProcessor {
         })
     }
 
-    fn ensure_no_referral_fee(
+    fn validate_route_plan(
         &self,
         zap_out_instruction: &IntrospectedInstruction<'_>,
     ) -> Result<(), ProtocolZapError> {
