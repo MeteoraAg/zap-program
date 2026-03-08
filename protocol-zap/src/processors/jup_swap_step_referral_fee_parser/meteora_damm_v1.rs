@@ -1,8 +1,7 @@
 use crate::{
     error::ProtocolZapError,
     jup_swap_step_referral_fee_parser::{
-        adjust_processed_index_to_next_swap_step_base_start_index, is_placeholder_account,
-        must_retrieve_account_meta, SwapStepReferralFeeParser,
+        is_placeholder_account, must_retrieve_account_meta, SwapStepReferralFeeParser,
     },
     safe_math::SafeMath,
 };
@@ -30,11 +29,9 @@ impl SwapStepReferralFeeParser for Meteora {
         processed_index: usize,
         zap_out_instruction: &'a IntrospectedInstruction<'a>,
     ) -> Result<(), ProtocolZapError> {
-        let start_account_index =
-            adjust_processed_index_to_next_swap_step_base_start_index(processed_index)?;
-        let referral_fee_index = start_account_index
-            .safe_add(self.get_base_account_length())?
-            .safe_add(1)?;
+        let end_account_index = self.get_end_account_index_default(processed_index)?;
+
+        let referral_fee_index = end_account_index.safe_add(1)?;
 
         let referral_fee_account_meta =
             must_retrieve_account_meta(zap_out_instruction, referral_fee_index)?;

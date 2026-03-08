@@ -118,20 +118,22 @@ fn generate_meteora_swap_accounts(has_referral_fee: bool) -> Vec<MakeInstruction
         });
     }
 
-    accounts.push(MakeInstructionAccount {
-        pubkey: jupiter::ID,
-        is_signer: false,
-        is_writable: false,
-    });
-
-    let pubkey = if has_referral_fee {
+    // Remaining account 0: Referral fee account (jupiter::ID as placeholder when no referral fee)
+    let referral_fee_pubkey = if has_referral_fee {
         Pubkey::new_unique()
     } else {
         jupiter::ID
     };
 
     accounts.push(MakeInstructionAccount {
-        pubkey,
+        pubkey: referral_fee_pubkey,
+        is_signer: false,
+        is_writable: false,
+    });
+
+    // Remaining account 1: Stake pool account
+    accounts.push(MakeInstructionAccount {
+        pubkey: jupiter::ID,
         is_signer: false,
         is_writable: false,
     });
@@ -1132,6 +1134,66 @@ fn test_get_end_account_index_for_all_swap_steps() {
             account_key, last_account_key_in_test_context,
             "End account index mismatch for swap type: {:?}",
             step.swap
+        );
+    }
+}
+
+#[test]
+fn test_ensure_no_referral_fee_for_all_swap_steps_with_referral_fee() {
+    let swap_types: Vec<Swap> = vec![
+        Swap::Meteora,
+        Swap::MeteoraDammV2,
+        Swap::MeteoraDammV2WithRemainingAccounts,
+        Swap::MeteoraDlmm,
+        Swap::MeteoraDlmmSwapV2 {
+            remaining_accounts_info: RemainingAccountsInfo::default(),
+        },
+    ];
+
+    for swap in &swap_types {
+        // Without referral fee — should pass
+        let route_step_plan = vec![(
+            RoutePlanStep {
+                swap: swap.clone(),
+                percent: 100,
+                input_index: 0,
+                output_index: 1,
+            },
+            false,
+        )];
+
+        let test_context =
+            setup_jupiter_v6_route_test_context(&route_step_plan, 100_000, 100_000, 0, 0);
+        let (processor, zap_out_instruction) = test_context.get_prerequisite_for_testing();
+        let result = processor.validate_route_plan(&zap_out_instruction);
+        assert!(
+            result.is_ok(),
+            "Expected Ok for swap type without referral fee: {:?}",
+            swap
+        );
+
+        // With referral fee — should fail
+        let route_step_plan = vec![(
+            RoutePlanStep {
+                swap: swap.clone(),
+                percent: 100,
+                input_index: 0,
+                output_index: 1,
+            },
+            true,
+        )];
+
+        let test_context =
+            setup_jupiter_v6_route_test_context(&route_step_plan, 100_000, 100_000, 0, 0);
+        let (processor, zap_out_instruction) = test_context.get_prerequisite_for_testing();
+        let err = processor
+            .validate_route_plan(&zap_out_instruction)
+            .unwrap_err();
+        assert_eq!(
+            err,
+            ProtocolZapError::ReferralFeeNotAllowed,
+            "Expected ReferralFeeNotAllowed for swap type with referral fee: {:?}",
+            swap
         );
     }
 }
