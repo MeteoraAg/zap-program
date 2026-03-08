@@ -12,3 +12,6 @@ pinocchio = "0.9"
 pinocchio-pubkey = "0.3"
 thiserror = "2"
 zap-sdk = { path = "../zap-sdk" }
+
+[dev-dependencies]
+solana-sdk = "2.3.1"
