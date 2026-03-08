@@ -50,7 +50,7 @@ fn search_and_validate_zap_out_instruction(
     treasury_paired_destination_token_address: &Pubkey,
 ) -> Result<(), ProtocolZapError> {
     // Zap out instruction must be next to current instruction
-    let ix = sysvar_instructions
+    let ix: IntrospectedInstruction<'_> = sysvar_instructions
         .get_instruction_relative(1)
         .map_err(|_| ProtocolZapError::MissingZapOutInstruction)?;
 

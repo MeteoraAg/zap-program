@@ -7,7 +7,11 @@ use crate::{
     WhitelistedSwapStep,
 };
 use jupiter::types::RoutePlanStep;
-use pinocchio::sysvars::instructions::IntrospectedInstruction;
+use pinocchio::{pubkey::Pubkey, sysvars::instructions::IntrospectedInstruction};
+use pinocchio_pubkey::from_str;
+
+pub const ID: Pubkey = from_str("MERLuDFBMmsHnsBPZw2sDQZHvXFMwp8EdjudcU2HKky");
+pub const BASE_ACCOUNT_LENGTH: usize = 6;
 
 // Mercurial
 #[derive(Default)]
@@ -17,7 +21,7 @@ pub struct Mercurial {
 
 impl SwapStepReferralFeeParser for Mercurial {
     fn get_base_account_length(&self) -> usize {
-        6
+        BASE_ACCOUNT_LENGTH
     }
 
     fn load_next_swap_step(
@@ -27,6 +31,7 @@ impl SwapStepReferralFeeParser for Mercurial {
         self.next_swap_step = next_swap_step
             .map(|step| WhitelistedSwapStep::try_from(&step.swap))
             .transpose()?;
+
         Ok(())
     }
 

@@ -10,6 +10,7 @@ use crate::{
     error::ProtocolZapError,
     jup_swap_step_referral_fee_parser::get_referral_fee_parser,
     safe_math::{SafeCast, SafeMath},
+    utils::get_account_index_in_instruction,
     RawZapOutAmmInfo, ZapInfoProcessor, ZapOutParameters,
 };
 use borsh::BorshDeserialize;
@@ -23,7 +24,7 @@ pub struct ZapJupV6RouteInfoProcessor {
 
 impl ZapJupV6RouteInfoProcessor {
     // Jupiter V6 Route instruction has 9 accounts before the remaining accounts which are used for swap legs.
-    const ROUTE_BASE_ACCOUNT_LENGTH: usize = 9;
+    pub const ROUTE_BASE_ACCOUNT_LENGTH: usize = 9;
 
     pub fn new(payload: &[u8]) -> Result<Self, ProtocolZapError> {
         let route_params = jupiter::client::args::Route::try_from_slice(payload)
@@ -117,6 +118,14 @@ pub(crate) fn ensure_route_plan_fully_converges(
     Ok(())
 }
 
+pub fn get_jup_route_base_account_end_index(
+    route_base_account_length: usize,
+) -> Result<usize, ProtocolZapError> {
+    let base_account_offset = get_account_index_in_instruction(route_base_account_length)?;
+    // Subtract 1 to get index instead of offset
+    base_account_offset.safe_sub(1)
+}
+
 impl ZapInfoProcessor for ZapJupV6RouteInfoProcessor {
     fn validate_payload(&self) -> Result<(), ProtocolZapError> {
         ensure_route_plan_fully_converges(&self.route_params.route_plan)?;
@@ -154,9 +163,12 @@ impl ZapInfoProcessor for ZapJupV6RouteInfoProcessor {
             return Err(ProtocolZapError::InvalidZapOutParameters);
         }
 
+        let base_account_end_index =
+            get_jup_route_base_account_end_index(Self::ROUTE_BASE_ACCOUNT_LENGTH)?;
+
         internal_validate_route_plan(
             &self.route_params.route_plan,
-            Self::ROUTE_BASE_ACCOUNT_LENGTH,
+            base_account_end_index,
             zap_out_instruction,
         )?;
 
@@ -217,9 +229,12 @@ impl ZapInfoProcessor for ZapJupV6SharedRouteInfoProcessor {
             return Err(ProtocolZapError::InvalidZapOutParameters);
         }
 
+        let base_account_end_index =
+            get_jup_route_base_account_end_index(Self::ROUTE_BASE_ACCOUNT_LENGTH)?;
+
         internal_validate_route_plan(
             &self.route_params.route_plan,
-            Self::ROUTE_BASE_ACCOUNT_LENGTH,
+            base_account_end_index,
             zap_out_instruction,
         )?;
 

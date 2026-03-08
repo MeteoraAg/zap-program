@@ -6,10 +6,13 @@ use crate::{
     },
     safe_math::SafeMath,
 };
-use pinocchio::sysvars::instructions::IntrospectedInstruction;
+use pinocchio::{pubkey::Pubkey, sysvars::instructions::IntrospectedInstruction};
+use pinocchio_pubkey::from_str;
+
+pub const ID: Pubkey = from_str("LBUZKhRxPF3XUpBCjp4YzTKgLccjZhTSDM9YuVaPwxo");
 
 // Index of referral fee account in base account (shared by both DLMM variants)
-const REFERRAL_ACCOUNT_INDEX: usize = 9;
+pub const REFERRAL_ACCOUNT_INDEX: usize = 9;
 
 fn internal_ensure_no_referral_fee_account<'a>(
     processed_index: usize,
@@ -23,10 +26,7 @@ fn internal_ensure_no_referral_fee_account<'a>(
         must_retrieve_account_meta(zap_out_instruction, referral_fee_index)?;
 
     // DLMM use it's own account as placeholder of Option::None
-    if referral_fee_account_meta
-        .key
-        .ne(zap_sdk::constants::DLMM.as_array())
-    {
+    if referral_fee_account_meta.key.ne(&ID) {
         return Err(ProtocolZapError::ReferralFeeNotAllowed);
     }
 
@@ -36,9 +36,13 @@ fn internal_ensure_no_referral_fee_account<'a>(
 // Meteora DLMM
 pub struct MeteoraDLMM;
 
+impl MeteoraDLMM {
+    pub const BASE_ACCOUNT_LENGTH: usize = 15;
+}
+
 impl SwapStepReferralFeeParser for MeteoraDLMM {
     fn get_base_account_length(&self) -> usize {
-        15
+        Self::BASE_ACCOUNT_LENGTH
     }
 
     fn ensure_no_referral_fee_account<'a>(
@@ -61,9 +65,13 @@ impl SwapStepReferralFeeParser for MeteoraDLMM {
 // Meteora DLMM Swap2
 pub struct MeteoraDLMMSwapV2;
 
+impl MeteoraDLMMSwapV2 {
+    pub const BASE_ACCOUNT_LENGTH: usize = 16;
+}
+
 impl SwapStepReferralFeeParser for MeteoraDLMMSwapV2 {
     fn get_base_account_length(&self) -> usize {
-        16
+        Self::BASE_ACCOUNT_LENGTH
     }
 
     fn ensure_no_referral_fee_account<'a>(

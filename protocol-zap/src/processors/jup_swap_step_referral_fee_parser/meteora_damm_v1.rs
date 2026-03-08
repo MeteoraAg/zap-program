@@ -6,15 +6,18 @@ use crate::{
     },
     safe_math::SafeMath,
 };
-use pinocchio::sysvars::instructions::IntrospectedInstruction;
+use pinocchio::{pubkey::Pubkey, sysvars::instructions::IntrospectedInstruction};
+use pinocchio_pubkey::from_str;
+
+pub const ID: Pubkey = from_str("Eo7WjKq67rjJQSZxS6z3YkapzY3eMj6Xy8X5EQVn5UaB");
 
 // Meteora DAMM v1
 pub struct Meteora;
 
 impl Meteora {
-    // 0. Stake pool account
-    // 1. Referral fee account
-    const REMAINING_ACCOUNTS_LENGTH: usize = 2;
+    // 0. Referral fee account
+    // 1. Stake pool account
+    pub const REMAINING_ACCOUNTS_LENGTH: usize = 2;
 }
 
 impl SwapStepReferralFeeParser for Meteora {
@@ -48,11 +51,8 @@ impl SwapStepReferralFeeParser for Meteora {
         processed_index: usize,
         _zap_out_instruction: &'a IntrospectedInstruction<'a>,
     ) -> Result<usize, ProtocolZapError> {
-        let start_account_index =
-            adjust_processed_index_to_next_swap_step_base_start_index(processed_index)?;
-        let end_account_index = start_account_index
-            .safe_add(self.get_base_account_length())?
-            .safe_add(Self::REMAINING_ACCOUNTS_LENGTH)?;
+        let end_base_account_index = self.get_end_account_index_default(processed_index)?;
+        let end_account_index = end_base_account_index.safe_add(Self::REMAINING_ACCOUNTS_LENGTH)?;
 
         Ok(end_account_index)
     }

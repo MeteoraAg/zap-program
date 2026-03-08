@@ -6,11 +6,14 @@ use crate::{
     },
     safe_math::SafeMath,
 };
-use pinocchio::sysvars::instructions::IntrospectedInstruction;
+use pinocchio::{pubkey::Pubkey, sysvars::instructions::IntrospectedInstruction};
+use pinocchio_pubkey::from_str;
+
+pub const ID: Pubkey = from_str("cpamdpZCGKUy5JxQXB4dcpGPiikHawvSWAd6mEn1sGG");
 
 // Index of referral fee account in base account
-const REFERRAL_ACCOUNT_INDEX: usize = 12;
-const BASE_ACCOUNT_LENGTH: usize = 14;
+pub const REFERRAL_ACCOUNT_INDEX: usize = 11;
+pub const BASE_ACCOUNT_LENGTH: usize = 14;
 
 fn internal_ensure_no_referral_fee_account<'a>(
     processed_index: usize,
@@ -24,10 +27,7 @@ fn internal_ensure_no_referral_fee_account<'a>(
         must_retrieve_account_meta(zap_out_instruction, referral_fee_index)?;
 
     // DAMM v2 use it's own account as placeholder of Option::None
-    if referral_fee_account_meta
-        .key
-        .ne(zap_sdk::constants::DAMM_V2.as_array())
-    {
+    if referral_fee_account_meta.key.ne(&ID) {
         return Err(ProtocolZapError::ReferralFeeNotAllowed);
     }
 
