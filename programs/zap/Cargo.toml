@@ -25,6 +25,6 @@ bytemuck = { workspace = true, features = ["derive", "min_const_generics"] }
 dlmm = { path = "../../libs/dlmm" }
 damm-v2 = { git = "https://github.com/MeteoraAg/damm-v2", features = [
     "cpi",
-], rev = "d9cef5aaec9cfa1a6d3b0b28d213c87c285127de", package = "cp-amm" }
+], rev = "6e9aee4e549bd792c8f5b82b88be04459e644f3c", package = "cp-amm" }
 ruint = { workspace = true }
 zap-sdk = { path = "../../zap-sdk" }
