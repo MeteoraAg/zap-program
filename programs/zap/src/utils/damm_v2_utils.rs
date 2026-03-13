@@ -186,7 +186,7 @@ fn validate_swap_result(
         let pool_amount_a = total_amount_a.safe_add(pool_amount_in)?;
         let pool_amount_b = total_amount_b
             .safe_sub(pool_amount_out)?
-            .safe_add(compounding_fee)?;
+            .safe_add(compounding_fee)?; // compounding fee is only applied on token_b
         get_swap_result_status(
             token_a_transfer_fee_calculator,
             token_b_transfer_fee_calculator,
@@ -201,7 +201,7 @@ fn validate_swap_result(
         let pool_amount_a = total_amount_a.safe_sub(pool_amount_out)?;
         let pool_amount_b = total_amount_b
             .safe_add(pool_amount_in)?
-            .safe_add(compounding_fee)?;
+            .safe_add(compounding_fee)?; // compounding fee is only applied on token_b
         get_swap_result_status(
             token_a_transfer_fee_calculator,
             token_b_transfer_fee_calculator,

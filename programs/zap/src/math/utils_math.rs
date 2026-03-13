@@ -4,6 +4,7 @@ use ruint::aliases::U256;
 
 use crate::{error::ZapError, safe_math::SafeMath};
 
+#[inline]
 pub fn safe_mul_div_cast_u64(x: u64, y: u64, denominator: u64, rounding: Rounding) -> Result<u64> {
     let prod = u128::from(x).safe_mul(y.into())?;
     let denominator: u128 = denominator.into();
@@ -21,6 +22,7 @@ pub fn safe_mul_div_cast_u64(x: u64, y: u64, denominator: u64, rounding: Roundin
         .map_err(|_| ZapError::TypeCastFailed.into())
 }
 
+#[inline]
 pub fn safe_mul_div_cast_u128(
     x: u128,
     y: u128,
@@ -31,7 +33,10 @@ pub fn safe_mul_div_cast_u128(
     let denominator = U256::from(denominator);
 
     let result = match rounding {
-        Rounding::Up => prod.div_ceil(denominator),
+        Rounding::Up => prod
+            .safe_add(denominator)?
+            .safe_sub(U256::from(1))?
+            .safe_div(denominator)?,
         Rounding::Down => prod.safe_div(denominator)?,
     };
 

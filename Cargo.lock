@@ -730,7 +730,7 @@ checksum = "7c74b8349d32d297c9134b8c88677813a227df8f779daa29bfc29c183fe3dca6"
 [[package]]
 name = "cp-amm"
 version = "0.2.0"
-source = "git+https://github.com/MeteoraAg/damm-v2?rev=6e9aee4e549bd792c8f5b82b88be04459e644f3c#6e9aee4e549bd792c8f5b82b88be04459e644f3c"
+source = "git+https://github.com/MeteoraAg/damm-v2?rev=58a13fcf45516a9f27f2bd2a2056fb66673454e0#58a13fcf45516a9f27f2bd2a2056fb66673454e0"
 dependencies = [
  "anchor-lang",
  "anchor-spl",
@@ -742,7 +742,7 @@ dependencies = [
  "pinocchio 0.9.0",
  "pinocchio-token",
  "pinocchio-token-2022",
- "protocol-zap 0.1.0 (git+https://github.com/MeteoraAg/zap-program?rev=064c58b317b9a85f212c0de72caea286fc72fdb4)",
+ "protocol-zap",
  "ruint",
  "spl-token-metadata-interface",
  "static_assertions",
@@ -1112,14 +1112,6 @@ dependencies = [
 [[package]]
 name = "jupiter"
 version = "0.1.0"
-dependencies = [
- "anchor-lang",
-]
-
-[[package]]
-name = "jupiter"
-version = "0.1.0"
-source = "git+https://github.com/MeteoraAg/zap-program?rev=064c58b317b9a85f212c0de72caea286fc72fdb4#064c58b317b9a85f212c0de72caea286fc72fdb4"
 dependencies = [
  "anchor-lang",
 ]
@@ -1576,28 +1568,13 @@ name = "protocol-zap"
 version = "0.1.0"
 dependencies = [
  "borsh 0.10.4",
- "jupiter 0.1.0",
+ "jupiter",
  "num_enum",
  "pinocchio 0.9.2",
  "pinocchio-pubkey 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "ruint",
  "thiserror 2.0.12",
- "zap-sdk 0.1.0",
-]
-
-[[package]]
-name = "protocol-zap"
-version = "0.1.0"
-source = "git+https://github.com/MeteoraAg/zap-program?rev=064c58b317b9a85f212c0de72caea286fc72fdb4#064c58b317b9a85f212c0de72caea286fc72fdb4"
-dependencies = [
- "borsh 0.10.4",
- "jupiter 0.1.0 (git+https://github.com/MeteoraAg/zap-program?rev=064c58b317b9a85f212c0de72caea286fc72fdb4)",
- "num_enum",
- "pinocchio 0.9.2",
- "pinocchio-pubkey 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "ruint",
- "thiserror 2.0.12",
- "zap-sdk 0.1.0 (git+https://github.com/MeteoraAg/zap-program?rev=064c58b317b9a85f212c0de72caea286fc72fdb4)",
+ "zap-sdk",
 ]
 
 [[package]]
@@ -3620,20 +3597,12 @@ dependencies = [
  "cp-amm",
  "dlmm",
  "ruint",
- "zap-sdk 0.1.0",
+ "zap-sdk",
 ]
 
 [[package]]
 name = "zap-sdk"
 version = "0.1.0"
-dependencies = [
- "solana-pubkey",
-]
-
-[[package]]
-name = "zap-sdk"
-version = "0.1.0"
-source = "git+https://github.com/MeteoraAg/zap-program?rev=064c58b317b9a85f212c0de72caea286fc72fdb4#064c58b317b9a85f212c0de72caea286fc72fdb4"
 dependencies = [
  "solana-pubkey",
 ]
