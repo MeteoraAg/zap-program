@@ -169,7 +169,9 @@ export async function createDammV2Pool(
   tokenBMint: PublicKey,
   amountA?: BN,
   amountB?: BN,
-  baseFeeParams?: Buffer
+  baseFeeParams?: Buffer,
+  compoundingFeeBps?: number,
+  collectFeeMode?: number
 ): Promise<PublicKey> {
   const program = createDammV2Program();
 
@@ -235,6 +237,8 @@ export async function createDammV2Pool(
     .initializeCustomizablePool({
       poolFees: {
         baseFee,
+        compoundingFeeBps: compoundingFeeBps ?? 0,
+        padding: 0,
         dynamicFee: null,
       },
       sqrtMinPrice: MIN_SQRT_PRICE,
@@ -243,7 +247,7 @@ export async function createDammV2Pool(
       liquidity: liquidityDelta,
       sqrtPrice: INIT_PRICE,
       activationType: 0,
-      collectFeeMode: 1,
+      collectFeeMode: collectFeeMode ?? 1,
       activationPoint: null,
     })
     .accountsPartial({
@@ -517,7 +521,6 @@ export async function swap(params: {
     .transaction();
 }
 
-const FEE_PADDING = Array.from(Buffer.alloc(3));
 const cpAmmCoder = new BorshCoder(CpAmmIDL as CpAmm);
 
 export enum BaseFeeMode {
@@ -541,7 +544,6 @@ export function encodeFeeTimeSchedulerParams(
     period_frequency: new BN(periodFrequency.toString()),
     reduction_factor: new BN(reductionFactor.toString()),
     base_fee_mode: baseFeeMode,
-    padding: FEE_PADDING,
   };
 
   return cpAmmCoder.types.encode("BorshFeeTimeScheduler", feeTimeScheduler);
@@ -562,7 +564,6 @@ export function encodeFeeMarketCapSchedulerParams(
     scheduler_expiration_duration: schedulerExpirationDuration,
     reduction_factor: new BN(reductionFactor.toString()),
     base_fee_mode: baseFeeMode,
-    padding: FEE_PADDING,
   };
 
   return cpAmmCoder.types.encode(
@@ -585,7 +586,6 @@ export function encodeFeeRateLimiterParams(
     max_fee_bps: maxFeeBps,
     reference_amount: new BN(referenceAmount.toString()),
     base_fee_mode: BaseFeeMode.RateLimiter,
-    padding: FEE_PADDING,
   };
 
   return cpAmmCoder.types.encode("BorshFeeRateLimiter", feeRateLimiter);

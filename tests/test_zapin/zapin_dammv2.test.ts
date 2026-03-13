@@ -409,6 +409,74 @@ describe("Zap In damm V2", () => {
     expect(result).instanceOf(TransactionMetadata);
   });
 
+  it("zap in with compounding fee (AtoB)", async () => {
+    const pool = await createDammV2Pool(
+      svm,
+      admin,
+      tokenAMint,
+      tokenBMint,
+      undefined,
+      undefined,
+      undefined,
+      5000, // 50% compounding fee
+      2 // collectFeeMode: Compounding
+    );
+
+    const { position, positionNftAccount } = await createDammV2Position(
+      svm,
+      user,
+      pool
+    );
+
+    const amountTokenA = new BN(LAMPORTS_PER_SOL);
+    const amountSwap = amountTokenA.divn(2);
+    await zapInFullFlow({
+      svm,
+      user,
+      pool,
+      position,
+      positionNftAccount,
+      inputTokenMint: tokenAMint,
+      outputTokenMint: tokenBMint,
+      totalAmount: amountTokenA,
+      amountSwap,
+    });
+  });
+
+  it("zap in with compounding fee (BtoA)", async () => {
+    const pool = await createDammV2Pool(
+      svm,
+      admin,
+      tokenAMint,
+      tokenBMint,
+      new BN(LAMPORTS_PER_SOL),
+      new BN(LAMPORTS_PER_SOL),
+      undefined,
+      5000, // 50% compounding fee
+      2 // collectFeeMode: Compounding
+    );
+
+    const { position, positionNftAccount } = await createDammV2Position(
+      svm,
+      user,
+      pool
+    );
+
+    const amountTokenB = new BN(LAMPORTS_PER_SOL / 2);
+    const amountSwap = amountTokenB.divn(2);
+    await zapInFullFlow({
+      svm,
+      user,
+      pool,
+      position,
+      positionNftAccount,
+      inputTokenMint: tokenBMint,
+      outputTokenMint: tokenAMint,
+      totalAmount: amountTokenB,
+      amountSwap,
+    });
+  });
+
   it("zap in without external swap with rate limiter and remaining accounts", async () => {
     const baseFee = encodeFeeRateLimiterParams(
       new BN(10_000_00), // 1% cliff fee
