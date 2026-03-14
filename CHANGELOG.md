@@ -21,6 +21,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Breaking Changes
 
+## zap [0.2.2] [PR #46](https://github.com/MeteoraAg/zap-program/pull/46)
+
+### Added
+
+- Add support for damm-v2 pool with Compounding fee mode
+
+### Fixed
+
+- Fix zap in to single-sided damm-v2 pool. A single-sided pool is a pool fully contains only one token in the pool pair, either fully token a (`sqrt_price` at `sqrt_min_price`) or fully token b (`sqrt_price` at `sqrt_max_price`)
+
 ## zap [0.2.1] [PR #41](https://github.com/MeteoraAg/zap-program/pull/41)
 
 ### Fixed

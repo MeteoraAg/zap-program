@@ -57,6 +57,10 @@ impl LiquidityHandler for ConcentratedLiquidity {
     // liquidity delta has the same calculation as initial liquidity for concentrated liquidity
     // Δa = L * (1/√P_lower - 1/√P_upper) => L = Δa / (1/√P_lower - 1/√P_upper)
     fn get_liquidity_delta_from_amount_a(&self, amount_a: u64) -> Result<u128> {
+        if self.sqrt_price == self.sqrt_max_price {
+            // Single-sided B position: no token A needed, return max so A is always surplus
+            return Ok(u128::MAX);
+        }
         let price_delta = U512::from(self.sqrt_max_price.safe_sub(self.sqrt_price)?);
         let prod = U512::from(amount_a)
             .safe_mul(U512::from(self.sqrt_price))?
@@ -69,6 +73,10 @@ impl LiquidityHandler for ConcentratedLiquidity {
     // liquidity delta has the same calculation as initial liquidity for concentrated liquidity
     // Δb = L * (√P_upper - √P_lower) => L = Δb / (√P_upper - √P_lower)
     fn get_liquidity_delta_from_amount_b(&self, amount_b: u64) -> Result<u128> {
+        if self.sqrt_price == self.sqrt_min_price {
+            // Single-sided A position: no token B needed, return max so B is always surplus
+            return Ok(u128::MAX);
+        }
         let price_delta = U256::from(self.sqrt_price.safe_sub(self.sqrt_min_price)?);
         let quote_amount = U256::from(amount_b).safe_shl(128)?;
         let liquidity = quote_amount.safe_div(price_delta)?;
