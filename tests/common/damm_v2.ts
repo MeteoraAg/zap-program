@@ -50,6 +50,7 @@ import {
   getDammV2Position,
 } from "./pda";
 import {
+  CollectFeeMode,
   getLiquidityDeltaFromAmountA,
   getLiquidityDeltaFromAmountB,
 } from "@meteora-ag/cp-amm-sdk";
@@ -184,7 +185,7 @@ export async function createDammV2Pool(params: {
     amountA,
     amountB,
     baseFee: baseFeeParams,
-    collectFeeMode,
+    collectFeeMode: collectFeeModeParam,
     compoundingFeeBps,
   } = params;
   const program = createDammV2Program();
@@ -192,6 +193,7 @@ export async function createDammV2Pool(params: {
   const sqrtMinPrice = params.sqrtMinPrice ?? MIN_SQRT_PRICE;
   const sqrtMaxPrice = params.sqrtMaxPrice ?? MAX_SQRT_PRICE;
   const sqrtPrice = params.initSqrtPrice ?? INIT_PRICE;
+  const collectFeeMode = collectFeeModeParam ?? CollectFeeMode.OnlyB;
 
   const poolAuthority = deriveDammV2PoolAuthority();
   const pool = deriveDammV2CustomizablePoolAddress(tokenAMint, tokenBMint);
@@ -226,13 +228,15 @@ export async function createDammV2Pool(params: {
     const liquidityFromA = getLiquidityDeltaFromAmountA(
       amountA,
       sqrtPrice,
-      sqrtMaxPrice
+      sqrtMaxPrice,
+      collectFeeMode
     );
 
     const liquidityFromB = getLiquidityDeltaFromAmountB(
       amountB,
       sqrtMinPrice,
-      sqrtPrice
+      sqrtPrice,
+      collectFeeMode
     );
 
     liquidityDelta = BN.min(liquidityFromA, liquidityFromB);
@@ -241,14 +245,16 @@ export async function createDammV2Pool(params: {
     liquidityDelta = getLiquidityDeltaFromAmountA(
       amountA,
       sqrtPrice,
-      sqrtMaxPrice
+      sqrtMaxPrice,
+      collectFeeMode
     );
   } else if (amountB) {
     // one sided pool B
     liquidityDelta = getLiquidityDeltaFromAmountB(
       amountB,
       sqrtMinPrice,
-      sqrtPrice
+      sqrtPrice,
+      collectFeeMode
     );
   }
 
@@ -279,7 +285,7 @@ export async function createDammV2Pool(params: {
       liquidity: liquidityDelta,
       sqrtPrice,
       activationType: 0,
-      collectFeeMode: collectFeeMode ?? 1,
+      collectFeeMode,
       activationPoint: null,
     })
     .accountsPartial({
