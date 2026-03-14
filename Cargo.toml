@@ -16,3 +16,10 @@ anchor-lang = "0.31.1"
 anchor-spl = "0.31.1"
 bytemuck = "1.20.0"
 ruint = "1.3.0"
+
+# redirect git references from damm-v2 dependency to local workspace crates
+# to avoid duplicate crate entries at different revisions in Cargo.lock.
+[patch."https://github.com/MeteoraAg/zap-program"]
+protocol-zap = { path = "protocol-zap" }
+zap-sdk = { path = "zap-sdk" }
+jupiter = { path = "libs/jupiter" }

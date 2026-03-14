@@ -8,6 +8,7 @@ use damm_v2::{
 use crate::{
     damm_v2_utils::{calculate_swap_amount, get_price_change_bps},
     error::ZapError,
+    liquidity_handler::get_liquidity_handler,
     new_transfer_fee_calculator, UserLedger,
 };
 
@@ -165,14 +166,14 @@ pub fn handle_zap_in_damm_v2<'c: 'info, 'info>(
     let user_amount_a_1 = accessor::amount(&token_a_account_ai)?;
     let user_amount_b_1 = accessor::amount(&token_b_account_ai)?;
 
+    let liquidity_handler = get_liquidity_handler(&pool)?;
     let (liquidity, trade_direction) = ledger.get_liquidity_from_amounts_and_trade_direction(
         &token_a_transfer_fee_calculator,
         &token_b_transfer_fee_calculator,
-        pool.sqrt_price,
-        pool.sqrt_min_price,
-        pool.sqrt_max_price,
+        liquidity_handler.as_ref(),
     )?;
 
+    drop(liquidity_handler);
     drop(pool);
 
     if liquidity > 0 {
@@ -262,15 +263,15 @@ pub fn handle_zap_in_damm_v2<'c: 'info, 'info>(
         user_amount_b_3,
     )?;
 
+    let liquidity_handler = get_liquidity_handler(&pool)?;
     let (liquidity, _trade_direction) = ledger.get_liquidity_from_amounts_and_trade_direction(
         &token_a_transfer_fee_calculator,
         &token_b_transfer_fee_calculator,
-        pool.sqrt_price,
-        pool.sqrt_min_price,
-        pool.sqrt_max_price,
+        liquidity_handler.as_ref(),
     )?;
 
     if liquidity > 0 {
+        drop(liquidity_handler);
         drop(pool);
         ctx.accounts.add_liquidity(liquidity)?;
     }
