@@ -1,9 +1,9 @@
 use crate::{
-    error::ZapError, liquidity_handler::LiquidityHandler, math::safe_math::SafeMath,
-    TransferFeeCalculator,
+    error::ZapError, get_liquidity_handler, liquidity_handler::LiquidityHandler,
+    math::safe_math::SafeMath, TransferFeeCalculator,
 };
 use anchor_lang::prelude::*;
-use damm_v2::params::swap::TradeDirection;
+use damm_v2::{params::swap::TradeDirection, state::Pool};
 
 #[account(zero_copy)]
 #[derive(InitSpace, Debug, Default)]
@@ -39,16 +39,17 @@ impl UserLedger {
         &self,
         token_a_transfer_fee_calculator: &TransferFeeCalculator,
         token_b_transfer_fee_calculator: &TransferFeeCalculator,
-        handler: &dyn LiquidityHandler,
+        pool: &Pool,
     ) -> Result<(u128, TradeDirection)> {
+        let liquidity_handler = get_liquidity_handler(&pool)?;
         let amount_a = token_a_transfer_fee_calculator
             .calculate_transfer_fee_excluded_amount(self.amount_a)?
             .amount;
         let amount_b = token_b_transfer_fee_calculator
             .calculate_transfer_fee_excluded_amount(self.amount_b)?
             .amount;
-        let liquidity_from_a = handler.get_liquidity_delta_from_amount_a(amount_a)?;
-        let liquidity_from_b = handler.get_liquidity_delta_from_amount_b(amount_b)?;
+        let liquidity_from_a = liquidity_handler.get_liquidity_delta_from_amount_a(amount_a)?;
+        let liquidity_from_b = liquidity_handler.get_liquidity_delta_from_amount_b(amount_b)?;
         if liquidity_from_a > liquidity_from_b {
             // a is surplus, so we need to swap AtoB
             Ok((liquidity_from_b, TradeDirection::AtoB))
