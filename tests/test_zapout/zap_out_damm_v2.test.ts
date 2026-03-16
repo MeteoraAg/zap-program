@@ -65,7 +65,12 @@ describe("Zap out damm V2", () => {
 
   it("full flow zap out", async () => {
     const inputTokenMint = tokenAMint;
-    const pool = await createDammV2Pool(svm, admin, tokenAMint, tokenBMint);
+    const pool = await createDammV2Pool({
+      svm,
+      creator: admin,
+      tokenAMint,
+      tokenBMint,
+    });
     const userPosition = await createPositionAndAddLiquidity(svm, user, pool);
     const tokenAAccount = getAssociatedTokenAddressSync(
       tokenAMint,

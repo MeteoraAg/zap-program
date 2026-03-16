@@ -50,6 +50,7 @@ import {
   getDammV2Position,
 } from "./pda";
 import {
+  CollectFeeMode,
   getLiquidityDeltaFromAmountA,
   getLiquidityDeltaFromAmountB,
 } from "@meteora-ag/cp-amm-sdk";
@@ -162,16 +163,37 @@ export function getDammV2RemainingAccounts(
   return remainingAccounts;
 }
 
-export async function createDammV2Pool(
-  svm: LiteSVM,
-  creator: Keypair,
-  tokenAMint: PublicKey,
-  tokenBMint: PublicKey,
-  amountA?: BN,
-  amountB?: BN,
-  baseFeeParams?: Buffer
-): Promise<PublicKey> {
+export async function createDammV2Pool(params: {
+  svm: LiteSVM;
+  creator: Keypair;
+  tokenAMint: PublicKey;
+  tokenBMint: PublicKey;
+  amountA?: BN;
+  amountB?: BN;
+  baseFee?: Buffer;
+  sqrtMinPrice?: BN;
+  sqrtMaxPrice?: BN;
+  initSqrtPrice?: BN;
+  collectFeeMode?: number;
+  compoundingFeeBps?: number;
+}): Promise<PublicKey> {
+  const {
+    svm,
+    creator,
+    tokenAMint,
+    tokenBMint,
+    amountA,
+    amountB,
+    baseFee: baseFeeParams,
+    collectFeeMode: collectFeeModeParam,
+    compoundingFeeBps,
+  } = params;
   const program = createDammV2Program();
+
+  const sqrtMinPrice = params.sqrtMinPrice ?? MIN_SQRT_PRICE;
+  const sqrtMaxPrice = params.sqrtMaxPrice ?? MAX_SQRT_PRICE;
+  const sqrtPrice = params.initSqrtPrice ?? INIT_PRICE;
+  const collectFeeMode = collectFeeModeParam ?? CollectFeeMode.OnlyB;
 
   const poolAuthority = deriveDammV2PoolAuthority();
   const pool = deriveDammV2CustomizablePoolAddress(tokenAMint, tokenBMint);
@@ -205,17 +227,35 @@ export async function createDammV2Pool(
   if (amountA && amountB) {
     const liquidityFromA = getLiquidityDeltaFromAmountA(
       amountA,
-      INIT_PRICE,
-      MAX_SQRT_PRICE
+      sqrtPrice,
+      sqrtMaxPrice,
+      collectFeeMode
     );
 
     const liquidityFromB = getLiquidityDeltaFromAmountB(
       amountB,
-      MIN_SQRT_PRICE,
-      INIT_PRICE
+      sqrtMinPrice,
+      sqrtPrice,
+      collectFeeMode
     );
 
     liquidityDelta = BN.min(liquidityFromA, liquidityFromB);
+  } else if (amountA) {
+    // one sided pool A
+    liquidityDelta = getLiquidityDeltaFromAmountA(
+      amountA,
+      sqrtPrice,
+      sqrtMaxPrice,
+      collectFeeMode
+    );
+  } else if (amountB) {
+    // one sided pool B
+    liquidityDelta = getLiquidityDeltaFromAmountB(
+      amountB,
+      sqrtMinPrice,
+      sqrtPrice,
+      collectFeeMode
+    );
   }
 
   const baseFee = {
@@ -235,15 +275,17 @@ export async function createDammV2Pool(
     .initializeCustomizablePool({
       poolFees: {
         baseFee,
+        compoundingFeeBps: compoundingFeeBps ?? 0,
+        padding: 0,
         dynamicFee: null,
       },
-      sqrtMinPrice: MIN_SQRT_PRICE,
-      sqrtMaxPrice: MAX_SQRT_PRICE,
+      sqrtMinPrice,
+      sqrtMaxPrice,
       hasAlphaVault: false,
       liquidity: liquidityDelta,
-      sqrtPrice: INIT_PRICE,
+      sqrtPrice,
       activationType: 0,
-      collectFeeMode: 1,
+      collectFeeMode,
       activationPoint: null,
     })
     .accountsPartial({
@@ -280,8 +322,12 @@ export async function createDammV2Pool(
 
   const vaultBBalance = Number(AccountLayout.decode(tokenBVaultData).amount);
 
-  expect(vaultABalance).greaterThan(0);
-  expect(vaultBBalance).greaterThan(0);
+  if (!sqrtPrice.eq(sqrtMaxPrice)) {
+    expect(vaultABalance).greaterThan(0);
+  }
+  if (!sqrtPrice.eq(sqrtMinPrice)) {
+    expect(vaultBBalance).greaterThan(0);
+  }
 
   return pool;
 }
@@ -517,7 +563,6 @@ export async function swap(params: {
     .transaction();
 }
 
-const FEE_PADDING = Array.from(Buffer.alloc(3));
 const cpAmmCoder = new BorshCoder(CpAmmIDL as CpAmm);
 
 export enum BaseFeeMode {
@@ -541,7 +586,6 @@ export function encodeFeeTimeSchedulerParams(
     period_frequency: new BN(periodFrequency.toString()),
     reduction_factor: new BN(reductionFactor.toString()),
     base_fee_mode: baseFeeMode,
-    padding: FEE_PADDING,
   };
 
   return cpAmmCoder.types.encode("BorshFeeTimeScheduler", feeTimeScheduler);
@@ -562,7 +606,6 @@ export function encodeFeeMarketCapSchedulerParams(
     scheduler_expiration_duration: schedulerExpirationDuration,
     reduction_factor: new BN(reductionFactor.toString()),
     base_fee_mode: baseFeeMode,
-    padding: FEE_PADDING,
   };
 
   return cpAmmCoder.types.encode(
@@ -585,7 +628,6 @@ export function encodeFeeRateLimiterParams(
     max_fee_bps: maxFeeBps,
     reference_amount: new BN(referenceAmount.toString()),
     base_fee_mode: BaseFeeMode.RateLimiter,
-    padding: FEE_PADDING,
   };
 
   return cpAmmCoder.types.encode("BorshFeeRateLimiter", feeRateLimiter);

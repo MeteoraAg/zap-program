@@ -729,8 +729,8 @@ checksum = "7c74b8349d32d297c9134b8c88677813a227df8f779daa29bfc29c183fe3dca6"
 
 [[package]]
 name = "cp-amm"
-version = "0.1.6"
-source = "git+https://github.com/MeteoraAg/damm-v2?rev=d9cef5aaec9cfa1a6d3b0b28d213c87c285127de#d9cef5aaec9cfa1a6d3b0b28d213c87c285127de"
+version = "0.2.0"
+source = "git+https://github.com/MeteoraAg/damm-v2?rev=58a13fcf45516a9f27f2bd2a2056fb66673454e0#58a13fcf45516a9f27f2bd2a2056fb66673454e0"
 dependencies = [
  "anchor-lang",
  "anchor-spl",
@@ -742,6 +742,7 @@ dependencies = [
  "pinocchio 0.9.0",
  "pinocchio-token",
  "pinocchio-token-2022",
+ "protocol-zap",
  "ruint",
  "spl-token-metadata-interface",
  "static_assertions",
