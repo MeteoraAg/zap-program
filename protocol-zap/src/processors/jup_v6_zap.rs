@@ -84,7 +84,7 @@ impl ZapInfoProcessor for ZapJupV6RouteInfoProcessor {
         ensure_whitelisted_swap_leg(&route_params.route_plan)?;
         ensure_route_plan_fully_converges(&route_params.route_plan)?;
 
-        // Ensure no platform_fee_bps is 0, so operator can't steal funds by providing their account as platform_fee_account
+        // Ensure platform_fee_bps is 0, so operator can't steal funds by providing their account as platform_fee_account
         if route_params.platform_fee_bps != 0 {
             return Err(ProtozolZapError::InvalidZapOutParameters);
         }
@@ -119,7 +119,7 @@ impl ZapInfoProcessor for ZapJupV6SharedRouteInfoProcessor {
         ensure_whitelisted_swap_leg(&route_params.route_plan)?;
         ensure_route_plan_fully_converges(&route_params.route_plan)?;
 
-        // Ensure no platform_fee_bps is 0, so operator can't steal funds by providing their account as platform_fee_account
+        // Ensure platform_fee_bps is 0, so operator can't steal funds by providing their account as platform_fee_account
         if route_params.platform_fee_bps != 0 {
             return Err(ProtozolZapError::InvalidZapOutParameters);
         }
