@@ -1,14 +1,14 @@
 use crate::{
     constants::{SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID, SPL_TOKEN_PROGRAM_ID},
-    error::ProtozolZapError,
+    error::ProtocolZapError,
 };
 use pinocchio::pubkey::{find_program_address, Pubkey};
 
 // Adapted from anchor_spl::token::accessor::amount
 // https://github.com/solana-foundation/anchor/blob/2cb7ababa7dba3ac269fd2e60cfa06793ad2b989/spl/src/token.rs#L519
-pub(crate) fn get_token_amount(token_account_data: &[u8]) -> Result<u64, ProtozolZapError> {
+pub(crate) fn get_token_amount(token_account_data: &[u8]) -> Result<u64, ProtocolZapError> {
     if token_account_data.len() < 72 {
-        return Err(ProtozolZapError::InvalidZapAccounts);
+        return Err(ProtocolZapError::InvalidZapAccounts);
     }
     let mut amount_bytes = [0u8; 8];
     amount_bytes.copy_from_slice(&token_account_data[64..72]);
