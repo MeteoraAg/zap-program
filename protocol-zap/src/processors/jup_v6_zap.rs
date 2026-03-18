@@ -42,20 +42,38 @@ fn ensure_whitelisted_swap_leg(route_plan_steps: &[RoutePlanStep]) -> Result<(),
     Ok(())
 }
 
-/// Validates that the route plan fully converges
-/// - Every input index (original and intermediate) must be 100% consumed
-/// - All swap paths must converge to exactly one terminal output
-pub(crate) fn ensure_route_plan_fully_converges(
+/// Validates the route plan:
+/// - every input index (original and intermediate) must be 100% consumed
+/// - root input (index 0) must be consumed
+/// - prevent phantom input, a non-root input must have been produced by a prior step
+/// - cannot output to an index already used as input
+/// - all swap paths must converge to exactly one terminal output
+pub(crate) fn validate_route_plan(
     route_plan_steps: &[RoutePlanStep],
 ) -> Result<(), ProtozolZapError> {
+    let mut input_indices_seen = HashSet::new();
     let mut input_percent: HashMap<u8, u8> = HashMap::new();
     let mut output_indices = HashSet::new();
 
     for step in route_plan_steps {
+        // prevent phantom input, a non-root input must have been produced by a prior step
+        // this also ensures root input (index 0) is consumed
+        // output_indices starts empty, so the first step must use input_index 0 or it will error
+        if step.input_index != 0 && !output_indices.contains(&step.input_index) {
+            return Err(ProtozolZapError::InvalidZapOutParameters);
+        }
+
+        // cannot output to an index already used as input
+        input_indices_seen.insert(step.input_index);
+        if input_indices_seen.contains(&step.output_index) {
+            return Err(ProtozolZapError::InvalidZapOutParameters);
+        }
+
         let percent = input_percent.entry(step.input_index).or_insert(0);
         *percent = percent
             .checked_add(step.percent)
             .ok_or_else(|| ProtozolZapError::MathOverflow)?;
+
         output_indices.insert(step.output_index);
     }
 
@@ -82,7 +100,7 @@ impl ZapInfoProcessor for ZapJupV6RouteInfoProcessor {
         let route_params = jupiter::client::args::Route::try_from_slice(payload)
             .map_err(|_| ProtozolZapError::InvalidZapOutParameters)?;
         ensure_whitelisted_swap_leg(&route_params.route_plan)?;
-        ensure_route_plan_fully_converges(&route_params.route_plan)?;
+        validate_route_plan(&route_params.route_plan)?;
 
         // Ensure platform_fee_bps is 0, so operator can't steal funds by providing their account as platform_fee_account
         if route_params.platform_fee_bps != 0 {
@@ -117,7 +135,7 @@ impl ZapInfoProcessor for ZapJupV6SharedRouteInfoProcessor {
         let route_params = jupiter::client::args::SharedAccountsRoute::try_from_slice(payload)
             .map_err(|_| ProtozolZapError::InvalidZapOutParameters)?;
         ensure_whitelisted_swap_leg(&route_params.route_plan)?;
-        ensure_route_plan_fully_converges(&route_params.route_plan)?;
+        validate_route_plan(&route_params.route_plan)?;
 
         // Ensure platform_fee_bps is 0, so operator can't steal funds by providing their account as platform_fee_account
         if route_params.platform_fee_bps != 0 {
