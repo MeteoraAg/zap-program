@@ -23,6 +23,20 @@ pub struct ZapOutParameters {
     pub payload_data: Vec<u8>,
 }
 
+impl ZapOutParameters {
+    pub fn get_amm_disc(&self) -> Result<&[u8], ProtozolZapError> {
+        self.payload_data
+            .get(..8)
+            .ok_or(ProtozolZapError::InvalidZapOutParameters)
+    }
+
+    pub fn get_amm_payload(&self) -> Result<&[u8], ProtozolZapError> {
+        self.payload_data
+            .get(8..)
+            .ok_or(ProtozolZapError::InvalidZapOutParameters)
+    }
+}
+
 pub struct RawZapOutAmmInfo {
     source_index: usize,
     destination_index: usize,

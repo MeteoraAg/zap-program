@@ -3,7 +3,8 @@ use std::collections::{HashMap, HashSet};
 use crate::{
     constants::{
         JUP_V6_ROUTE_AMOUNT_IN_REVERSE_OFFSET, JUP_V6_ROUTE_DESTINATION_ACCOUNT_INDEX,
-        JUP_V6_ROUTE_SOURCE_ACCOUNT_INDEX, JUP_V6_SHARED_ACCOUNT_ROUTE_AMOUNT_IN_REVERSE_OFFSET,
+        JUP_V6_ROUTE_FIRST_SWAP_ACCOUNTS_OFFSET, JUP_V6_ROUTE_SOURCE_ACCOUNT_INDEX,
+        JUP_V6_SHARED_ACCOUNT_ROUTE_AMOUNT_IN_REVERSE_OFFSET,
         JUP_V6_SHARED_ACCOUNT_ROUTE_DESTINATION_ACCOUNT_INDEX,
         JUP_V6_SHARED_ACCOUNT_ROUTE_SOURCE_ACCOUNT_INDEX,
     },
@@ -12,8 +13,7 @@ use crate::{
     RawZapOutAmmInfo, ZapInfoProcessor, ZapOutParameters,
 };
 use borsh::BorshDeserialize;
-use jupiter::types::RoutePlanStep;
-use jupiter::types::Swap;
+use jupiter::types::{RoutePlanStep, Swap};
 
 pub struct ZapJupV6RouteInfoProcessor;
 
@@ -40,6 +40,66 @@ fn ensure_whitelisted_swap_leg(route_plan_steps: &[RoutePlanStep]) -> Result<(),
     }
 
     Ok(())
+}
+
+fn get_swap_source_index(swap: &Swap) -> Result<usize, ProtozolZapError> {
+    match swap {
+        // Meteora ref: https://github.com/jup-ag/jupiter-aggregator-program/blob/e583ab6619f4646b4d7a0e2514aec62ae9fb62ec/dex_interfaces/src/lib.rs#L1632
+        Swap::Meteora => Ok(1),
+        // MeteoraDammV2 ref: https://github.com/jup-ag/jupiter-aggregator-program/blob/e583ab6619f4646b4d7a0e2514aec62ae9fb62ec/dex_interfaces/src/lib.rs#L6150
+        Swap::MeteoraDammV2 | Swap::MeteoraDammV2WithRemainingAccounts => Ok(2),
+        // MeteoraDlmm ref: https://github.com/jup-ag/jupiter-aggregator-program/blob/e583ab6619f4646b4d7a0e2514aec62ae9fb62ec/dex_interfaces/src/lib.rs#L2879
+        // MeteoraDlmmSwapV2 ref: https://github.com/jup-ag/jupiter-aggregator-program/blob/e583ab6619f4646b4d7a0e2514aec62ae9fb62ec/dex_interfaces/src/lib.rs#L5956
+        Swap::MeteoraDlmm | Swap::MeteoraDlmmSwapV2 { .. } => Ok(4),
+        // Mercurial ref: https://github.com/jup-ag/jupiter-aggregator-program/blob/e583ab6619f4646b4d7a0e2514aec62ae9fb62ec/dex_interfaces/src/lib.rs#L40
+        Swap::Mercurial => Ok(4),
+        // Whirlpool ref: https://github.com/jup-ag/jupiter-aggregator-program/blob/e583ab6619f4646b4d7a0e2514aec62ae9fb62ec/dex_interfaces/src/lib.rs#L1396-L1398
+        Swap::Whirlpool { a_to_b } => {
+            if *a_to_b {
+                Ok(3)
+            } else {
+                Ok(5)
+            }
+        }
+        // WhirlpoolSwapV2 ref: https://github.com/jup-ag/jupiter-aggregator-program/blob/e583ab6619f4646b4d7a0e2514aec62ae9fb62ec/dex_interfaces/src/lib.rs#L1478-L1480
+        Swap::WhirlpoolSwapV2 { a_to_b, .. } => {
+            if *a_to_b {
+                Ok(7)
+            } else {
+                Ok(9)
+            }
+        }
+        // Raydium ref: https://github.com/jup-ag/jupiter-aggregator-program/blob/e583ab6619f4646b4d7a0e2514aec62ae9fb62ec/dex_interfaces/src/lib.rs#L769
+        Swap::Raydium => Ok(14),
+        // RaydiumV2 ref: https://github.com/jup-ag/jupiter-aggregator-program/blob/e583ab6619f4646b4d7a0e2514aec62ae9fb62ec/dex_interfaces/src/lib.rs#L849
+        Swap::RaydiumV2 => Ok(5),
+        // RaydiumCP ref: https://github.com/jup-ag/jupiter-aggregator-program/blob/e583ab6619f4646b4d7a0e2514aec62ae9fb62ec/dex_interfaces/src/lib.rs#L3297
+        Swap::RaydiumCP => Ok(4),
+        // RaydiumClmm ref: https://github.com/jup-ag/jupiter-aggregator-program/blob/e583ab6619f4646b4d7a0e2514aec62ae9fb62ec/dex_interfaces/src/lib.rs#L2247
+        // RaydiumClmmV2 ref: https://github.com/jup-ag/jupiter-aggregator-program/blob/e583ab6619f4646b4d7a0e2514aec62ae9fb62ec/dex_interfaces/src/lib.rs#L2320
+        Swap::RaydiumClmm | Swap::RaydiumClmmV2 => Ok(3),
+        _ => Err(ProtozolZapError::InvalidZapOutParameters),
+    }
+}
+
+pub(crate) fn get_jup_route_first_swap_source_account_index(
+    payload: &[u8],
+) -> Result<usize, ProtozolZapError> {
+    let route_params = jupiter::client::args::Route::try_from_slice(payload)
+        .map_err(|_| ProtozolZapError::InvalidZapOutParameters)?;
+
+    let first_step = route_params
+        .route_plan
+        .first()
+        .ok_or_else(|| ProtozolZapError::InvalidZapOutParameters)?;
+
+    if first_step.input_index != 0 {
+        return Err(ProtozolZapError::InvalidZapOutParameters);
+    }
+
+    let source_index = get_swap_source_index(&first_step.swap)?;
+
+    JUP_V6_ROUTE_FIRST_SWAP_ACCOUNTS_OFFSET.safe_add(source_index)
 }
 
 /// Validates the route plan:
