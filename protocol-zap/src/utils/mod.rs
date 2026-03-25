@@ -1,4 +1,4 @@
-use crate::constants::{SOL_ADDRESS, USDC_ADDRESS};
+use crate::constants::{SOL_ADDRESS, USDC_ADDRESS, ZAP_OUT_ACCOUNTS_LEN};
 use crate::error::ProtozolZapError;
 use crate::processors::jup_v6_zap::get_jup_route_first_swap_source_account_index;
 use crate::safe_math::SafeMath;
@@ -109,6 +109,7 @@ fn search_and_validate_zap_out_instruction(
             .get_account_meta_at(first_swap_source_index)
             .map_err(|_| ProtozolZapError::InvalidZapAccounts)?
             .key;
+        // first swap source address must be the same as the claimer token account key
         if first_swap_source_address != *claimer_token_account_key {
             return Err(ProtozolZapError::InvalidZapAccounts);
         }
@@ -173,8 +174,6 @@ fn extract_amm_accounts_and_info(
     zap_in_instruction: &IntrospectedInstruction<'_>,
 ) -> Result<ZapOutAmmInfo, ProtozolZapError> {
     // Accounts in ZapOutCtx
-    const ZAP_OUT_ACCOUNTS_LEN: usize = 2;
-
     let zap_user_token_in_address = zap_in_instruction
         .get_account_meta_at(0)
         .map_err(|_| ProtozolZapError::InvalidZapAccounts)?
