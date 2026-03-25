@@ -19,24 +19,9 @@ pub struct ZapJupV6RouteInfoProcessor;
 
 fn ensure_whitelisted_swap_leg(route_plan_steps: &[RoutePlanStep]) -> Result<(), ProtozolZapError> {
     for step in route_plan_steps {
-        match step.swap {
-            Swap::Meteora
-            | Swap::MeteoraDammV2
-            | Swap::MeteoraDammV2WithRemainingAccounts
-            | Swap::MeteoraDlmm
-            | Swap::MeteoraDlmmSwapV2 { .. }
-            | Swap::Mercurial
-            | Swap::Whirlpool { .. }
-            | Swap::WhirlpoolSwapV2 { .. }
-            | Swap::Raydium
-            | Swap::RaydiumV2
-            | Swap::RaydiumCP
-            | Swap::RaydiumClmm
-            | Swap::RaydiumClmmV2 => {
-                // whitelisted swap leg
-            }
-            _ => return Err(ProtozolZapError::InvalidZapOutParameters),
-        }
+        // delegate to get_swap_source_index so the whitelist and source index mapping are in sync
+        // but we discard the result
+        get_swap_source_index(&step.swap)?;
     }
 
     Ok(())
