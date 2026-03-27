@@ -46,7 +46,7 @@ describe("Zap out Jup V6", () => {
       "./target/deploy/zap.so"
     );
     svm.addProgramFromFile(DAMM_V2_PROGRAM_ID, "./tests/fixtures/damm_v2.so");
-    svm.addProgramFromFile(JUP_V6_PROGRAM_ID, "./tests/fixtures/jup_v6.so");
+    svm.addProgramFromFile(JUP_V6_PROGRAM_ID, "./tests/fixtures/jupiter.so");
 
     user = Keypair.generate();
     admin = Keypair.generate();
@@ -64,7 +64,12 @@ describe("Zap out Jup V6", () => {
 
   it("full flow zap out", async () => {
     const inputTokenAccount = tokenAMint;
-    const pool = await createDammV2Pool(svm, admin, tokenAMint, tokenBMint);
+    const pool = await createDammV2Pool({
+      svm,
+      creator: admin,
+      tokenAMint,
+      tokenBMint,
+    });
     const userPosition = await createPositionAndAddLiquidity(svm, user, pool);
     const tokenAAccount = getAssociatedTokenAddressSync(
       tokenAMint,

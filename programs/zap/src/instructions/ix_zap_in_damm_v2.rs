@@ -168,9 +168,7 @@ pub fn handle_zap_in_damm_v2<'c: 'info, 'info>(
     let (liquidity, trade_direction) = ledger.get_liquidity_from_amounts_and_trade_direction(
         &token_a_transfer_fee_calculator,
         &token_b_transfer_fee_calculator,
-        pool.sqrt_price,
-        pool.sqrt_min_price,
-        pool.sqrt_max_price,
+        &pool,
     )?;
 
     drop(pool);
@@ -265,9 +263,7 @@ pub fn handle_zap_in_damm_v2<'c: 'info, 'info>(
     let (liquidity, _trade_direction) = ledger.get_liquidity_from_amounts_and_trade_direction(
         &token_a_transfer_fee_calculator,
         &token_b_transfer_fee_calculator,
-        pool.sqrt_price,
-        pool.sqrt_min_price,
-        pool.sqrt_max_price,
+        &pool,
     )?;
 
     if liquidity > 0 {

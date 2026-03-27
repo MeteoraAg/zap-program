@@ -28,8 +28,8 @@ importers:
         version: 0.1.0(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
     devDependencies:
       '@meteora-ag/cp-amm-sdk':
-        specifier: ^1.1.9
-        version: 1.2.3(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.3)(utf-8-validate@5.0.10)
+        specifier: ^1.3.7
+        version: 1.3.7(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@types/bn.js':
         specifier: ^5.1.0
         version: 5.2.0
@@ -75,8 +75,8 @@ packages:
     peerDependencies:
       '@solana/web3.js': ^1.69.0
 
-  '@meteora-ag/cp-amm-sdk@1.2.3':
-    resolution: {integrity: sha512-e1wo88tBe4luv/CLuKdUSVaU3ZiliU4yFQQjkP6uiawEzw827OXl60WzY0D+vitbWIad1J5u+bMepuFWv2HSdg==}
+  '@meteora-ag/cp-amm-sdk@1.3.7':
+    resolution: {integrity: sha512-k7vijBXhKtT4+geHcrRbLlgggXDgl3WtgsCTHAZAtzl1JEYeN0LopcbuOmeuRLEQVq73TlzSwhIlDCH6M3JyuA==}
 
   '@noble/curves@1.9.2':
     resolution: {integrity: sha512-HxngEd2XUcg9xi20JkwlLCtYwfoFw4JGkuZpT+WlsPD4gB/cxkvTD8fSsoAnphGZhFdZYKeQIPCuFlWPm1uE0g==}
@@ -565,12 +565,14 @@ packages:
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
+    libc: [glibc]
 
   litesvm-linux-x64-musl@0.1.0:
     resolution: {integrity: sha512-3E9gC5HRCEHFsfUNDhAY9JKx6ou6JazlnYMhT89JgbAN/YsJmyEgkTfY6W7TVV90g4EAJ/K4smSmg+vV413mYQ==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
+    libc: [musl]
 
   litesvm@0.1.0:
     resolution: {integrity: sha512-XfpvWgYxFQUZxwFzWJTsuHRc1y34q8WtC60lhvH1xb6YX1/RBLqzIClp2JkxtlqGnDi/WPlThsXGmC3SinuPMQ==}
@@ -892,12 +894,13 @@ snapshots:
       bn.js: 5.2.2
       buffer-layout: 1.2.2
 
-  '@meteora-ag/cp-amm-sdk@1.2.3(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.3)(utf-8-validate@5.0.10)':
+  '@meteora-ag/cp-amm-sdk@1.3.7(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.3)(utf-8-validate@5.0.10)':
     dependencies:
       '@coral-xyz/anchor': 0.31.1(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@solana/spl-token': 0.4.13(@solana/web3.js@1.98.2(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10))(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@solana/web3.js': 1.98.2(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)
       '@types/bn.js': 5.2.0
+      bn.js: 5.2.2
       chain: 0.4.2
       decimal.js: 10.6.0
       invariant: 2.2.4

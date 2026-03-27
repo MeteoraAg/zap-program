@@ -5,26 +5,18 @@ use damm_v2::{
         BaseFeeHandlerBuilder,
     },
     constants::fee::get_max_fee_numerator,
-    curve::{
-        get_delta_amount_a_unsigned, get_delta_amount_b_unsigned, get_next_sqrt_price_from_input,
-    },
     params::swap::TradeDirection,
     state::{
-        fee::{BaseFeeMode, FeeMode, FeeOnAmountResult},
-        Pool,
+        fee::{BaseFeeMode, FeeMode},
+        CollectFeeMode, Pool,
     },
-    u128x128_math::Rounding,
-    PoolError,
 };
-use ruint::aliases::{U192, U256, U512};
+use ruint::aliases::U192;
 
 use crate::{
-    constants::MAX_BASIS_POINT, error::ZapError, safe_math::SafeMath, TransferFeeCalculator,
+    constants::MAX_BASIS_POINT, error::ZapError, get_liquidity_handler, safe_math::SafeMath,
+    LiquidityHandler, SwapAmountFromInput, TransferFeeCalculator,
 };
-
-struct SwapAmountFromInput {
-    output_amount: u64,
-}
 
 pub fn get_swap_result_status(
     token_a_transfer_fee_calculator: &TransferFeeCalculator,
@@ -74,50 +66,12 @@ pub fn get_swap_result_status(
     }
 }
 
-fn calculate_a_to_b_from_amount_in(pool: &Pool, amount_in: u64) -> Result<SwapAmountFromInput> {
-    // finding new target price
-    let next_sqrt_price =
-        get_next_sqrt_price_from_input(pool.sqrt_price, pool.liquidity, amount_in, true)?;
-
-    if next_sqrt_price < pool.sqrt_min_price {
-        return Err(PoolError::PriceRangeViolation.into());
-    }
-
-    // finding output amount
-    let output_amount = get_delta_amount_b_unsigned(
-        next_sqrt_price,
-        pool.sqrt_price,
-        pool.liquidity,
-        Rounding::Down,
-    )?;
-
-    Ok(SwapAmountFromInput { output_amount })
-}
-
-fn calculate_b_to_a_from_amount_in(pool: &Pool, amount_in: u64) -> Result<SwapAmountFromInput> {
-    // finding new target price
-    let next_sqrt_price =
-        get_next_sqrt_price_from_input(pool.sqrt_price, pool.liquidity, amount_in, false)?;
-
-    if next_sqrt_price > pool.sqrt_max_price {
-        return Err(PoolError::PriceRangeViolation.into());
-    }
-    // finding output amount
-    let output_amount = get_delta_amount_a_unsigned(
-        pool.sqrt_price,
-        next_sqrt_price,
-        pool.liquidity,
-        Rounding::Down,
-    )?;
-
-    Ok(SwapAmountFromInput { output_amount })
-}
-
 struct SimulateSwapResult {
     user_amount_in: u64,
     user_amount_out: u64,
     pool_amount_in: u64,
     pool_amount_out: u64,
+    compounding_fee: u64,
 }
 
 /// Replicate exactly how swap_exact_in work
@@ -130,16 +84,25 @@ fn calculate_swap_result(
     trade_direction: TradeDirection,
     fee_handler: &FeeHandler,
     fee_mode: &FeeMode,
+    handler: &dyn LiquidityHandler,
 ) -> Result<SimulateSwapResult> {
-    let excluded_fee_amount_in = if trade_direction == TradeDirection::AtoB {
-        token_a_transfer_fee_calculator
-            .calculate_transfer_fee_excluded_amount(amount_in)?
-            .amount
-    } else {
-        token_b_transfer_fee_calculator
-            .calculate_transfer_fee_excluded_amount(amount_in)?
-            .amount
-    };
+    let (input_transfer_fee_calculator, output_transfer_fee_calculator) =
+        if trade_direction == TradeDirection::AtoB {
+            (
+                token_a_transfer_fee_calculator,
+                token_b_transfer_fee_calculator,
+            )
+        } else {
+            (
+                token_b_transfer_fee_calculator,
+                token_a_transfer_fee_calculator,
+            )
+        };
+
+    let excluded_fee_amount_in = input_transfer_fee_calculator
+        .calculate_transfer_fee_excluded_amount(amount_in)?
+        .amount;
+
     let trade_fee_numerator = fee_handler.get_trade_fee_numerator(
         excluded_fee_amount_in,
         current_point,
@@ -148,50 +111,46 @@ fn calculate_swap_result(
         pool.pool_fees.init_sqrt_price,
         pool.sqrt_price,
     )?;
-    let actual_amount_in = if fee_mode.fees_on_input {
-        let FeeOnAmountResult { amount, .. } = pool.pool_fees.get_fee_on_amount(
+
+    let (actual_amount_in, input_compounding_fee) = if fee_mode.fees_on_input {
+        let fee_result = pool.pool_fees.get_fee_on_amount(
             excluded_fee_amount_in,
             trade_fee_numerator,
             fee_mode.has_referral,
-            false,
         )?;
-
-        amount
+        (fee_result.amount, fee_result.compounding_fee)
     } else {
-        excluded_fee_amount_in
+        (excluded_fee_amount_in, 0)
     };
+
     let SwapAmountFromInput { output_amount, .. } = match trade_direction {
-        TradeDirection::AtoB => calculate_a_to_b_from_amount_in(pool, actual_amount_in),
-        TradeDirection::BtoA => calculate_b_to_a_from_amount_in(pool, actual_amount_in),
+        TradeDirection::AtoB => handler.calculate_a_to_b_from_amount_in(actual_amount_in),
+        TradeDirection::BtoA => handler.calculate_b_to_a_from_amount_in(actual_amount_in),
     }?;
 
-    let actual_amount_out = if fee_mode.fees_on_input {
-        output_amount
+    let (actual_amount_out, output_compounding_fee) = if fee_mode.fees_on_input {
+        (output_amount, 0)
     } else {
-        let FeeOnAmountResult { amount, .. } = pool.pool_fees.get_fee_on_amount(
+        let fee_result = pool.pool_fees.get_fee_on_amount(
             output_amount,
             trade_fee_numerator,
             fee_mode.has_referral,
-            false,
         )?;
-        amount
+        (fee_result.amount, fee_result.compounding_fee)
     };
 
-    let excluded_fee_amount_out = if trade_direction == TradeDirection::AtoB {
-        token_b_transfer_fee_calculator
-            .calculate_transfer_fee_excluded_amount(actual_amount_out)?
-            .amount
-    } else {
-        token_a_transfer_fee_calculator
-            .calculate_transfer_fee_excluded_amount(actual_amount_out)?
-            .amount
-    };
+    let compounding_fee = input_compounding_fee.safe_add(output_compounding_fee)?;
+
+    let excluded_fee_amount_out = output_transfer_fee_calculator
+        .calculate_transfer_fee_excluded_amount(actual_amount_out)?
+        .amount;
 
     Ok(SimulateSwapResult {
         user_amount_in: excluded_fee_amount_out,
         user_amount_out: amount_in,
         pool_amount_in: actual_amount_in,
         pool_amount_out: output_amount,
+        compounding_fee,
     })
 }
 
@@ -218,13 +177,16 @@ fn validate_swap_result(
         user_amount_out,
         pool_amount_in,
         pool_amount_out,
+        compounding_fee,
     } = swap_result;
     // apply swap result
     if trade_direction == TradeDirection::AtoB {
         let user_amount_a = remaining_amount.safe_sub(user_amount_out)?;
         let user_amount_b = user_amount_in;
         let pool_amount_a = total_amount_a.safe_add(pool_amount_in)?;
-        let pool_amount_b = total_amount_b.safe_sub(pool_amount_out)?;
+        let pool_amount_b = total_amount_b
+            .safe_sub(pool_amount_out)?
+            .safe_add(compounding_fee)?; // compounding fee is only applied on token_b
         get_swap_result_status(
             token_a_transfer_fee_calculator,
             token_b_transfer_fee_calculator,
@@ -237,7 +199,9 @@ fn validate_swap_result(
         let user_amount_a = user_amount_in;
         let user_amount_b = remaining_amount.safe_sub(user_amount_out)?;
         let pool_amount_a = total_amount_a.safe_sub(pool_amount_out)?;
-        let pool_amount_b = total_amount_b.safe_add(pool_amount_in)?;
+        let pool_amount_b = total_amount_b
+            .safe_add(pool_amount_in)?
+            .safe_add(compounding_fee)?; // compounding fee is only applied on token_b
         get_swap_result_status(
             token_a_transfer_fee_calculator,
             token_b_transfer_fee_calculator,
@@ -296,7 +260,7 @@ fn get_fee_handler(
     trade_direction: TradeDirection,
 ) -> Result<FeeHandler> {
     let variable_fee_numerator = pool.pool_fees.dynamic_fee.get_variable_fee()?;
-    let max_fee_numerator = get_max_fee_numerator(pool.version)?;
+    let max_fee_numerator = get_max_fee_numerator(pool.fee_version)?;
 
     let base_fee_mode = pool.pool_fees.base_fee.base_fee_info.get_base_fee_mode()?;
     match BaseFeeMode::try_from(base_fee_mode) {
@@ -383,9 +347,13 @@ pub fn calculate_swap_amount(
 
     let fee_handler = get_fee_handler(pool, current_point, trade_direction)?;
 
-    let fee_mode = FeeMode::get_fee_mode(pool.collect_fee_mode, trade_direction, false)?;
+    let collect_fee_mode = CollectFeeMode::try_from(pool.collect_fee_mode)
+        .map_err(|_| ZapError::UnsupportedFeeMode)?;
+    let fee_mode = FeeMode::get_fee_mode(collect_fee_mode, trade_direction, false);
 
-    let (pool_amount_a, pool_amount_b) = pool.get_reserves_amount()?;
+    let (pool_amount_a, pool_amount_b) = pool.get_liquidity_handler()?.get_reserves_amount()?;
+
+    let handler = get_liquidity_handler(pool)?;
 
     // max 20 loops
     // For each loop program consumed ~ 5394.3 -> 5,395 CUs
@@ -407,6 +375,7 @@ pub fn calculate_swap_amount(
             trade_direction,
             &fee_handler,
             &fee_mode,
+            handler.as_ref(),
         )?;
 
         // update swap amount
@@ -451,32 +420,6 @@ pub fn calculate_swap_amount(
     }
 
     Ok((swap_in_amount, swap_out_amount))
-}
-
-// Δa = L * (1 / √P_lower - 1 / √P_upper) => L = Δa / (1 / √P_lower - 1 / √P_upper)
-pub fn get_liquidity_from_amount_a(
-    amount_a: u64,
-    sqrt_max_price: u128,
-    sqrt_price: u128,
-) -> Result<u128> {
-    let price_delta = U512::from(sqrt_max_price.safe_sub(sqrt_price)?);
-    let prod = U512::from(amount_a)
-        .safe_mul(U512::from(sqrt_price))?
-        .safe_mul(U512::from(sqrt_max_price))?;
-    let liquidity = prod.safe_div(price_delta)?; // round down
-    Ok(liquidity.try_into().map_err(|_| ZapError::TypeCastFailed)?)
-}
-
-// Δb = L (√P_upper - √P_lower) => L = Δb / (√P_upper - √P_lower)
-pub fn get_liquidity_from_amount_b(
-    amount_b: u64,
-    sqrt_min_price: u128,
-    sqrt_price: u128,
-) -> Result<u128> {
-    let price_delta = U256::from(sqrt_price.safe_sub(sqrt_min_price)?);
-    let quote_amount = U256::from(amount_b).safe_shl(128)?;
-    let liquidity = quote_amount.safe_div(price_delta)?; // round down
-    return Ok(liquidity.try_into().map_err(|_| ZapError::TypeCastFailed)?);
 }
 
 // u32::MAX == 4_294_967_295, so we dont allow price change to go over 4_294_967_295 * 100 / 10_000 = 42_949_672 (%)
