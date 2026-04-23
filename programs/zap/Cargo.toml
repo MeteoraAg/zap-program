@@ -16,6 +16,12 @@ no-entrypoint = []
 no-idl = []
 no-log-ix-name = []
 idl-build = ["anchor-lang/idl-build", "anchor-spl/idl-build"]
+custom-heap = []
+custom-panic = []
+anchor-debug = []
+
+[lints]
+workspace = true
 
 
 [dependencies]
@@ -25,6 +31,6 @@ bytemuck = { workspace = true, features = ["derive", "min_const_generics"] }
 dlmm = { path = "../../libs/dlmm" }
 damm-v2 = { git = "https://github.com/MeteoraAg/damm-v2", features = [
     "cpi",
-], rev = "58a13fcf45516a9f27f2bd2a2056fb66673454e0", package = "cp-amm" }
+], rev = "c918cb8023dc01cb01a84c322bb94128cd0abfc8", package = "cp-amm" }
 ruint = { workspace = true }
 zap-sdk = { path = "../../zap-sdk" }

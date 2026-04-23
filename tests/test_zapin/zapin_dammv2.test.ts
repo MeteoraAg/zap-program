@@ -37,7 +37,7 @@ import {
   swap,
 } from "../common/damm_v2";
 import { getAssociatedTokenAddressSync } from "@solana/spl-token";
-import { BN } from "@coral-xyz/anchor";
+import { BN } from "@anchor-lang/core";
 import { getDammV2Pool, getDammV2Position } from "../common/pda";
 import { expect } from "chai";
 import {
