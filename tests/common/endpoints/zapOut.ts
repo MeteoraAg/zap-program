@@ -1,4 +1,4 @@
-import { AnchorProvider, BN, Program, Wallet } from "@coral-xyz/anchor";
+import { AnchorProvider, BN, Program, Wallet } from "@anchor-lang/core";
 import { LiteSVM } from "litesvm";
 
 import ZapIDL from "../../../target/idl/zap.json";

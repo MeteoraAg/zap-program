@@ -1,4 +1,5 @@
-#![allow(unexpected_cfgs)]
+// Ignored due to https://github.com/solana-foundation/anchor/issues/4378
+#![allow(deprecated)]
 
 use anchor_lang::prelude::*;
 
@@ -21,8 +22,8 @@ declare_id!("zapvX9M3uf5pvy4wRPAbQgdQsM1xmuiFnkfHKPvwMiz");
 #[program]
 pub mod zap {
     use super::*;
-    pub fn zap_out<'c: 'info, 'info>(
-        ctx: Context<'_, '_, 'c, 'info, ZapOutCtx<'info>>,
+    pub fn zap_out<'info>(
+        ctx: Context<'info, ZapOutCtx<'info>>,
         params: ZapOutParameters,
     ) -> Result<()> {
         instructions::handle_zap_out(ctx, &params)
@@ -58,16 +59,16 @@ pub mod zap {
         )
     }
 
-    pub fn zap_in_damm_v2<'c: 'info, 'info>(
-        ctx: Context<'_, '_, 'c, 'info, ZapInDammv2Ctx<'info>>,
+    pub fn zap_in_damm_v2<'info>(
+        ctx: Context<'info, ZapInDammv2Ctx<'info>>,
         pre_sqrt_price: u128,
         max_sqrt_price_change_bps: u32,
     ) -> Result<()> {
         instructions::handle_zap_in_damm_v2(ctx, pre_sqrt_price, max_sqrt_price_change_bps)
     }
 
-    pub fn zap_in_dlmm_for_initialized_position<'c: 'info, 'info>(
-        ctx: Context<'_, '_, 'c, 'info, ZapInDlmmForInitializedPositionCtx<'info>>,
+    pub fn zap_in_dlmm_for_initialized_position<'info>(
+        ctx: Context<'info, ZapInDlmmForInitializedPositionCtx<'info>>,
         active_id: i32,
         min_delta_id: i32,
         max_delta_id: i32,
@@ -88,8 +89,8 @@ pub mod zap {
         )
     }
 
-    pub fn zap_in_dlmm_for_uninitialized_position<'c: 'info, 'info>(
-        ctx: Context<'_, '_, 'c, 'info, ZapInDlmmForUnintializedPositionCtx<'info>>,
+    pub fn zap_in_dlmm_for_uninitialized_position<'info>(
+        ctx: Context<'info, ZapInDlmmForUnintializedPositionCtx<'info>>,
         min_delta_id: i32,
         max_delta_id: i32,
         active_id: i32,

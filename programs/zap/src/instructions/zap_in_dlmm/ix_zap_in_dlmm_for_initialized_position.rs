@@ -46,7 +46,7 @@ pub struct ZapInDlmmForInitializedPositionCtx<'info> {
     pub token_x_mint: InterfaceAccount<'info, Mint>,
     pub token_y_mint: InterfaceAccount<'info, Mint>,
 
-    pub dlmm_program: Program<'info, dlmm::program::LbClmm>,
+    pub dlmm_program: Program<'info, dlmm::dlmm::program::LbClmm>,
 
     /// owner of position
     pub owner: Signer<'info>,
@@ -68,8 +68,8 @@ pub struct ZapInDlmmForInitializedPositionCtx<'info> {
     pub dlmm_event_authority: UncheckedAccount<'info>,
 }
 
-pub fn handle_zap_in_dlmm_for_initialized_position<'c: 'info, 'info>(
-    ctx: Context<'_, '_, 'c, 'info, ZapInDlmmForInitializedPositionCtx<'info>>,
+pub fn handle_zap_in_dlmm_for_initialized_position<'info>(
+    ctx: Context<'info, ZapInDlmmForInitializedPositionCtx<'info>>,
     active_id: i32,
     max_active_bin_slippage: u16,
     min_delta_id: i32,
@@ -166,7 +166,7 @@ pub fn handle_zap_in_dlmm_for_initialized_position<'c: 'info, 'info>(
 
     dlmm::cpi::rebalance_liquidity(
         CpiContext::new(
-            ctx.accounts.dlmm_program.to_account_info(),
+            ctx.accounts.dlmm_program.key(),
             dlmm::cpi::accounts::RebalanceLiquidity {
                 position: ctx.accounts.position.to_account_info(),
                 lb_pair: ctx.accounts.lb_pair.to_account_info(),
