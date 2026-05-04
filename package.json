@@ -4,7 +4,7 @@
     "lint:fix": "prettier */*.ts \"*/**/*{.js,.ts}\" -w",
     "lint": "prettier */*.js \"*/**/*{.js,.ts}\" --check",
     "build-local": "anchor build --ignore-keys -- --features local",
-    "test": "ANCHOR_WALLET=~/.config/solana/id.json bunx tsx node_modules/.bin/_mocha -t 1000000 tests/**/*.ts",
+    "test": "ANCHOR_WALLET=~/.config/solana/id.json bunx ts-mocha --no-experimental-strip-types -p ./tsconfig.json -t 1000000 tests/**/*.ts",
     "build-local-test": "bun run build-local && bun run test"
   },
   "dependencies": {

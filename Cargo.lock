@@ -625,7 +625,7 @@ dependencies = [
 [[package]]
 name = "cp-amm"
 version = "0.2.1"
-source = "git+https://github.com/MeteoraAg/damm-v2?rev=c918cb8023dc01cb01a84c322bb94128cd0abfc8#c918cb8023dc01cb01a84c322bb94128cd0abfc8"
+source = "git+https://github.com/MeteoraAg/damm-v2?rev=b22a28f4fd9130aa3c46be3bd9633356e621f9eb#b22a28f4fd9130aa3c46be3bd9633356e621f9eb"
 dependencies = [
  "anchor-lang",
  "anchor-spl",
