@@ -15,7 +15,7 @@ User can withdraw liquidity or claim fees from AMM pools and immediately swaps t
 
 ### Dependencies
 
-- anchor 1.0.0
+- anchor 1.0.2
 - solana 3.1.10
 - rust 1.93.0
 
