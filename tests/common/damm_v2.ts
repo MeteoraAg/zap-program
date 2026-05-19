@@ -6,7 +6,7 @@ import {
   IdlTypes,
   Program,
   Wallet,
-} from "@coral-xyz/anchor";
+} from "@anchor-lang/core";
 
 import { CpAmm } from "./idl/damm_v2";
 import CpAmmIDL from "../../idls/damm_v2.json";

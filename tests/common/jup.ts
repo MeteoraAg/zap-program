@@ -3,7 +3,7 @@ import { PublicKey } from "@solana/web3.js";
 import { LiteSVM } from "litesvm";
 import { Jupiter } from "./idl/jupiter";
 import JupIDL from "../../idls/jupiter.json";
-import { IdlTypes } from "@coral-xyz/anchor";
+import { IdlTypes } from "@anchor-lang/core";
 import { DAMM_V2_PROGRAM_ID } from "./damm_v2";
 import {
   deriveDammV2EventAuthority,

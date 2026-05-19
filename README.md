@@ -15,25 +15,21 @@ User can withdraw liquidity or claim fees from AMM pools and immediately swaps t
 
 ### Dependencies
 
-- anchor 0.31.1
-- solana 2.1.0
-- rust 1.85.0
-
-
+- anchor 1.0.2
+- solana 3.1.10
+- rust 1.93.0
 
 ### Build
 
-Program
-
 ```
-anchor build
+anchor build --ignore-keys
 ```
 
 ### Test
 
 ```
-pnpm install
-pnpm test
+bun install
+bun run build-local-test
 ```
 
 ### Program Address

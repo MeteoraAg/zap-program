@@ -76,8 +76,8 @@ pub fn modify_instruction_data(
     Ok(())
 }
 
-pub fn handle_zap_out<'c: 'info, 'info>(
-    ctx: Context<'_, '_, 'c, 'info, ZapOutCtx<'info>>,
+pub fn handle_zap_out<'info>(
+    ctx: Context<'info, ZapOutCtx<'info>>,
     params: &ZapOutParameters,
 ) -> Result<()> {
     // validate params
