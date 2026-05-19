@@ -34,3 +34,6 @@ unexpected_cfgs = { level = "warn", check-cfg = [
 protocol-zap = { path = "protocol-zap" }
 zap-sdk = { path = "zap-sdk" }
 jupiter = { path = "libs/jupiter" }
+
+[workspace.metadata.cli]
+solana = "3.1.10"
