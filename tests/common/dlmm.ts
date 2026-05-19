@@ -5,7 +5,7 @@ import {
   IdlTypes,
   Program,
   Wallet,
-} from "@coral-xyz/anchor";
+} from "@anchor-lang/core";
 import * as borsh from "borsh";
 import { LbClmm } from "./idl/dlmm";
 import DlmmIDL from "./idl/dlmm.json";

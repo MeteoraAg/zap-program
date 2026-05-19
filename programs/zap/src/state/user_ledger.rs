@@ -1,6 +1,5 @@
 use crate::{
-    error::ZapError, get_liquidity_handler, liquidity_handler::LiquidityHandler,
-    math::safe_math::SafeMath, TransferFeeCalculator,
+    error::ZapError, get_liquidity_handler, math::safe_math::SafeMath, TransferFeeCalculator,
 };
 use anchor_lang::prelude::*;
 use damm_v2::{params::swap::TradeDirection, state::Pool};

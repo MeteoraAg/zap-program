@@ -6,3 +6,6 @@ node_modules
 test-ledger
 .yarn
 deploy.sh
+
+.notes
+CLAUDE.md
