@@ -21,6 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Breaking Changes
 
+## zap [0.2.3]
+
 ## zap [0.2.2] [PR #46](https://github.com/MeteoraAg/zap-program/pull/46)
 
 ### Added
