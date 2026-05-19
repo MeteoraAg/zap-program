@@ -1,16 +1,16 @@
 use jupiter::types::{RoutePlanStep, Swap};
 
-use crate::jup_v6_zap::ensure_route_plan_fully_converges;
+use crate::jup_v6_zap::validate_route_plan;
 
 #[test]
-fn test_ensure_route_plan_fully_converges_success() {
+fn test_validate_route_plan_success() {
     let route_plan_1_market = vec![RoutePlanStep {
         swap: Swap::Meteora,
         percent: 100,
         input_index: 0,
         output_index: 1,
     }];
-    assert!(ensure_route_plan_fully_converges(&route_plan_1_market).is_ok());
+    assert!(validate_route_plan(&route_plan_1_market).is_ok());
 
     // Layer 1 Split into 3:    0 -> 1 (60%), 0 -> 2 (5%), 0 -> 3 (35%)
     // Layer 2 Split into 3:    1 -> 5 (50%), 1 -> 6 (50%), 2 -> 6 (100%), 3 -> 6 (33%), 3 -> 7 (67%)
@@ -86,7 +86,7 @@ fn test_ensure_route_plan_fully_converges_success() {
             output_index: 8,
         },
     ];
-    assert!(ensure_route_plan_fully_converges(&route_plan_funnel).is_ok());
+    assert!(validate_route_plan(&route_plan_funnel).is_ok());
 
     let route_plan_sequential = vec![
         RoutePlanStep {
@@ -120,7 +120,7 @@ fn test_ensure_route_plan_fully_converges_success() {
             output_index: 5,
         },
     ];
-    assert!(ensure_route_plan_fully_converges(&route_plan_sequential).is_ok());
+    assert!(validate_route_plan(&route_plan_sequential).is_ok());
 
     // diamond: 1 -> 2 -> 4 -> 2 -> 1
     // Layer 1: 0 -> 1 (60%), 0 -> 2 (40%)
@@ -205,21 +205,21 @@ fn test_ensure_route_plan_fully_converges_success() {
             output_index: 9,
         },
     ];
-    assert!(ensure_route_plan_fully_converges(&route_plan_diamond).is_ok());
+    assert!(validate_route_plan(&route_plan_diamond).is_ok());
 }
 
 #[test]
-fn test_ensure_route_plan_fully_converges_failure() {
+fn test_validate_route_plan_failure() {
     let route_plan_1_market = vec![RoutePlanStep {
         swap: Swap::Meteora,
         percent: 50,
         input_index: 0,
         output_index: 1,
     }];
-    assert!(ensure_route_plan_fully_converges(&route_plan_1_market).is_err());
+    assert!(validate_route_plan(&route_plan_1_market).is_err());
 
     let route_plan_empty: Vec<RoutePlanStep> = vec![];
-    assert!(ensure_route_plan_fully_converges(&route_plan_empty).is_err());
+    assert!(validate_route_plan(&route_plan_empty).is_err());
 
     let route_plan_cycle = vec![
         RoutePlanStep {
@@ -235,7 +235,7 @@ fn test_ensure_route_plan_fully_converges_failure() {
             output_index: 0,
         },
     ];
-    assert!(ensure_route_plan_fully_converges(&route_plan_cycle).is_err());
+    assert!(validate_route_plan(&route_plan_cycle).is_err());
 
     let route_plan_over_100_pct = vec![
         RoutePlanStep {
@@ -263,7 +263,7 @@ fn test_ensure_route_plan_fully_converges_failure() {
             output_index: 3,
         },
     ];
-    assert!(ensure_route_plan_fully_converges(&route_plan_over_100_pct).is_err());
+    assert!(validate_route_plan(&route_plan_over_100_pct).is_err());
 
     let route_plan_sequential = vec![
         RoutePlanStep {
@@ -297,7 +297,7 @@ fn test_ensure_route_plan_fully_converges_failure() {
             output_index: 5,
         },
     ];
-    assert!(ensure_route_plan_fully_converges(&route_plan_sequential).is_err());
+    assert!(validate_route_plan(&route_plan_sequential).is_err());
 
     // Same as happy diamond but layer 4 outputs diverge: 7 -> 9, 8 -> 10
     // Two terminal outputs (9 and 10)
@@ -379,5 +379,66 @@ fn test_ensure_route_plan_fully_converges_failure() {
             output_index: 10,
         },
     ];
-    assert!(ensure_route_plan_fully_converges(&route_plan_diamond).is_err());
+    assert!(validate_route_plan(&route_plan_diamond).is_err());
+}
+
+#[test]
+fn test_validate_route_plan_failure_index_0_not_consumed() {
+    let route_plan = vec![RoutePlanStep {
+        swap: Swap::Meteora,
+        percent: 100,
+        input_index: 1,
+        output_index: 2,
+    }];
+    assert!(validate_route_plan(&route_plan).is_err());
+}
+
+#[test]
+fn test_validate_route_plan_failure_output_to_consumed_input() {
+    let route_plan = vec![
+        RoutePlanStep {
+            swap: Swap::Meteora,
+            percent: 1,
+            input_index: 0,
+            output_index: 2,
+        },
+        RoutePlanStep {
+            swap: Swap::Raydium,
+            percent: 100,
+            input_index: 2, // index 2 fully consumed
+            output_index: 3,
+        },
+        RoutePlanStep {
+            swap: Swap::MeteoraDlmm,
+            percent: 99,
+            input_index: 0,
+            output_index: 2, // outputting to index 2 which was already consumed as input in step 2
+        },
+        RoutePlanStep {
+            swap: Swap::RaydiumCP,
+            percent: 100,
+            input_index: 3,
+            output_index: 4,
+        },
+    ];
+    assert!(validate_route_plan(&route_plan).is_err());
+}
+
+#[test]
+fn test_validate_route_plan_failure_phantom_input() {
+    let route_plan = vec![
+        RoutePlanStep {
+            swap: Swap::Meteora,
+            percent: 100,
+            input_index: 0,
+            output_index: 1,
+        },
+        RoutePlanStep {
+            swap: Swap::Raydium,
+            percent: 100,
+            input_index: 2, // index 2 was never produced by any prior step
+            output_index: 1,
+        },
+    ];
+    assert!(validate_route_plan(&route_plan).is_err());
 }

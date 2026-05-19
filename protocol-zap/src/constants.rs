@@ -1,6 +1,8 @@
 use pinocchio::pubkey::Pubkey;
 use pinocchio_pubkey::pubkey;
 
+pub const ZAP_OUT_ACCOUNTS_LEN: usize = 2;
+
 pub const JUP_V6_SHARED_ACCOUNT_ROUTE_AMOUNT_IN_REVERSE_OFFSET: usize = 1 + 2 + 8 + 8; // Due to jupiter parameters have dynamic length type (vec), we have to do parameters_data.length - JUP_V6_SHARED_ACCOUNT_ROUTE_AMOUNT_IN_REVERSE_OFFSET
 pub const JUP_V6_SHARED_ACCOUNT_ROUTE_SOURCE_ACCOUNT_INDEX: usize = 3;
 pub const JUP_V6_SHARED_ACCOUNT_ROUTE_DESTINATION_ACCOUNT_INDEX: usize = 6;
@@ -8,6 +10,11 @@ pub const JUP_V6_SHARED_ACCOUNT_ROUTE_DESTINATION_ACCOUNT_INDEX: usize = 6;
 pub const JUP_V6_ROUTE_AMOUNT_IN_REVERSE_OFFSET: usize = 1 + 2 + 8 + 8;
 pub const JUP_V6_ROUTE_SOURCE_ACCOUNT_INDEX: usize = 2;
 pub const JUP_V6_ROUTE_DESTINATION_ACCOUNT_INDEX: usize = 4;
+// the offset of the first swap accounts in the route plan when called through ix_zap_out.
+// 2 (ix_zap_out) + 9 (jup route named accounts) + 1 (jup swap_program that is consumed in extract_swap_program)
+// ref for 9 named accounts: https://github.com/jup-ag/jupiter-aggregator-program/blob/e583ab6619f4646b4d7a0e2514aec62ae9fb62ec/programs/jupiter/src/lib.rs#L410
+// ref for swap_program: https://github.com/jup-ag/jupiter-aggregator-program/blob/e583ab6619f4646b4d7a0e2514aec62ae9fb62ec/programs/jupiter/src/process_swap.rs#L3455
+pub const JUP_V6_ROUTE_FIRST_SWAP_ACCOUNTS_OFFSET: usize = ZAP_OUT_ACCOUNTS_LEN + 9 + 1;
 
 pub const DLMM_SWAP2_AMOUNT_IN_OFFSET: u16 = 8;
 pub const DLMM_SWAP2_SOURCE_ACCOUNT_INDEX: usize = 4;

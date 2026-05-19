@@ -1,10 +1,12 @@
-use crate::constants::{SOL_ADDRESS, USDC_ADDRESS};
+use crate::constants::{SOL_ADDRESS, USDC_ADDRESS, ZAP_OUT_ACCOUNTS_LEN};
 use crate::error::ProtozolZapError;
+use crate::processors::jup_v6_zap::get_jup_route_first_swap_source_account_index;
 use crate::safe_math::SafeMath;
 use crate::{constants, get_zap_amm_processor, RawZapOutAmmInfo, ZapOutParameters};
 use borsh::BorshDeserialize;
 use pinocchio::pubkey::Pubkey;
 use pinocchio::sysvars::instructions::{Instructions, IntrospectedInstruction};
+use zap_sdk::constants::JUP_V6_ROUTE_DISC;
 mod token;
 use token::{get_associated_token_address, get_token_amount};
 
@@ -75,7 +77,7 @@ fn search_and_validate_zap_out_instruction(
         amm_source_token_address: source_token_address,
         amm_destination_token_address: destination_token_address,
         amount_in_offset,
-    } = extract_amm_accounts_and_info(&zap_params, ix)?;
+    } = extract_amm_accounts_and_info(&zap_params, &ix)?;
 
     // Zap out from operator fee receiving account
     validate_zap_parameters(
@@ -95,6 +97,22 @@ fn search_and_validate_zap_out_instruction(
     // Zap out from operator fee receiving account
     if source_token_address != *claimer_token_account_key {
         return Err(ProtozolZapError::InvalidZapAccounts);
+    }
+
+    // jupiter route() does not validate user_source_token_account and source_mint
+    // this check prevents an operator from substituting a different source token account
+    // with a less valuable mint, keeping the claimed tokens and sending a small amount to treasury
+    if zap_params.get_amm_disc()? == JUP_V6_ROUTE_DISC {
+        let first_swap_source_index =
+            get_jup_route_first_swap_source_account_index(zap_params.get_amm_payload()?)?;
+        let first_swap_source_address = ix
+            .get_account_meta_at(first_swap_source_index)
+            .map_err(|_| ProtozolZapError::InvalidZapAccounts)?
+            .key;
+        // first swap source address must be the same as the claimer token account key
+        if first_swap_source_address != *claimer_token_account_key {
+            return Err(ProtozolZapError::InvalidZapAccounts);
+        }
     }
 
     let treasury_usdc_address = get_associated_token_address(&treasury_address, &USDC_ADDRESS);
@@ -153,11 +171,9 @@ pub struct ZapOutAmmInfo {
 
 fn extract_amm_accounts_and_info(
     zap_params: &ZapOutParameters,
-    zap_in_instruction: IntrospectedInstruction<'_>,
+    zap_in_instruction: &IntrospectedInstruction<'_>,
 ) -> Result<ZapOutAmmInfo, ProtozolZapError> {
     // Accounts in ZapOutCtx
-    const ZAP_OUT_ACCOUNTS_LEN: usize = 2;
-
     let zap_user_token_in_address = zap_in_instruction
         .get_account_meta_at(0)
         .map_err(|_| ProtozolZapError::InvalidZapAccounts)?
@@ -168,19 +184,10 @@ fn extract_amm_accounts_and_info(
         .map_err(|_| ProtozolZapError::InvalidZapAccounts)?
         .key;
 
-    let amm_disc = zap_params
-        .payload_data
-        .get(..8)
-        .ok_or_else(|| ProtozolZapError::InvalidZapOutParameters)?;
+    let zap_info_processor =
+        get_zap_amm_processor(zap_params.get_amm_disc()?, zap_amm_program_address)?;
 
-    let zap_info_processor = get_zap_amm_processor(amm_disc, zap_amm_program_address)?;
-
-    let amm_payload = zap_params
-        .payload_data
-        .get(8..)
-        .ok_or_else(|| ProtozolZapError::InvalidZapOutParameters)?;
-
-    zap_info_processor.validate_payload(amm_payload)?;
+    zap_info_processor.validate_payload(zap_params.get_amm_payload()?)?;
 
     let RawZapOutAmmInfo {
         source_index,

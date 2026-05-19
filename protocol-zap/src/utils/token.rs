@@ -15,7 +15,7 @@ pub(crate) fn get_token_amount(token_account_data: &[u8]) -> Result<u64, Protozo
     Ok(u64::from_le_bytes(amount_bytes))
 }
 
-// Adatpted from spl_associated_token_account::get_associated_token_address
+// Adapted from spl_associated_token_account::get_associated_token_address
 // https://github.com/solana-labs/solana-program-library/blob/72bb80d76de5628749e9f06ed1a36d3986dab2a2/associated-token-account/client/src/address.rs#L56
 pub(crate) fn get_associated_token_address(wallet: &Pubkey, mint: &Pubkey) -> Pubkey {
     let seeds: &[&[u8]] = &[wallet, &SPL_TOKEN_PROGRAM_ID, mint];
