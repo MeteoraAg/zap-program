@@ -1,5 +1,5 @@
 [workspace]
-members = ["programs/*", "libs/*", "zap-sdk", "protocol-zap"]
+members = ["programs/*", "libs/*", "zap-sdk"]
 resolver = "2"
 
 [profile.release]
@@ -31,9 +31,7 @@ unexpected_cfgs = { level = "warn", check-cfg = [
 # redirect git references from damm-v2 dependency to local workspace crates
 # to avoid duplicate crate entries at different revisions in Cargo.lock.
 [patch."https://github.com/MeteoraAg/zap-program"]
-protocol-zap = { path = "protocol-zap" }
 zap-sdk = { path = "zap-sdk" }
-jupiter = { path = "libs/jupiter" }
 
 [workspace.metadata.cli]
 solana = "3.1.10"
