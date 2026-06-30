@@ -129,7 +129,7 @@ impl<'info> ZapInDammv2Ctx<'info> {
                     token_a_mint: self.token_a_mint.to_account_info(),
                     token_b_mint: self.token_b_mint.to_account_info(),
                     position_nft_account: self.position_nft_account.to_account_info(),
-                    owner: self.owner.to_account_info(),
+                    signer: self.owner.to_account_info(),
                     token_a_program: self.token_a_program.to_account_info(),
                     token_b_program: self.token_b_program.to_account_info(),
                     event_authority: self.damm_event_authority.to_account_info(),
