@@ -1,76 +1,121 @@
-{
+/**
+ * Program IDL in camelCase format in order to be used in JS/TS.
+ *
+ * Note that this is only a type helper and is not the actual IDL. The original
+ * IDL can be found at `target/idl/cp_amm.json`.
+ */
+export type CpAmm = {
   "address": "cpamdpZCGKUy5JxQXB4dcpGPiikHawvSWAd6mEn1sGG",
   "metadata": {
-    "name": "cp_amm",
+    "name": "cpAmm",
     "version": "0.2.3",
     "spec": "0.1.0",
     "description": "Created with Anchor"
   },
   "instructions": [
     {
-      "name": "add_liquidity",
-      "discriminator": [181, 157, 89, 67, 143, 182, 52, 72],
+      "name": "addLiquidity",
+      "discriminator": [
+        181,
+        157,
+        89,
+        67,
+        143,
+        182,
+        52,
+        72
+      ],
       "accounts": [
         {
           "name": "pool",
           "writable": true,
-          "relations": ["position"]
+          "relations": [
+            "position"
+          ]
         },
         {
           "name": "position",
           "writable": true
         },
         {
-          "name": "token_a_account",
-          "docs": ["The user token a account"],
+          "name": "tokenAAccount",
+          "docs": [
+            "The user token a account"
+          ],
           "writable": true
         },
         {
-          "name": "token_b_account",
-          "docs": ["The user token b account"],
+          "name": "tokenBAccount",
+          "docs": [
+            "The user token b account"
+          ],
           "writable": true
         },
         {
-          "name": "token_a_vault",
-          "docs": ["The vault token account for input token"],
+          "name": "tokenAVault",
+          "docs": [
+            "The vault token account for input token"
+          ],
           "writable": true,
-          "relations": ["pool"]
+          "relations": [
+            "pool"
+          ]
         },
         {
-          "name": "token_b_vault",
-          "docs": ["The vault token account for output token"],
+          "name": "tokenBVault",
+          "docs": [
+            "The vault token account for output token"
+          ],
           "writable": true,
-          "relations": ["pool"]
+          "relations": [
+            "pool"
+          ]
         },
         {
-          "name": "token_a_mint",
-          "docs": ["The mint of token a"],
-          "relations": ["pool"]
+          "name": "tokenAMint",
+          "docs": [
+            "The mint of token a"
+          ],
+          "relations": [
+            "pool"
+          ]
         },
         {
-          "name": "token_b_mint",
-          "docs": ["The mint of token b"],
-          "relations": ["pool"]
+          "name": "tokenBMint",
+          "docs": [
+            "The mint of token b"
+          ],
+          "relations": [
+            "pool"
+          ]
         },
         {
-          "name": "position_nft_account",
-          "docs": ["The token account for nft"]
+          "name": "positionNftAccount",
+          "docs": [
+            "The token account for nft"
+          ]
         },
         {
           "name": "signer",
-          "docs": ["Signer"],
+          "docs": [
+            "Signer"
+          ],
           "signer": true
         },
         {
-          "name": "token_a_program",
-          "docs": ["Token a program"]
+          "name": "tokenAProgram",
+          "docs": [
+            "Token a program"
+          ]
         },
         {
-          "name": "token_b_program",
-          "docs": ["Token b program"]
+          "name": "tokenBProgram",
+          "docs": [
+            "Token b program"
+          ]
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -81,79 +126,118 @@
           "name": "params",
           "type": {
             "defined": {
-              "name": "AddLiquidityParameters"
+              "name": "addLiquidityParameters"
             }
           }
         }
       ]
     },
     {
-      "name": "claim_position_fee",
-      "discriminator": [180, 38, 154, 17, 133, 33, 162, 211],
+      "name": "claimPositionFee",
+      "discriminator": [
+        180,
+        38,
+        154,
+        17,
+        133,
+        33,
+        162,
+        211
+      ],
       "accounts": [
         {
-          "name": "pool_authority",
+          "name": "poolAuthority",
           "address": "HLnpSz9h2S4hiLQ43rnSD9XkcUThA7B8hQMKmDaiTLcC"
         },
         {
           "name": "pool",
-          "relations": ["position"]
+          "relations": [
+            "position"
+          ]
         },
         {
           "name": "position",
           "writable": true
         },
         {
-          "name": "token_a_account",
-          "docs": ["The user token a account"],
+          "name": "tokenAAccount",
+          "docs": [
+            "The user token a account"
+          ],
           "writable": true
         },
         {
-          "name": "token_b_account",
-          "docs": ["The user token b account"],
+          "name": "tokenBAccount",
+          "docs": [
+            "The user token b account"
+          ],
           "writable": true
         },
         {
-          "name": "token_a_vault",
-          "docs": ["The vault token account for input token"],
+          "name": "tokenAVault",
+          "docs": [
+            "The vault token account for input token"
+          ],
           "writable": true,
-          "relations": ["pool"]
+          "relations": [
+            "pool"
+          ]
         },
         {
-          "name": "token_b_vault",
-          "docs": ["The vault token account for output token"],
+          "name": "tokenBVault",
+          "docs": [
+            "The vault token account for output token"
+          ],
           "writable": true,
-          "relations": ["pool"]
+          "relations": [
+            "pool"
+          ]
         },
         {
-          "name": "token_a_mint",
-          "docs": ["The mint of token a"],
-          "relations": ["pool"]
+          "name": "tokenAMint",
+          "docs": [
+            "The mint of token a"
+          ],
+          "relations": [
+            "pool"
+          ]
         },
         {
-          "name": "token_b_mint",
-          "docs": ["The mint of token b"],
-          "relations": ["pool"]
+          "name": "tokenBMint",
+          "docs": [
+            "The mint of token b"
+          ],
+          "relations": [
+            "pool"
+          ]
         },
         {
-          "name": "position_nft_account",
-          "docs": ["The token account for nft"]
+          "name": "positionNftAccount",
+          "docs": [
+            "The token account for nft"
+          ]
         },
         {
           "name": "signer",
-          "docs": ["Signer"],
+          "docs": [
+            "Signer"
+          ],
           "signer": true
         },
         {
-          "name": "token_a_program",
-          "docs": ["Token a program"]
+          "name": "tokenAProgram",
+          "docs": [
+            "Token a program"
+          ]
         },
         {
-          "name": "token_b_program",
-          "docs": ["Token b program"]
+          "name": "tokenBProgram",
+          "docs": [
+            "Token b program"
+          ]
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -162,46 +246,63 @@
       "args": []
     },
     {
-      "name": "claim_protocol_fee2",
-      "discriminator": [235, 194, 54, 69, 65, 10, 236, 112],
+      "name": "claimProtocolFee2",
+      "discriminator": [
+        235,
+        194,
+        54,
+        69,
+        65,
+        10,
+        236,
+        112
+      ],
       "accounts": [
         {
-          "name": "receiver_token_account",
+          "name": "receiverTokenAccount",
           "docs": [
             "receiver token account for the claimed token. validated through the protocol_fee program"
           ],
           "writable": true
         },
         {
-          "name": "token_a_mint",
-          "relations": ["pool"]
+          "name": "tokenAMint",
+          "relations": [
+            "pool"
+          ]
         },
         {
-          "name": "token_b_mint",
-          "relations": ["pool"]
+          "name": "tokenBMint",
+          "relations": [
+            "pool"
+          ]
         },
         {
-          "name": "token_a_program"
+          "name": "tokenAProgram"
         },
         {
-          "name": "token_b_program"
+          "name": "tokenBProgram"
         },
         {
           "name": "pool",
           "writable": true
         },
         {
-          "name": "token_a_vault",
+          "name": "tokenAVault",
           "writable": true,
-          "relations": ["pool"]
+          "relations": [
+            "pool"
+          ]
         },
         {
-          "name": "token_b_vault",
+          "name": "tokenBVault",
           "writable": true,
-          "relations": ["pool"]
+          "relations": [
+            "pool"
+          ]
         },
         {
-          "name": "pool_authority",
+          "name": "poolAuthority",
           "address": "HLnpSz9h2S4hiLQ43rnSD9XkcUThA7B8hQMKmDaiTLcC"
         },
         {
@@ -212,54 +313,71 @@
       ],
       "args": [
         {
-          "name": "max_amount",
+          "name": "maxAmount",
           "type": "u64"
         }
       ]
     },
     {
-      "name": "claim_reward",
-      "discriminator": [149, 95, 181, 242, 94, 90, 158, 162],
+      "name": "claimReward",
+      "discriminator": [
+        149,
+        95,
+        181,
+        242,
+        94,
+        90,
+        158,
+        162
+      ],
       "accounts": [
         {
-          "name": "pool_authority",
+          "name": "poolAuthority",
           "address": "HLnpSz9h2S4hiLQ43rnSD9XkcUThA7B8hQMKmDaiTLcC"
         },
         {
           "name": "pool",
           "writable": true,
-          "relations": ["position"]
+          "relations": [
+            "position"
+          ]
         },
         {
           "name": "position",
           "writable": true
         },
         {
-          "name": "reward_vault",
-          "docs": ["The vault token account for reward token"],
+          "name": "rewardVault",
+          "docs": [
+            "The vault token account for reward token"
+          ],
           "writable": true
         },
         {
-          "name": "reward_mint"
+          "name": "rewardMint"
         },
         {
-          "name": "user_token_account",
+          "name": "userTokenAccount",
           "writable": true
         },
         {
-          "name": "position_nft_account",
-          "docs": ["The token account for nft"]
+          "name": "positionNftAccount",
+          "docs": [
+            "The token account for nft"
+          ]
         },
         {
           "name": "signer",
-          "docs": ["Signer"],
+          "docs": [
+            "Signer"
+          ],
           "signer": true
         },
         {
-          "name": "token_program"
+          "name": "tokenProgram"
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -267,18 +385,27 @@
       ],
       "args": [
         {
-          "name": "reward_index",
+          "name": "rewardIndex",
           "type": "u8"
         },
         {
-          "name": "skip_reward",
+          "name": "skipReward",
           "type": "u8"
         }
       ]
     },
     {
-      "name": "close_config",
-      "discriminator": [145, 9, 72, 157, 95, 125, 61, 85],
+      "name": "closeConfig",
+      "discriminator": [
+        145,
+        9,
+        72,
+        157,
+        95,
+        125,
+        61,
+        85
+      ],
       "accounts": [
         {
           "name": "config",
@@ -292,11 +419,11 @@
           "signer": true
         },
         {
-          "name": "rent_receiver",
+          "name": "rentReceiver",
           "writable": true
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -305,8 +432,17 @@
       "args": []
     },
     {
-      "name": "close_operator_account",
-      "discriminator": [171, 9, 213, 74, 120, 23, 3, 29],
+      "name": "closeOperatorAccount",
+      "discriminator": [
+        171,
+        9,
+        213,
+        74,
+        120,
+        23,
+        3,
+        29
+      ],
       "accounts": [
         {
           "name": "operator",
@@ -317,11 +453,11 @@
           "signer": true
         },
         {
-          "name": "rent_receiver",
+          "name": "rentReceiver",
           "writable": true
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -330,50 +466,67 @@
       "args": []
     },
     {
-      "name": "close_position",
-      "discriminator": [123, 134, 81, 0, 49, 68, 98, 98],
+      "name": "closePosition",
+      "discriminator": [
+        123,
+        134,
+        81,
+        0,
+        49,
+        68,
+        98,
+        98
+      ],
       "accounts": [
         {
-          "name": "position_nft_mint",
-          "docs": ["position_nft_mint"],
+          "name": "positionNftMint",
+          "docs": [
+            "positionNftMint"
+          ],
           "writable": true
         },
         {
-          "name": "position_nft_account",
-          "docs": ["The token account for nft"],
+          "name": "positionNftAccount",
+          "docs": [
+            "The token account for nft"
+          ],
           "writable": true
         },
         {
           "name": "pool",
           "writable": true,
-          "relations": ["position"]
+          "relations": [
+            "position"
+          ]
         },
         {
           "name": "position",
           "writable": true
         },
         {
-          "name": "pool_authority",
+          "name": "poolAuthority",
           "address": "HLnpSz9h2S4hiLQ43rnSD9XkcUThA7B8hQMKmDaiTLcC"
         },
         {
-          "name": "rent_receiver",
+          "name": "rentReceiver",
           "writable": true
         },
         {
           "name": "owner",
-          "docs": ["Owner of position"],
+          "docs": [
+            "Owner of position"
+          ],
           "signer": true
         },
         {
-          "name": "token_program",
+          "name": "tokenProgram",
           "docs": [
             "Program to create NFT mint/token account and transfer for token22 account"
           ],
           "address": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -382,11 +535,20 @@
       "args": []
     },
     {
-      "name": "close_token_badge",
-      "discriminator": [108, 146, 86, 110, 179, 254, 10, 104],
+      "name": "closeTokenBadge",
+      "discriminator": [
+        108,
+        146,
+        86,
+        110,
+        179,
+        254,
+        10,
+        104
+      ],
       "accounts": [
         {
-          "name": "token_badge",
+          "name": "tokenBadge",
           "writable": true
         },
         {
@@ -397,11 +559,11 @@
           "signer": true
         },
         {
-          "name": "rent_receiver",
+          "name": "rentReceiver",
           "writable": true
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -410,9 +572,20 @@
       "args": []
     },
     {
-      "name": "create_config",
-      "docs": ["OPERATOR FUNCTIONS /////"],
-      "discriminator": [201, 207, 243, 114, 75, 111, 47, 189],
+      "name": "createConfig",
+      "docs": [
+        "OPERATOR FUNCTIONS /////"
+      ],
+      "discriminator": [
+        201,
+        207,
+        243,
+        114,
+        75,
+        111,
+        47,
+        189
+      ],
       "accounts": [
         {
           "name": "config",
@@ -421,7 +594,14 @@
             "seeds": [
               {
                 "kind": "const",
-                "value": [99, 111, 110, 102, 105, 103]
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
               },
               {
                 "kind": "arg",
@@ -443,11 +623,11 @@
           "signer": true
         },
         {
-          "name": "system_program",
+          "name": "systemProgram",
           "address": "11111111111111111111111111111111"
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -459,18 +639,27 @@
           "type": "u64"
         },
         {
-          "name": "config_parameters",
+          "name": "configParameters",
           "type": {
             "defined": {
-              "name": "StaticConfigParameters"
+              "name": "staticConfigParameters"
             }
           }
         }
       ]
     },
     {
-      "name": "create_dynamic_config",
-      "discriminator": [81, 251, 122, 78, 66, 57, 208, 82],
+      "name": "createDynamicConfig",
+      "discriminator": [
+        81,
+        251,
+        122,
+        78,
+        66,
+        57,
+        208,
+        82
+      ],
       "accounts": [
         {
           "name": "config",
@@ -479,7 +668,14 @@
             "seeds": [
               {
                 "kind": "const",
-                "value": [99, 111, 110, 102, 105, 103]
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
               },
               {
                 "kind": "arg",
@@ -501,11 +697,11 @@
           "signer": true
         },
         {
-          "name": "system_program",
+          "name": "systemProgram",
           "address": "11111111111111111111111111111111"
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -517,19 +713,30 @@
           "type": "u64"
         },
         {
-          "name": "config_parameters",
+          "name": "configParameters",
           "type": {
             "defined": {
-              "name": "DynamicConfigParameters"
+              "name": "dynamicConfigParameters"
             }
           }
         }
       ]
     },
     {
-      "name": "create_operator_account",
-      "docs": ["ADMIN FUNCTIONS /////"],
-      "discriminator": [221, 64, 246, 149, 240, 153, 229, 163],
+      "name": "createOperatorAccount",
+      "docs": [
+        "ADMIN FUNCTIONS /////"
+      ],
+      "discriminator": [
+        221,
+        64,
+        246,
+        149,
+        240,
+        153,
+        229,
+        163
+      ],
       "accounts": [
         {
           "name": "operator",
@@ -538,17 +745,26 @@
             "seeds": [
               {
                 "kind": "const",
-                "value": [111, 112, 101, 114, 97, 116, 111, 114]
+                "value": [
+                  111,
+                  112,
+                  101,
+                  114,
+                  97,
+                  116,
+                  111,
+                  114
+                ]
               },
               {
                 "kind": "account",
-                "path": "whitelisted_address"
+                "path": "whitelistedAddress"
               }
             ]
           }
         },
         {
-          "name": "whitelisted_address"
+          "name": "whitelistedAddress"
         },
         {
           "name": "signer",
@@ -560,11 +776,11 @@
           "signer": true
         },
         {
-          "name": "system_program",
+          "name": "systemProgram",
           "address": "11111111111111111111111111111111"
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -578,34 +794,65 @@
       ]
     },
     {
-      "name": "create_position",
-      "discriminator": [48, 215, 197, 153, 96, 203, 180, 133],
+      "name": "createPosition",
+      "discriminator": [
+        48,
+        215,
+        197,
+        153,
+        96,
+        203,
+        180,
+        133
+      ],
       "accounts": [
         {
           "name": "owner"
         },
         {
-          "name": "position_nft_mint",
-          "docs": ["position_nft_mint"],
+          "name": "positionNftMint",
+          "docs": [
+            "positionNftMint"
+          ],
           "writable": true,
           "signer": true
         },
         {
-          "name": "position_nft_account",
-          "docs": ["position nft account"],
+          "name": "positionNftAccount",
+          "docs": [
+            "position nft account"
+          ],
           "writable": true,
           "pda": {
             "seeds": [
               {
                 "kind": "const",
                 "value": [
-                  112, 111, 115, 105, 116, 105, 111, 110, 95, 110, 102, 116, 95,
-                  97, 99, 99, 111, 117, 110, 116
+                  112,
+                  111,
+                  115,
+                  105,
+                  116,
+                  105,
+                  111,
+                  110,
+                  95,
+                  110,
+                  102,
+                  116,
+                  95,
+                  97,
+                  99,
+                  99,
+                  111,
+                  117,
+                  110,
+                  116
                 ]
               },
               {
                 "kind": "account",
-                "path": "position_nft_mint"
+                "path": "positionNftMint"
               }
             ]
           }
@@ -621,38 +868,49 @@
             "seeds": [
               {
                 "kind": "const",
-                "value": [112, 111, 115, 105, 116, 105, 111, 110]
+                "value": [
+                  112,
+                  111,
+                  115,
+                  105,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
               },
               {
                 "kind": "account",
-                "path": "position_nft_mint"
+                "path": "positionNftMint"
               }
             ]
           }
         },
         {
-          "name": "pool_authority",
+          "name": "poolAuthority",
           "address": "HLnpSz9h2S4hiLQ43rnSD9XkcUThA7B8hQMKmDaiTLcC"
         },
         {
           "name": "payer",
-          "docs": ["Address paying to create the position. Can be anyone"],
+          "docs": [
+            "Address paying to create the position. Can be anyone"
+          ],
           "writable": true,
           "signer": true
         },
         {
-          "name": "token_program",
+          "name": "tokenProgram",
           "docs": [
             "Program to create NFT mint/token account and transfer for token22 account"
           ],
           "address": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
         },
         {
-          "name": "system_program",
+          "name": "systemProgram",
           "address": "11111111111111111111111111111111"
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -661,27 +919,48 @@
       "args": []
     },
     {
-      "name": "create_token_badge",
-      "discriminator": [88, 206, 0, 91, 60, 175, 151, 118],
+      "name": "createTokenBadge",
+      "discriminator": [
+        88,
+        206,
+        0,
+        91,
+        60,
+        175,
+        151,
+        118
+      ],
       "accounts": [
         {
-          "name": "token_badge",
+          "name": "tokenBadge",
           "writable": true,
           "pda": {
             "seeds": [
               {
                 "kind": "const",
-                "value": [116, 111, 107, 101, 110, 95, 98, 97, 100, 103, 101]
+                "value": [
+                  116,
+                  111,
+                  107,
+                  101,
+                  110,
+                  95,
+                  98,
+                  97,
+                  100,
+                  103,
+                  101
+                ]
               },
               {
                 "kind": "account",
-                "path": "token_mint"
+                "path": "tokenMint"
               }
             ]
           }
         },
         {
-          "name": "token_mint"
+          "name": "tokenMint"
         },
         {
           "name": "operator"
@@ -696,11 +975,11 @@
           "signer": true
         },
         {
-          "name": "system_program",
+          "name": "systemProgram",
           "address": "11111111111111111111111111111111"
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -709,33 +988,51 @@
       "args": []
     },
     {
-      "name": "dummy_ix",
-      "discriminator": [234, 95, 176, 185, 7, 42, 35, 159],
+      "name": "dummyIx",
+      "discriminator": [
+        234,
+        95,
+        176,
+        185,
+        7,
+        42,
+        35,
+        159
+      ],
       "accounts": [
         {
-          "name": "pod_aligned_fee_time_scheduler"
+          "name": "podAlignedFeeTimeScheduler"
         },
         {
-          "name": "pod_aligned_fee_rate_limiter"
+          "name": "podAlignedFeeRateLimiter"
         },
         {
-          "name": "pod_aligned_fee_market_cap_scheduler"
+          "name": "podAlignedFeeMarketCapScheduler"
         }
       ],
       "args": [
         {
-          "name": "_ixs",
+          "name": "ixs",
           "type": {
             "defined": {
-              "name": "DummyParams"
+              "name": "dummyParams"
             }
           }
         }
       ]
     },
     {
-      "name": "fix_config_fee_params",
-      "discriminator": [38, 30, 216, 81, 250, 177, 243, 254],
+      "name": "fixConfigFeeParams",
+      "discriminator": [
+        38,
+        30,
+        216,
+        81,
+        250,
+        177,
+        243,
+        254
+      ],
       "accounts": [
         {
           "name": "config",
@@ -754,15 +1051,24 @@
           "name": "params",
           "type": {
             "defined": {
-              "name": "BaseFeeParameters"
+              "name": "baseFeeParameters"
             }
           }
         }
       ]
     },
     {
-      "name": "fix_pool_fee_params",
-      "discriminator": [132, 98, 81, 196, 44, 58, 120, 193],
+      "name": "fixPoolFeeParams",
+      "discriminator": [
+        132,
+        98,
+        81,
+        196,
+        44,
+        58,
+        120,
+        193
+      ],
       "accounts": [
         {
           "name": "pool",
@@ -781,15 +1087,24 @@
           "name": "params",
           "type": {
             "defined": {
-              "name": "BaseFeeParameters"
+              "name": "baseFeeParameters"
             }
           }
         }
       ]
     },
     {
-      "name": "fix_pool_layout_version",
-      "discriminator": [166, 158, 69, 35, 81, 167, 200, 215],
+      "name": "fixPoolLayoutVersion",
+      "discriminator": [
+        166,
+        158,
+        69,
+        35,
+        81,
+        167,
+        200,
+        215
+      ],
       "accounts": [
         {
           "name": "pool",
@@ -806,22 +1121,31 @@
       "args": []
     },
     {
-      "name": "fund_reward",
-      "discriminator": [188, 50, 249, 165, 93, 151, 38, 63],
+      "name": "fundReward",
+      "discriminator": [
+        188,
+        50,
+        249,
+        165,
+        93,
+        151,
+        38,
+        63
+      ],
       "accounts": [
         {
           "name": "pool",
           "writable": true
         },
         {
-          "name": "reward_vault",
+          "name": "rewardVault",
           "writable": true
         },
         {
-          "name": "reward_mint"
+          "name": "rewardMint"
         },
         {
-          "name": "funder_token_account",
+          "name": "funderTokenAccount",
           "writable": true
         },
         {
@@ -829,10 +1153,10 @@
           "signer": true
         },
         {
-          "name": "token_program"
+          "name": "tokenProgram"
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -840,7 +1164,7 @@
       ],
       "args": [
         {
-          "name": "reward_index",
+          "name": "rewardIndex",
           "type": "u8"
         },
         {
@@ -848,57 +1172,92 @@
           "type": "u64"
         },
         {
-          "name": "carry_forward",
+          "name": "carryForward",
           "type": "bool"
         }
       ]
     },
     {
-      "name": "initialize_customizable_pool",
-      "discriminator": [20, 161, 241, 24, 189, 221, 180, 2],
+      "name": "initializeCustomizablePool",
+      "discriminator": [
+        20,
+        161,
+        241,
+        24,
+        189,
+        221,
+        180,
+        2
+      ],
       "accounts": [
         {
           "name": "creator"
         },
         {
-          "name": "position_nft_mint",
-          "docs": ["position_nft_mint"],
+          "name": "positionNftMint",
+          "docs": [
+            "positionNftMint"
+          ],
           "writable": true,
           "signer": true
         },
         {
-          "name": "position_nft_account",
-          "docs": ["position nft account"],
+          "name": "positionNftAccount",
+          "docs": [
+            "position nft account"
+          ],
           "writable": true,
           "pda": {
             "seeds": [
               {
                 "kind": "const",
                 "value": [
-                  112, 111, 115, 105, 116, 105, 111, 110, 95, 110, 102, 116, 95,
-                  97, 99, 99, 111, 117, 110, 116
+                  112,
+                  111,
+                  115,
+                  105,
+                  116,
+                  105,
+                  111,
+                  110,
+                  95,
+                  110,
+                  102,
+                  116,
+                  95,
+                  97,
+                  99,
+                  99,
+                  111,
+                  117,
+                  110,
+                  116
                 ]
               },
               {
                 "kind": "account",
-                "path": "position_nft_mint"
+                "path": "positionNftMint"
               }
             ]
           }
         },
         {
           "name": "payer",
-          "docs": ["Address paying to create the pool. Can be anyone"],
+          "docs": [
+            "Address paying to create the pool. Can be anyone"
+          ],
           "writable": true,
           "signer": true
         },
         {
-          "name": "pool_authority",
+          "name": "poolAuthority",
           "address": "HLnpSz9h2S4hiLQ43rnSD9XkcUThA7B8hQMKmDaiTLcC"
         },
         {
           "name": "pool",
-          "docs": ["Initialize an account to store the pool state"],
+          "docs": [
+            "Initialize an account to store the pool state"
+          ],
           "writable": true
         },
         {
@@ -908,36 +1267,63 @@
             "seeds": [
               {
                 "kind": "const",
-                "value": [112, 111, 115, 105, 116, 105, 111, 110]
+                "value": [
+                  112,
+                  111,
+                  115,
+                  105,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
               },
               {
                 "kind": "account",
-                "path": "position_nft_mint"
+                "path": "positionNftMint"
               }
             ]
           }
         },
         {
-          "name": "token_a_mint",
-          "docs": ["Token a mint"]
+          "name": "tokenAMint",
+          "docs": [
+            "Token a mint"
+          ]
         },
         {
-          "name": "token_b_mint",
-          "docs": ["Token b mint"]
+          "name": "tokenBMint",
+          "docs": [
+            "Token b mint"
+          ]
         },
         {
-          "name": "token_a_vault",
-          "docs": ["Token a vault for the pool"],
+          "name": "tokenAVault",
+          "docs": [
+            "Token a vault for the pool"
+          ],
           "writable": true,
           "pda": {
             "seeds": [
               {
                 "kind": "const",
-                "value": [116, 111, 107, 101, 110, 95, 118, 97, 117, 108, 116]
+                "value": [
+                  116,
+                  111,
+                  107,
+                  101,
+                  110,
+                  95,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
               },
               {
                 "kind": "account",
-                "path": "token_a_mint"
+                "path": "tokenAMint"
               },
               {
                 "kind": "account",
@@ -947,18 +1333,32 @@
           }
         },
         {
-          "name": "token_b_vault",
-          "docs": ["Token b vault for the pool"],
+          "name": "tokenBVault",
+          "docs": [
+            "Token b vault for the pool"
+          ],
           "writable": true,
           "pda": {
             "seeds": [
               {
                 "kind": "const",
-                "value": [116, 111, 107, 101, 110, 95, 118, 97, 117, 108, 116]
+                "value": [
+                  116,
+                  111,
+                  107,
+                  101,
+                  110,
+                  95,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
               },
               {
                 "kind": "account",
-                "path": "token_b_mint"
+                "path": "tokenBMint"
               },
               {
                 "kind": "account",
@@ -968,36 +1368,44 @@
           }
         },
         {
-          "name": "payer_token_a",
-          "docs": ["payer token a account"],
+          "name": "payerTokenA",
+          "docs": [
+            "payer token a account"
+          ],
           "writable": true
         },
         {
-          "name": "payer_token_b",
-          "docs": ["creator token b account"],
+          "name": "payerTokenB",
+          "docs": [
+            "creator token b account"
+          ],
           "writable": true
         },
         {
-          "name": "token_a_program",
-          "docs": ["Program to create mint account and mint tokens"]
+          "name": "tokenAProgram",
+          "docs": [
+            "Program to create mint account and mint tokens"
+          ]
         },
         {
-          "name": "token_b_program",
-          "docs": ["Program to create mint account and mint tokens"]
+          "name": "tokenBProgram",
+          "docs": [
+            "Program to create mint account and mint tokens"
+          ]
         },
         {
-          "name": "token_2022_program",
+          "name": "token2022Program",
           "docs": [
             "Program to create NFT mint/token account and transfer for token22 account"
           ],
           "address": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
         },
         {
-          "name": "system_program",
+          "name": "systemProgram",
           "address": "11111111111111111111111111111111"
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -1008,63 +1416,102 @@
           "name": "params",
           "type": {
             "defined": {
-              "name": "InitializeCustomizablePoolParameters"
+              "name": "initializeCustomizablePoolParameters"
             }
           }
         }
       ]
     },
     {
-      "name": "initialize_pool",
-      "docs": ["USER FUNCTIONS ////"],
-      "discriminator": [95, 180, 10, 172, 84, 174, 232, 40],
+      "name": "initializePool",
+      "docs": [
+        "USER FUNCTIONS ////"
+      ],
+      "discriminator": [
+        95,
+        180,
+        10,
+        172,
+        84,
+        174,
+        232,
+        40
+      ],
       "accounts": [
         {
           "name": "creator"
         },
         {
-          "name": "position_nft_mint",
-          "docs": ["position_nft_mint"],
+          "name": "positionNftMint",
+          "docs": [
+            "positionNftMint"
+          ],
           "writable": true,
           "signer": true
         },
         {
-          "name": "position_nft_account",
-          "docs": ["position nft account"],
+          "name": "positionNftAccount",
+          "docs": [
+            "position nft account"
+          ],
           "writable": true,
           "pda": {
             "seeds": [
               {
                 "kind": "const",
                 "value": [
-                  112, 111, 115, 105, 116, 105, 111, 110, 95, 110, 102, 116, 95,
-                  97, 99, 99, 111, 117, 110, 116
+                  112,
+                  111,
+                  115,
+                  105,
+                  116,
+                  105,
+                  111,
+                  110,
+                  95,
+                  110,
+                  102,
+                  116,
+                  95,
+                  97,
+                  99,
+                  99,
+                  111,
+                  117,
+                  110,
+                  116
                 ]
               },
               {
                 "kind": "account",
-                "path": "position_nft_mint"
+                "path": "positionNftMint"
               }
             ]
           }
         },
         {
           "name": "payer",
-          "docs": ["Address paying to create the pool. Can be anyone"],
+          "docs": [
+            "Address paying to create the pool. Can be anyone"
+          ],
           "writable": true,
           "signer": true
         },
         {
           "name": "config",
-          "docs": ["Which config the pool belongs to."]
+          "docs": [
+            "Which config the pool belongs to."
+          ]
         },
         {
-          "name": "pool_authority",
+          "name": "poolAuthority",
           "address": "HLnpSz9h2S4hiLQ43rnSD9XkcUThA7B8hQMKmDaiTLcC"
         },
         {
           "name": "pool",
-          "docs": ["Initialize an account to store the pool state"],
+          "docs": [
+            "Initialize an account to store the pool state"
+          ],
           "writable": true
         },
         {
@@ -1074,36 +1521,63 @@
             "seeds": [
               {
                 "kind": "const",
-                "value": [112, 111, 115, 105, 116, 105, 111, 110]
+                "value": [
+                  112,
+                  111,
+                  115,
+                  105,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
               },
               {
                 "kind": "account",
-                "path": "position_nft_mint"
+                "path": "positionNftMint"
               }
             ]
           }
         },
         {
-          "name": "token_a_mint",
-          "docs": ["Token a mint"]
+          "name": "tokenAMint",
+          "docs": [
+            "Token a mint"
+          ]
         },
         {
-          "name": "token_b_mint",
-          "docs": ["Token b mint"]
+          "name": "tokenBMint",
+          "docs": [
+            "Token b mint"
+          ]
         },
         {
-          "name": "token_a_vault",
-          "docs": ["Token a vault for the pool"],
+          "name": "tokenAVault",
+          "docs": [
+            "Token a vault for the pool"
+          ],
           "writable": true,
           "pda": {
             "seeds": [
               {
                 "kind": "const",
-                "value": [116, 111, 107, 101, 110, 95, 118, 97, 117, 108, 116]
+                "value": [
+                  116,
+                  111,
+                  107,
+                  101,
+                  110,
+                  95,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
               },
               {
                 "kind": "account",
-                "path": "token_a_mint"
+                "path": "tokenAMint"
               },
               {
                 "kind": "account",
@@ -1113,18 +1587,32 @@
           }
         },
         {
-          "name": "token_b_vault",
-          "docs": ["Token b vault for the pool"],
+          "name": "tokenBVault",
+          "docs": [
+            "Token b vault for the pool"
+          ],
           "writable": true,
           "pda": {
             "seeds": [
               {
                 "kind": "const",
-                "value": [116, 111, 107, 101, 110, 95, 118, 97, 117, 108, 116]
+                "value": [
+                  116,
+                  111,
+                  107,
+                  101,
+                  110,
+                  95,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
               },
               {
                 "kind": "account",
-                "path": "token_b_mint"
+                "path": "tokenBMint"
               },
               {
                 "kind": "account",
@@ -1134,36 +1622,44 @@
           }
         },
         {
-          "name": "payer_token_a",
-          "docs": ["payer token a account"],
+          "name": "payerTokenA",
+          "docs": [
+            "payer token a account"
+          ],
           "writable": true
         },
         {
-          "name": "payer_token_b",
-          "docs": ["creator token b account"],
+          "name": "payerTokenB",
+          "docs": [
+            "creator token b account"
+          ],
           "writable": true
         },
         {
-          "name": "token_a_program",
-          "docs": ["Program to create mint account and mint tokens"]
+          "name": "tokenAProgram",
+          "docs": [
+            "Program to create mint account and mint tokens"
+          ]
         },
         {
-          "name": "token_b_program",
-          "docs": ["Program to create mint account and mint tokens"]
+          "name": "tokenBProgram",
+          "docs": [
+            "Program to create mint account and mint tokens"
+          ]
         },
         {
-          "name": "token_2022_program",
+          "name": "token2022Program",
           "docs": [
             "Program to create NFT mint/token account and transfer for token22 account"
           ],
           "address": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
         },
         {
-          "name": "system_program",
+          "name": "systemProgram",
           "address": "11111111111111111111111111111111"
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -1174,67 +1670,106 @@
           "name": "params",
           "type": {
             "defined": {
-              "name": "InitializePoolParameters"
+              "name": "initializePoolParameters"
             }
           }
         }
       ]
     },
     {
-      "name": "initialize_pool_with_dynamic_config",
-      "discriminator": [149, 82, 72, 197, 253, 252, 68, 15],
+      "name": "initializePoolWithDynamicConfig",
+      "discriminator": [
+        149,
+        82,
+        72,
+        197,
+        253,
+        252,
+        68,
+        15
+      ],
       "accounts": [
         {
           "name": "creator"
         },
         {
-          "name": "position_nft_mint",
-          "docs": ["position_nft_mint"],
+          "name": "positionNftMint",
+          "docs": [
+            "positionNftMint"
+          ],
           "writable": true,
           "signer": true
         },
         {
-          "name": "position_nft_account",
-          "docs": ["position nft account"],
+          "name": "positionNftAccount",
+          "docs": [
+            "position nft account"
+          ],
           "writable": true,
           "pda": {
             "seeds": [
               {
                 "kind": "const",
                 "value": [
-                  112, 111, 115, 105, 116, 105, 111, 110, 95, 110, 102, 116, 95,
-                  97, 99, 99, 111, 117, 110, 116
+                  112,
+                  111,
+                  115,
+                  105,
+                  116,
+                  105,
+                  111,
+                  110,
+                  95,
+                  110,
+                  102,
+                  116,
+                  95,
+                  97,
+                  99,
+                  99,
+                  111,
+                  117,
+                  110,
+                  116
                 ]
               },
               {
                 "kind": "account",
-                "path": "position_nft_mint"
+                "path": "positionNftMint"
               }
             ]
           }
         },
         {
           "name": "payer",
-          "docs": ["Address paying to create the pool. Can be anyone"],
+          "docs": [
+            "Address paying to create the pool. Can be anyone"
+          ],
           "writable": true,
           "signer": true
         },
         {
-          "name": "pool_creator_authority",
+          "name": "poolCreatorAuthority",
           "signer": true,
-          "relations": ["config"]
+          "relations": [
+            "config"
+          ]
         },
         {
           "name": "config",
-          "docs": ["Which config the pool belongs to."]
+          "docs": [
+            "Which config the pool belongs to."
+          ]
         },
         {
-          "name": "pool_authority",
+          "name": "poolAuthority",
           "address": "HLnpSz9h2S4hiLQ43rnSD9XkcUThA7B8hQMKmDaiTLcC"
         },
         {
           "name": "pool",
-          "docs": ["Initialize an account to store the pool state"],
+          "docs": [
+            "Initialize an account to store the pool state"
+          ],
           "writable": true
         },
         {
@@ -1244,36 +1779,63 @@
             "seeds": [
               {
                 "kind": "const",
-                "value": [112, 111, 115, 105, 116, 105, 111, 110]
+                "value": [
+                  112,
+                  111,
+                  115,
+                  105,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
               },
               {
                 "kind": "account",
-                "path": "position_nft_mint"
+                "path": "positionNftMint"
               }
             ]
           }
         },
         {
-          "name": "token_a_mint",
-          "docs": ["Token a mint"]
+          "name": "tokenAMint",
+          "docs": [
+            "Token a mint"
+          ]
         },
         {
-          "name": "token_b_mint",
-          "docs": ["Token b mint"]
+          "name": "tokenBMint",
+          "docs": [
+            "Token b mint"
+          ]
         },
         {
-          "name": "token_a_vault",
-          "docs": ["Token a vault for the pool"],
+          "name": "tokenAVault",
+          "docs": [
+            "Token a vault for the pool"
+          ],
           "writable": true,
           "pda": {
             "seeds": [
               {
                 "kind": "const",
-                "value": [116, 111, 107, 101, 110, 95, 118, 97, 117, 108, 116]
+                "value": [
+                  116,
+                  111,
+                  107,
+                  101,
+                  110,
+                  95,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
               },
               {
                 "kind": "account",
-                "path": "token_a_mint"
+                "path": "tokenAMint"
               },
               {
                 "kind": "account",
@@ -1283,18 +1845,32 @@
           }
         },
         {
-          "name": "token_b_vault",
-          "docs": ["Token b vault for the pool"],
+          "name": "tokenBVault",
+          "docs": [
+            "Token b vault for the pool"
+          ],
           "writable": true,
           "pda": {
             "seeds": [
               {
                 "kind": "const",
-                "value": [116, 111, 107, 101, 110, 95, 118, 97, 117, 108, 116]
+                "value": [
+                  116,
+                  111,
+                  107,
+                  101,
+                  110,
+                  95,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
               },
               {
                 "kind": "account",
-                "path": "token_b_mint"
+                "path": "tokenBMint"
               },
               {
                 "kind": "account",
@@ -1304,36 +1880,44 @@
           }
         },
         {
-          "name": "payer_token_a",
-          "docs": ["payer token a account"],
+          "name": "payerTokenA",
+          "docs": [
+            "payer token a account"
+          ],
           "writable": true
         },
         {
-          "name": "payer_token_b",
-          "docs": ["creator token b account"],
+          "name": "payerTokenB",
+          "docs": [
+            "creator token b account"
+          ],
           "writable": true
         },
         {
-          "name": "token_a_program",
-          "docs": ["Program to create mint account and mint tokens"]
+          "name": "tokenAProgram",
+          "docs": [
+            "Program to create mint account and mint tokens"
+          ]
         },
         {
-          "name": "token_b_program",
-          "docs": ["Program to create mint account and mint tokens"]
+          "name": "tokenBProgram",
+          "docs": [
+            "Program to create mint account and mint tokens"
+          ]
         },
         {
-          "name": "token_2022_program",
+          "name": "token2022Program",
           "docs": [
             "Program to create NFT mint/token account and transfer for token22 account"
           ],
           "address": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
         },
         {
-          "name": "system_program",
+          "name": "systemProgram",
           "address": "11111111111111111111111111111111"
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -1344,18 +1928,27 @@
           "name": "params",
           "type": {
             "defined": {
-              "name": "InitializeCustomizablePoolParameters"
+              "name": "initializeCustomizablePoolParameters"
             }
           }
         }
       ]
     },
     {
-      "name": "initialize_reward",
-      "discriminator": [95, 135, 192, 196, 242, 129, 230, 68],
+      "name": "initializeReward",
+      "discriminator": [
+        95,
+        135,
+        192,
+        196,
+        242,
+        129,
+        230,
+        68
+      ],
       "accounts": [
         {
-          "name": "pool_authority",
+          "name": "poolAuthority",
           "address": "HLnpSz9h2S4hiLQ43rnSD9XkcUThA7B8hQMKmDaiTLcC"
         },
         {
@@ -1363,14 +1956,25 @@
           "writable": true
         },
         {
-          "name": "reward_vault",
+          "name": "rewardVault",
           "writable": true,
           "pda": {
             "seeds": [
               {
                 "kind": "const",
                 "value": [
-                  114, 101, 119, 97, 114, 100, 95, 118, 97, 117, 108, 116
+                  114,
+                  101,
+                  119,
+                  97,
+                  114,
+                  100,
+                  95,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
                 ]
               },
               {
@@ -1379,13 +1983,13 @@
               },
               {
                 "kind": "arg",
-                "path": "reward_index"
+                "path": "rewardIndex"
               }
             ]
           }
         },
         {
-          "name": "reward_mint"
+          "name": "rewardMint"
         },
         {
           "name": "signer",
@@ -1397,14 +2001,14 @@
           "signer": true
         },
         {
-          "name": "token_program"
+          "name": "tokenProgram"
         },
         {
-          "name": "system_program",
+          "name": "systemProgram",
           "address": "11111111111111111111111111111111"
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -1412,11 +2016,11 @@
       ],
       "args": [
         {
-          "name": "reward_index",
+          "name": "rewardIndex",
           "type": "u8"
         },
         {
-          "name": "reward_duration",
+          "name": "rewardDuration",
           "type": "u64"
         },
         {
@@ -1426,28 +2030,43 @@
       ]
     },
     {
-      "name": "lock_inner_position",
-      "discriminator": [72, 19, 49, 204, 18, 122, 23, 90],
+      "name": "lockInnerPosition",
+      "discriminator": [
+        72,
+        19,
+        49,
+        204,
+        18,
+        122,
+        23,
+        90
+      ],
       "accounts": [
         {
           "name": "pool",
-          "relations": ["position"]
+          "relations": [
+            "position"
+          ]
         },
         {
           "name": "position",
           "writable": true
         },
         {
-          "name": "position_nft_account",
-          "docs": ["The token account for nft"]
+          "name": "positionNftAccount",
+          "docs": [
+            "The token account for nft"
+          ]
         },
         {
           "name": "signer",
-          "docs": ["Signer"],
+          "docs": [
+            "Signer"
+          ],
           "signer": true
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -1458,19 +2077,30 @@
           "name": "params",
           "type": {
             "defined": {
-              "name": "VestingParameters"
+              "name": "vestingParameters"
             }
           }
         }
       ]
     },
     {
-      "name": "lock_position",
-      "discriminator": [227, 62, 2, 252, 247, 10, 171, 185],
+      "name": "lockPosition",
+      "discriminator": [
+        227,
+        62,
+        2,
+        252,
+        247,
+        10,
+        171,
+        185
+      ],
       "accounts": [
         {
           "name": "pool",
-          "relations": ["position"]
+          "relations": [
+            "position"
+          ]
         },
         {
           "name": "position",
@@ -1482,12 +2112,16 @@
           "signer": true
         },
         {
-          "name": "position_nft_account",
-          "docs": ["The token account for nft"]
+          "name": "positionNftAccount",
+          "docs": [
+            "The token account for nft"
+          ]
         },
         {
           "name": "signer",
-          "docs": ["Signer"],
+          "docs": [
+            "Signer"
+          ],
           "signer": true
         },
         {
@@ -1496,11 +2130,11 @@
           "signer": true
         },
         {
-          "name": "system_program",
+          "name": "systemProgram",
           "address": "11111111111111111111111111111111"
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -1511,36 +2145,51 @@
           "name": "params",
           "type": {
             "defined": {
-              "name": "VestingParameters"
+              "name": "vestingParameters"
             }
           }
         }
       ]
     },
     {
-      "name": "permanent_lock_position",
-      "discriminator": [165, 176, 125, 6, 231, 171, 186, 213],
+      "name": "permanentLockPosition",
+      "discriminator": [
+        165,
+        176,
+        125,
+        6,
+        231,
+        171,
+        186,
+        213
+      ],
       "accounts": [
         {
           "name": "pool",
           "writable": true,
-          "relations": ["position"]
+          "relations": [
+            "position"
+          ]
         },
         {
           "name": "position",
           "writable": true
         },
         {
-          "name": "position_nft_account",
-          "docs": ["The token account for nft"]
+          "name": "positionNftAccount",
+          "docs": [
+            "The token account for nft"
+          ]
         },
         {
           "name": "signer",
-          "docs": ["Signer"],
+          "docs": [
+            "Signer"
+          ],
           "signer": true
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -1548,26 +2197,39 @@
       ],
       "args": [
         {
-          "name": "permanent_lock_liquidity",
+          "name": "permanentLockLiquidity",
           "type": "u128"
         }
       ]
     },
     {
-      "name": "refresh_vesting",
-      "discriminator": [9, 94, 216, 14, 116, 204, 247, 0],
+      "name": "refreshVesting",
+      "discriminator": [
+        9,
+        94,
+        216,
+        14,
+        116,
+        204,
+        247,
+        0
+      ],
       "accounts": [
         {
           "name": "pool",
-          "relations": ["position"]
+          "relations": [
+            "position"
+          ]
         },
         {
           "name": "position",
           "writable": true
         },
         {
-          "name": "position_nft_account",
-          "docs": ["The token account for nft"]
+          "name": "positionNftAccount",
+          "docs": [
+            "The token account for nft"
+          ]
         },
         {
           "name": "owner"
@@ -1576,73 +2238,112 @@
       "args": []
     },
     {
-      "name": "remove_all_liquidity",
-      "discriminator": [10, 51, 61, 35, 112, 105, 24, 85],
+      "name": "removeAllLiquidity",
+      "discriminator": [
+        10,
+        51,
+        61,
+        35,
+        112,
+        105,
+        24,
+        85
+      ],
       "accounts": [
         {
-          "name": "pool_authority",
+          "name": "poolAuthority",
           "address": "HLnpSz9h2S4hiLQ43rnSD9XkcUThA7B8hQMKmDaiTLcC"
         },
         {
           "name": "pool",
           "writable": true,
-          "relations": ["position"]
+          "relations": [
+            "position"
+          ]
         },
         {
           "name": "position",
           "writable": true
         },
         {
-          "name": "token_a_account",
-          "docs": ["The user token a account"],
+          "name": "tokenAAccount",
+          "docs": [
+            "The user token a account"
+          ],
           "writable": true
         },
         {
-          "name": "token_b_account",
-          "docs": ["The user token b account"],
+          "name": "tokenBAccount",
+          "docs": [
+            "The user token b account"
+          ],
           "writable": true
         },
         {
-          "name": "token_a_vault",
-          "docs": ["The vault token account for input token"],
+          "name": "tokenAVault",
+          "docs": [
+            "The vault token account for input token"
+          ],
           "writable": true,
-          "relations": ["pool"]
+          "relations": [
+            "pool"
+          ]
         },
         {
-          "name": "token_b_vault",
-          "docs": ["The vault token account for output token"],
+          "name": "tokenBVault",
+          "docs": [
+            "The vault token account for output token"
+          ],
           "writable": true,
-          "relations": ["pool"]
+          "relations": [
+            "pool"
+          ]
         },
         {
-          "name": "token_a_mint",
-          "docs": ["The mint of token a"],
-          "relations": ["pool"]
+          "name": "tokenAMint",
+          "docs": [
+            "The mint of token a"
+          ],
+          "relations": [
+            "pool"
+          ]
         },
         {
-          "name": "token_b_mint",
-          "docs": ["The mint of token b"],
-          "relations": ["pool"]
+          "name": "tokenBMint",
+          "docs": [
+            "The mint of token b"
+          ],
+          "relations": [
+            "pool"
+          ]
         },
         {
-          "name": "position_nft_account",
-          "docs": ["The token account for nft"]
+          "name": "positionNftAccount",
+          "docs": [
+            "The token account for nft"
+          ]
         },
         {
           "name": "signer",
-          "docs": ["Signer"],
+          "docs": [
+            "Signer"
+          ],
           "signer": true
         },
         {
-          "name": "token_a_program",
-          "docs": ["Token a program"]
+          "name": "tokenAProgram",
+          "docs": [
+            "Token a program"
+          ]
         },
         {
-          "name": "token_b_program",
-          "docs": ["Token b program"]
+          "name": "tokenBProgram",
+          "docs": [
+            "Token b program"
+          ]
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -1650,83 +2351,122 @@
       ],
       "args": [
         {
-          "name": "token_a_amount_threshold",
+          "name": "tokenAAmountThreshold",
           "type": "u64"
         },
         {
-          "name": "token_b_amount_threshold",
+          "name": "tokenBAmountThreshold",
           "type": "u64"
         }
       ]
     },
     {
-      "name": "remove_liquidity",
-      "discriminator": [80, 85, 209, 72, 24, 206, 177, 108],
+      "name": "removeLiquidity",
+      "discriminator": [
+        80,
+        85,
+        209,
+        72,
+        24,
+        206,
+        177,
+        108
+      ],
       "accounts": [
         {
-          "name": "pool_authority",
+          "name": "poolAuthority",
           "address": "HLnpSz9h2S4hiLQ43rnSD9XkcUThA7B8hQMKmDaiTLcC"
         },
         {
           "name": "pool",
           "writable": true,
-          "relations": ["position"]
+          "relations": [
+            "position"
+          ]
         },
         {
           "name": "position",
           "writable": true
         },
         {
-          "name": "token_a_account",
-          "docs": ["The user token a account"],
+          "name": "tokenAAccount",
+          "docs": [
+            "The user token a account"
+          ],
           "writable": true
         },
         {
-          "name": "token_b_account",
-          "docs": ["The user token b account"],
+          "name": "tokenBAccount",
+          "docs": [
+            "The user token b account"
+          ],
           "writable": true
         },
         {
-          "name": "token_a_vault",
-          "docs": ["The vault token account for input token"],
+          "name": "tokenAVault",
+          "docs": [
+            "The vault token account for input token"
+          ],
           "writable": true,
-          "relations": ["pool"]
+          "relations": [
+            "pool"
+          ]
         },
         {
-          "name": "token_b_vault",
-          "docs": ["The vault token account for output token"],
+          "name": "tokenBVault",
+          "docs": [
+            "The vault token account for output token"
+          ],
           "writable": true,
-          "relations": ["pool"]
+          "relations": [
+            "pool"
+          ]
         },
         {
-          "name": "token_a_mint",
-          "docs": ["The mint of token a"],
-          "relations": ["pool"]
+          "name": "tokenAMint",
+          "docs": [
+            "The mint of token a"
+          ],
+          "relations": [
+            "pool"
+          ]
         },
         {
-          "name": "token_b_mint",
-          "docs": ["The mint of token b"],
-          "relations": ["pool"]
+          "name": "tokenBMint",
+          "docs": [
+            "The mint of token b"
+          ],
+          "relations": [
+            "pool"
+          ]
         },
         {
-          "name": "position_nft_account",
-          "docs": ["The token account for nft"]
+          "name": "positionNftAccount",
+          "docs": [
+            "The token account for nft"
+          ]
         },
         {
           "name": "signer",
-          "docs": ["Signer"],
+          "docs": [
+            "Signer"
+          ],
           "signer": true
         },
         {
-          "name": "token_a_program",
-          "docs": ["Token a program"]
+          "name": "tokenAProgram",
+          "docs": [
+            "Token a program"
+          ]
         },
         {
-          "name": "token_b_program",
-          "docs": ["Token b program"]
+          "name": "tokenBProgram",
+          "docs": [
+            "Token b program"
+          ]
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -1737,15 +2477,24 @@
           "name": "params",
           "type": {
             "defined": {
-              "name": "RemoveLiquidityParameters"
+              "name": "removeLiquidityParameters"
             }
           }
         }
       ]
     },
     {
-      "name": "set_pool_status",
-      "discriminator": [112, 87, 135, 223, 83, 204, 132, 53],
+      "name": "setPoolStatus",
+      "discriminator": [
+        112,
+        87,
+        135,
+        223,
+        83,
+        204,
+        132,
+        53
+      ],
       "accounts": [
         {
           "name": "pool",
@@ -1759,7 +2508,7 @@
           "signer": true
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -1773,44 +2522,68 @@
       ]
     },
     {
-      "name": "split_position",
-      "discriminator": [172, 241, 221, 138, 161, 29, 253, 42],
+      "name": "splitPosition",
+      "discriminator": [
+        172,
+        241,
+        221,
+        138,
+        161,
+        29,
+        253,
+        42
+      ],
       "accounts": [
         {
           "name": "pool",
           "writable": true,
-          "relations": ["first_position", "second_position"]
+          "relations": [
+            "firstPosition",
+            "secondPosition"
+          ]
         },
         {
-          "name": "first_position",
-          "docs": ["The first position"],
+          "name": "firstPosition",
+          "docs": [
+            "The first position"
+          ],
           "writable": true
         },
         {
-          "name": "first_position_nft_account",
-          "docs": ["The token account for position nft"]
+          "name": "firstPositionNftAccount",
+          "docs": [
+            "The token account for position nft"
+          ]
         },
         {
-          "name": "second_position",
-          "docs": ["The second position"],
+          "name": "secondPosition",
+          "docs": [
+            "The second position"
+          ],
           "writable": true
         },
         {
-          "name": "second_position_nft_account",
-          "docs": ["The token account for position nft"]
+          "name": "secondPositionNftAccount",
+          "docs": [
+            "The token account for position nft"
+          ]
         },
         {
-          "name": "first_owner",
-          "docs": ["Owner of first position"],
+          "name": "firstOwner",
+          "docs": [
+            "Owner of first position"
+          ],
           "signer": true
         },
         {
-          "name": "second_owner",
-          "docs": ["Owner of second position"],
+          "name": "secondOwner",
+          "docs": [
+            "Owner of second position"
+          ],
           "signer": true
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -1821,51 +2594,75 @@
           "name": "params",
           "type": {
             "defined": {
-              "name": "SplitPositionParameters"
+              "name": "splitPositionParameters"
             }
           }
         }
       ]
     },
     {
-      "name": "split_position2",
-      "discriminator": [221, 147, 228, 207, 140, 212, 17, 119],
+      "name": "splitPosition2",
+      "discriminator": [
+        221,
+        147,
+        228,
+        207,
+        140,
+        212,
+        17,
+        119
+      ],
       "accounts": [
         {
           "name": "pool",
           "writable": true,
-          "relations": ["first_position", "second_position"]
+          "relations": [
+            "firstPosition",
+            "secondPosition"
+          ]
         },
         {
-          "name": "first_position",
-          "docs": ["The first position"],
+          "name": "firstPosition",
+          "docs": [
+            "The first position"
+          ],
           "writable": true
         },
         {
-          "name": "first_position_nft_account",
-          "docs": ["The token account for position nft"]
+          "name": "firstPositionNftAccount",
+          "docs": [
+            "The token account for position nft"
+          ]
         },
         {
-          "name": "second_position",
-          "docs": ["The second position"],
+          "name": "secondPosition",
+          "docs": [
+            "The second position"
+          ],
           "writable": true
         },
         {
-          "name": "second_position_nft_account",
-          "docs": ["The token account for position nft"]
+          "name": "secondPositionNftAccount",
+          "docs": [
+            "The token account for position nft"
+          ]
         },
         {
-          "name": "first_owner",
-          "docs": ["Owner of first position"],
+          "name": "firstOwner",
+          "docs": [
+            "Owner of first position"
+          ],
           "signer": true
         },
         {
-          "name": "second_owner",
-          "docs": ["Owner of second position"],
+          "name": "secondOwner",
+          "docs": [
+            "Owner of second position"
+          ],
           "signer": true
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -1880,68 +2677,103 @@
     },
     {
       "name": "swap",
-      "discriminator": [248, 198, 158, 145, 225, 117, 135, 200],
+      "discriminator": [
+        248,
+        198,
+        158,
+        145,
+        225,
+        117,
+        135,
+        200
+      ],
       "accounts": [
         {
-          "name": "pool_authority",
+          "name": "poolAuthority",
           "address": "HLnpSz9h2S4hiLQ43rnSD9XkcUThA7B8hQMKmDaiTLcC"
         },
         {
           "name": "pool",
-          "docs": ["Pool account"],
+          "docs": [
+            "Pool account"
+          ],
           "writable": true
         },
         {
-          "name": "input_token_account",
-          "docs": ["The user token account for input token"],
+          "name": "inputTokenAccount",
+          "docs": [
+            "The user token account for input token"
+          ],
           "writable": true
         },
         {
-          "name": "output_token_account",
-          "docs": ["The user token account for output token"],
+          "name": "outputTokenAccount",
+          "docs": [
+            "The user token account for output token"
+          ],
           "writable": true
         },
         {
-          "name": "token_a_vault",
-          "docs": ["The vault token account for input token"],
+          "name": "tokenAVault",
+          "docs": [
+            "The vault token account for input token"
+          ],
           "writable": true,
-          "relations": ["pool"]
+          "relations": [
+            "pool"
+          ]
         },
         {
-          "name": "token_b_vault",
-          "docs": ["The vault token account for output token"],
+          "name": "tokenBVault",
+          "docs": [
+            "The vault token account for output token"
+          ],
           "writable": true,
-          "relations": ["pool"]
+          "relations": [
+            "pool"
+          ]
         },
         {
-          "name": "token_a_mint",
-          "docs": ["The mint of token a"]
+          "name": "tokenAMint",
+          "docs": [
+            "The mint of token a"
+          ]
         },
         {
-          "name": "token_b_mint",
-          "docs": ["The mint of token b"]
+          "name": "tokenBMint",
+          "docs": [
+            "The mint of token b"
+          ]
         },
         {
           "name": "payer",
-          "docs": ["The user performing the swap"],
+          "docs": [
+            "The user performing the swap"
+          ],
           "signer": true
         },
         {
-          "name": "token_a_program",
-          "docs": ["Token a program"]
+          "name": "tokenAProgram",
+          "docs": [
+            "Token a program"
+          ]
         },
         {
-          "name": "token_b_program",
-          "docs": ["Token b program"]
+          "name": "tokenBProgram",
+          "docs": [
+            "Token b program"
+          ]
         },
         {
-          "name": "referral_token_account",
-          "docs": ["referral token account"],
+          "name": "referralTokenAccount",
+          "docs": [
+            "referral token account"
+          ],
           "writable": true,
           "optional": true
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -1949,10 +2781,10 @@
       ],
       "args": [
         {
-          "name": "_params",
+          "name": "params",
           "type": {
             "defined": {
-              "name": "SwapParameters"
+              "name": "swapParameters"
             }
           }
         }
@@ -1960,68 +2792,103 @@
     },
     {
       "name": "swap2",
-      "discriminator": [65, 75, 63, 76, 235, 91, 91, 136],
+      "discriminator": [
+        65,
+        75,
+        63,
+        76,
+        235,
+        91,
+        91,
+        136
+      ],
       "accounts": [
         {
-          "name": "pool_authority",
+          "name": "poolAuthority",
           "address": "HLnpSz9h2S4hiLQ43rnSD9XkcUThA7B8hQMKmDaiTLcC"
         },
         {
           "name": "pool",
-          "docs": ["Pool account"],
+          "docs": [
+            "Pool account"
+          ],
           "writable": true
         },
         {
-          "name": "input_token_account",
-          "docs": ["The user token account for input token"],
+          "name": "inputTokenAccount",
+          "docs": [
+            "The user token account for input token"
+          ],
           "writable": true
         },
         {
-          "name": "output_token_account",
-          "docs": ["The user token account for output token"],
+          "name": "outputTokenAccount",
+          "docs": [
+            "The user token account for output token"
+          ],
           "writable": true
         },
         {
-          "name": "token_a_vault",
-          "docs": ["The vault token account for input token"],
+          "name": "tokenAVault",
+          "docs": [
+            "The vault token account for input token"
+          ],
           "writable": true,
-          "relations": ["pool"]
+          "relations": [
+            "pool"
+          ]
         },
         {
-          "name": "token_b_vault",
-          "docs": ["The vault token account for output token"],
+          "name": "tokenBVault",
+          "docs": [
+            "The vault token account for output token"
+          ],
           "writable": true,
-          "relations": ["pool"]
+          "relations": [
+            "pool"
+          ]
         },
         {
-          "name": "token_a_mint",
-          "docs": ["The mint of token a"]
+          "name": "tokenAMint",
+          "docs": [
+            "The mint of token a"
+          ]
         },
         {
-          "name": "token_b_mint",
-          "docs": ["The mint of token b"]
+          "name": "tokenBMint",
+          "docs": [
+            "The mint of token b"
+          ]
         },
         {
           "name": "payer",
-          "docs": ["The user performing the swap"],
+          "docs": [
+            "The user performing the swap"
+          ],
           "signer": true
         },
         {
-          "name": "token_a_program",
-          "docs": ["Token a program"]
+          "name": "tokenAProgram",
+          "docs": [
+            "Token a program"
+          ]
         },
         {
-          "name": "token_b_program",
-          "docs": ["Token b program"]
+          "name": "tokenBProgram",
+          "docs": [
+            "Token b program"
+          ]
         },
         {
-          "name": "referral_token_account",
-          "docs": ["referral token account"],
+          "name": "referralTokenAccount",
+          "docs": [
+            "referral token account"
+          ],
           "writable": true,
           "optional": true
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -2029,33 +2896,44 @@
       ],
       "args": [
         {
-          "name": "_params",
+          "name": "params",
           "type": {
             "defined": {
-              "name": "SwapParameters2"
+              "name": "swapParameters2"
             }
           }
         }
       ]
     },
     {
-      "name": "update_delegate_permission",
-      "discriminator": [175, 165, 56, 64, 0, 251, 89, 47],
+      "name": "updateDelegatePermission",
+      "discriminator": [
+        175,
+        165,
+        56,
+        64,
+        0,
+        251,
+        89,
+        47
+      ],
       "accounts": [
         {
           "name": "position",
           "writable": true
         },
         {
-          "name": "position_nft_account",
-          "docs": ["The token account for nft"]
+          "name": "positionNftAccount",
+          "docs": [
+            "The token account for nft"
+          ]
         },
         {
           "name": "owner",
           "signer": true
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -2069,8 +2947,17 @@
       ]
     },
     {
-      "name": "update_pool_fees",
-      "discriminator": [118, 217, 203, 179, 60, 8, 70, 89],
+      "name": "updatePoolFees",
+      "discriminator": [
+        118,
+        217,
+        203,
+        179,
+        60,
+        8,
+        70,
+        89
+      ],
       "accounts": [
         {
           "name": "pool",
@@ -2084,7 +2971,7 @@
           "signer": true
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -2095,15 +2982,24 @@
           "name": "params",
           "type": {
             "defined": {
-              "name": "UpdatePoolFeesParameters"
+              "name": "updatePoolFeesParameters"
             }
           }
         }
       ]
     },
     {
-      "name": "update_reward_duration",
-      "discriminator": [138, 174, 196, 169, 213, 235, 254, 107],
+      "name": "updateRewardDuration",
+      "discriminator": [
+        138,
+        174,
+        196,
+        169,
+        213,
+        235,
+        254,
+        107
+      ],
       "accounts": [
         {
           "name": "pool",
@@ -2114,7 +3010,7 @@
           "signer": true
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -2122,18 +3018,27 @@
       ],
       "args": [
         {
-          "name": "reward_index",
+          "name": "rewardIndex",
           "type": "u8"
         },
         {
-          "name": "new_duration",
+          "name": "newDuration",
           "type": "u64"
         }
       ]
     },
     {
-      "name": "update_reward_funder",
-      "discriminator": [211, 28, 48, 32, 215, 160, 35, 23],
+      "name": "updateRewardFunder",
+      "discriminator": [
+        211,
+        28,
+        48,
+        32,
+        215,
+        160,
+        35,
+        23
+      ],
       "accounts": [
         {
           "name": "pool",
@@ -2144,7 +3049,7 @@
           "signer": true
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -2152,21 +3057,30 @@
       ],
       "args": [
         {
-          "name": "reward_index",
+          "name": "rewardIndex",
           "type": "u8"
         },
         {
-          "name": "new_funder",
+          "name": "newFunder",
           "type": "pubkey"
         }
       ]
     },
     {
-      "name": "withdraw_dead_liquidity_reward",
-      "discriminator": [121, 99, 224, 91, 178, 14, 22, 132],
+      "name": "withdrawDeadLiquidityReward",
+      "discriminator": [
+        121,
+        99,
+        224,
+        91,
+        178,
+        14,
+        22,
+        132
+      ],
       "accounts": [
         {
-          "name": "pool_authority",
+          "name": "poolAuthority",
           "address": "HLnpSz9h2S4hiLQ43rnSD9XkcUThA7B8hQMKmDaiTLcC"
         },
         {
@@ -2174,14 +3088,14 @@
           "writable": true
         },
         {
-          "name": "reward_vault",
+          "name": "rewardVault",
           "writable": true
         },
         {
-          "name": "reward_mint"
+          "name": "rewardMint"
         },
         {
-          "name": "funder_token_account",
+          "name": "funderTokenAccount",
           "writable": true
         },
         {
@@ -2189,10 +3103,10 @@
           "signer": true
         },
         {
-          "name": "token_program"
+          "name": "tokenProgram"
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -2200,17 +3114,26 @@
       ],
       "args": [
         {
-          "name": "reward_index",
+          "name": "rewardIndex",
           "type": "u8"
         }
       ]
     },
     {
-      "name": "withdraw_ineligible_reward",
-      "discriminator": [148, 206, 42, 195, 247, 49, 103, 8],
+      "name": "withdrawIneligibleReward",
+      "discriminator": [
+        148,
+        206,
+        42,
+        195,
+        247,
+        49,
+        103,
+        8
+      ],
       "accounts": [
         {
-          "name": "pool_authority",
+          "name": "poolAuthority",
           "address": "HLnpSz9h2S4hiLQ43rnSD9XkcUThA7B8hQMKmDaiTLcC"
         },
         {
@@ -2218,14 +3141,14 @@
           "writable": true
         },
         {
-          "name": "reward_vault",
+          "name": "rewardVault",
           "writable": true
         },
         {
-          "name": "reward_mint"
+          "name": "rewardMint"
         },
         {
-          "name": "funder_token_account",
+          "name": "funderTokenAccount",
           "writable": true
         },
         {
@@ -2233,10 +3156,10 @@
           "signer": true
         },
         {
-          "name": "token_program"
+          "name": "tokenProgram"
         },
         {
-          "name": "event_authority"
+          "name": "eventAuthority"
         },
         {
           "name": "program"
@@ -2244,7 +3167,7 @@
       ],
       "args": [
         {
-          "name": "reward_index",
+          "name": "rewardIndex",
           "type": "u8"
         }
       ]
@@ -2252,527 +3175,839 @@
   ],
   "accounts": [
     {
-      "name": "Config",
-      "discriminator": [155, 12, 170, 224, 30, 250, 204, 130]
+      "name": "config",
+      "discriminator": [
+        155,
+        12,
+        170,
+        224,
+        30,
+        250,
+        204,
+        130
+      ]
     },
     {
-      "name": "Operator",
-      "discriminator": [219, 31, 188, 145, 69, 139, 204, 117]
+      "name": "operator",
+      "discriminator": [
+        219,
+        31,
+        188,
+        145,
+        69,
+        139,
+        204,
+        117
+      ]
     },
     {
-      "name": "PodAlignedFeeMarketCapScheduler",
-      "discriminator": [251, 130, 208, 253, 245, 27, 145, 203]
+      "name": "podAlignedFeeMarketCapScheduler",
+      "discriminator": [
+        251,
+        130,
+        208,
+        253,
+        245,
+        27,
+        145,
+        203
+      ]
     },
     {
-      "name": "PodAlignedFeeRateLimiter",
-      "discriminator": [160, 219, 8, 251, 179, 7, 16, 117]
+      "name": "podAlignedFeeRateLimiter",
+      "discriminator": [
+        160,
+        219,
+        8,
+        251,
+        179,
+        7,
+        16,
+        117
+      ]
     },
     {
-      "name": "PodAlignedFeeTimeScheduler",
-      "discriminator": [239, 132, 138, 213, 67, 154, 130, 70]
+      "name": "podAlignedFeeTimeScheduler",
+      "discriminator": [
+        239,
+        132,
+        138,
+        213,
+        67,
+        154,
+        130,
+        70
+      ]
     },
     {
-      "name": "Pool",
-      "discriminator": [241, 154, 109, 4, 17, 177, 109, 188]
+      "name": "pool",
+      "discriminator": [
+        241,
+        154,
+        109,
+        4,
+        17,
+        177,
+        109,
+        188
+      ]
     },
     {
-      "name": "Position",
-      "discriminator": [170, 188, 143, 228, 122, 64, 247, 208]
+      "name": "position",
+      "discriminator": [
+        170,
+        188,
+        143,
+        228,
+        122,
+        64,
+        247,
+        208
+      ]
     },
     {
-      "name": "TokenBadge",
-      "discriminator": [116, 219, 204, 229, 249, 116, 255, 150]
+      "name": "tokenBadge",
+      "discriminator": [
+        116,
+        219,
+        204,
+        229,
+        249,
+        116,
+        255,
+        150
+      ]
     },
     {
-      "name": "Vesting",
-      "discriminator": [100, 149, 66, 138, 95, 200, 128, 241]
+      "name": "vesting",
+      "discriminator": [
+        100,
+        149,
+        66,
+        138,
+        95,
+        200,
+        128,
+        241
+      ]
     }
   ],
   "events": [
     {
-      "name": "EvtClaimPositionFee",
-      "discriminator": [198, 182, 183, 52, 97, 12, 49, 56]
+      "name": "evtClaimPositionFee",
+      "discriminator": [
+        198,
+        182,
+        183,
+        52,
+        97,
+        12,
+        49,
+        56
+      ]
     },
     {
-      "name": "EvtClaimProtocolFee2",
-      "discriminator": [187, 133, 66, 9, 205, 161, 84, 13]
+      "name": "evtClaimProtocolFee2",
+      "discriminator": [
+        187,
+        133,
+        66,
+        9,
+        205,
+        161,
+        84,
+        13
+      ]
     },
     {
-      "name": "EvtClaimReward",
-      "discriminator": [218, 86, 147, 200, 235, 188, 215, 231]
+      "name": "evtClaimReward",
+      "discriminator": [
+        218,
+        86,
+        147,
+        200,
+        235,
+        188,
+        215,
+        231
+      ]
     },
     {
-      "name": "EvtCloseConfig",
-      "discriminator": [36, 30, 239, 45, 58, 132, 14, 5]
+      "name": "evtCloseConfig",
+      "discriminator": [
+        36,
+        30,
+        239,
+        45,
+        58,
+        132,
+        14,
+        5
+      ]
     },
     {
-      "name": "EvtClosePosition",
-      "discriminator": [20, 145, 144, 68, 143, 142, 214, 178]
+      "name": "evtClosePosition",
+      "discriminator": [
+        20,
+        145,
+        144,
+        68,
+        143,
+        142,
+        214,
+        178
+      ]
     },
     {
-      "name": "EvtCreateConfig",
-      "discriminator": [131, 207, 180, 174, 180, 73, 165, 54]
+      "name": "evtCreateConfig",
+      "discriminator": [
+        131,
+        207,
+        180,
+        174,
+        180,
+        73,
+        165,
+        54
+      ]
     },
     {
-      "name": "EvtCreateDynamicConfig",
-      "discriminator": [231, 197, 13, 164, 248, 213, 133, 152]
+      "name": "evtCreateDynamicConfig",
+      "discriminator": [
+        231,
+        197,
+        13,
+        164,
+        248,
+        213,
+        133,
+        152
+      ]
     },
     {
-      "name": "EvtCreatePosition",
-      "discriminator": [156, 15, 119, 198, 29, 181, 221, 55]
+      "name": "evtCreatePosition",
+      "discriminator": [
+        156,
+        15,
+        119,
+        198,
+        29,
+        181,
+        221,
+        55
+      ]
     },
     {
-      "name": "EvtCreateTokenBadge",
-      "discriminator": [141, 120, 134, 116, 34, 28, 114, 160]
+      "name": "evtCreateTokenBadge",
+      "discriminator": [
+        141,
+        120,
+        134,
+        116,
+        34,
+        28,
+        114,
+        160
+      ]
     },
     {
-      "name": "EvtFundReward",
-      "discriminator": [104, 233, 237, 122, 199, 191, 121, 85]
+      "name": "evtFundReward",
+      "discriminator": [
+        104,
+        233,
+        237,
+        122,
+        199,
+        191,
+        121,
+        85
+      ]
     },
     {
-      "name": "EvtInitializePool",
-      "discriminator": [228, 50, 246, 85, 203, 66, 134, 37]
+      "name": "evtInitializePool",
+      "discriminator": [
+        228,
+        50,
+        246,
+        85,
+        203,
+        66,
+        134,
+        37
+      ]
     },
     {
-      "name": "EvtInitializeReward",
-      "discriminator": [129, 91, 188, 3, 246, 52, 185, 249]
+      "name": "evtInitializeReward",
+      "discriminator": [
+        129,
+        91,
+        188,
+        3,
+        246,
+        52,
+        185,
+        249
+      ]
     },
     {
-      "name": "EvtLiquidityChange",
-      "discriminator": [197, 171, 78, 127, 224, 211, 87, 13]
+      "name": "evtLiquidityChange",
+      "discriminator": [
+        197,
+        171,
+        78,
+        127,
+        224,
+        211,
+        87,
+        13
+      ]
     },
     {
-      "name": "EvtLockPosition",
-      "discriminator": [168, 63, 108, 83, 219, 82, 2, 200]
+      "name": "evtLockPosition",
+      "discriminator": [
+        168,
+        63,
+        108,
+        83,
+        219,
+        82,
+        2,
+        200
+      ]
     },
     {
-      "name": "EvtPermanentLockPosition",
-      "discriminator": [145, 143, 162, 218, 218, 80, 67, 11]
+      "name": "evtPermanentLockPosition",
+      "discriminator": [
+        145,
+        143,
+        162,
+        218,
+        218,
+        80,
+        67,
+        11
+      ]
     },
     {
-      "name": "EvtSetPoolStatus",
-      "discriminator": [100, 213, 74, 3, 95, 91, 228, 146]
+      "name": "evtSetPoolStatus",
+      "discriminator": [
+        100,
+        213,
+        74,
+        3,
+        95,
+        91,
+        228,
+        146
+      ]
     },
     {
-      "name": "EvtSplitPosition2",
-      "discriminator": [165, 32, 203, 174, 72, 100, 233, 103]
+      "name": "evtSplitPosition2",
+      "discriminator": [
+        165,
+        32,
+        203,
+        174,
+        72,
+        100,
+        233,
+        103
+      ]
     },
     {
-      "name": "EvtSplitPosition3",
-      "discriminator": [232, 117, 190, 218, 85, 162, 207, 78]
+      "name": "evtSplitPosition3",
+      "discriminator": [
+        232,
+        117,
+        190,
+        218,
+        85,
+        162,
+        207,
+        78
+      ]
     },
     {
-      "name": "EvtSwap2",
-      "discriminator": [189, 66, 51, 168, 38, 80, 117, 153]
+      "name": "evtSwap2",
+      "discriminator": [
+        189,
+        66,
+        51,
+        168,
+        38,
+        80,
+        117,
+        153
+      ]
     },
     {
-      "name": "EvtUpdateDelegatePermission",
-      "discriminator": [66, 188, 75, 151, 150, 232, 87, 93]
+      "name": "evtUpdateDelegatePermission",
+      "discriminator": [
+        66,
+        188,
+        75,
+        151,
+        150,
+        232,
+        87,
+        93
+      ]
     },
     {
-      "name": "EvtUpdatePoolFees",
-      "discriminator": [76, 165, 246, 102, 102, 217, 156, 44]
+      "name": "evtUpdatePoolFees",
+      "discriminator": [
+        76,
+        165,
+        246,
+        102,
+        102,
+        217,
+        156,
+        44
+      ]
     },
     {
-      "name": "EvtUpdateRewardDuration",
-      "discriminator": [149, 135, 65, 231, 129, 153, 65, 57]
+      "name": "evtUpdateRewardDuration",
+      "discriminator": [
+        149,
+        135,
+        65,
+        231,
+        129,
+        153,
+        65,
+        57
+      ]
     },
     {
-      "name": "EvtUpdateRewardFunder",
-      "discriminator": [76, 154, 208, 13, 40, 115, 246, 146]
+      "name": "evtUpdateRewardFunder",
+      "discriminator": [
+        76,
+        154,
+        208,
+        13,
+        40,
+        115,
+        246,
+        146
+      ]
     },
     {
-      "name": "EvtWithdrawDeadLiquidityReward",
-      "discriminator": [228, 66, 150, 195, 42, 62, 163, 13]
+      "name": "evtWithdrawDeadLiquidityReward",
+      "discriminator": [
+        228,
+        66,
+        150,
+        195,
+        42,
+        62,
+        163,
+        13
+      ]
     },
     {
-      "name": "EvtWithdrawIneligibleReward",
-      "discriminator": [248, 215, 184, 78, 31, 180, 179, 168]
+      "name": "evtWithdrawIneligibleReward",
+      "discriminator": [
+        248,
+        215,
+        184,
+        78,
+        31,
+        180,
+        179,
+        168
+      ]
     }
   ],
   "errors": [
     {
       "code": 6000,
-      "name": "MathOverflow",
+      "name": "mathOverflow",
       "msg": "Math operation overflow"
     },
     {
       "code": 6001,
-      "name": "InvalidFee",
+      "name": "invalidFee",
       "msg": "Invalid fee setup"
     },
     {
       "code": 6002,
-      "name": "ExceededSlippage",
+      "name": "exceededSlippage",
       "msg": "Exceeded slippage tolerance"
     },
     {
       "code": 6003,
-      "name": "PoolDisabled",
+      "name": "poolDisabled",
       "msg": "Pool disabled"
     },
     {
       "code": 6004,
-      "name": "ExceedMaxFeeBps",
+      "name": "exceedMaxFeeBps",
       "msg": "Exceeded max fee bps"
     },
     {
       "code": 6005,
-      "name": "InvalidAdmin",
+      "name": "invalidAdmin",
       "msg": "Invalid admin"
     },
     {
       "code": 6006,
-      "name": "AmountIsZero",
+      "name": "amountIsZero",
       "msg": "Amount is zero"
     },
     {
       "code": 6007,
-      "name": "TypeCastFailed",
+      "name": "typeCastFailed",
       "msg": "Type cast error"
     },
     {
       "code": 6008,
-      "name": "UnableToModifyActivationPoint",
+      "name": "unableToModifyActivationPoint",
       "msg": "Unable to modify activation point"
     },
     {
       "code": 6009,
-      "name": "InvalidAuthorityToCreateThePool",
+      "name": "invalidAuthorityToCreateThePool",
       "msg": "Invalid authority to create the pool"
     },
     {
       "code": 6010,
-      "name": "InvalidActivationType",
+      "name": "invalidActivationType",
       "msg": "Invalid activation type"
     },
     {
       "code": 6011,
-      "name": "InvalidActivationPoint",
+      "name": "invalidActivationPoint",
       "msg": "Invalid activation point"
     },
     {
       "code": 6012,
-      "name": "InvalidQuoteMint",
+      "name": "invalidQuoteMint",
       "msg": "Quote token must be SOL,USDC"
     },
     {
       "code": 6013,
-      "name": "InvalidFeeCurve",
+      "name": "invalidFeeCurve",
       "msg": "Invalid fee curve"
     },
     {
       "code": 6014,
-      "name": "InvalidPriceRange",
+      "name": "invalidPriceRange",
       "msg": "Invalid Price Range"
     },
     {
       "code": 6015,
-      "name": "PriceRangeViolation",
+      "name": "priceRangeViolation",
       "msg": "Trade is over price range"
     },
     {
       "code": 6016,
-      "name": "InvalidParameters",
+      "name": "invalidParameters",
       "msg": "Invalid parameters"
     },
     {
       "code": 6017,
-      "name": "InvalidCollectFeeMode",
+      "name": "invalidCollectFeeMode",
       "msg": "Invalid collect fee mode"
     },
     {
       "code": 6018,
-      "name": "InvalidInput",
+      "name": "invalidInput",
       "msg": "Invalid input"
     },
     {
       "code": 6019,
-      "name": "CannotCreateTokenBadgeOnSupportedMint",
+      "name": "cannotCreateTokenBadgeOnSupportedMint",
       "msg": "Cannot create token badge on supported mint"
     },
     {
       "code": 6020,
-      "name": "InvalidTokenBadge",
+      "name": "invalidTokenBadge",
       "msg": "Invalid token badge"
     },
     {
       "code": 6021,
-      "name": "InvalidMinimumLiquidity",
+      "name": "invalidMinimumLiquidity",
       "msg": "Invalid minimum liquidity"
     },
     {
       "code": 6022,
-      "name": "InvalidVestingInfo",
+      "name": "invalidVestingInfo",
       "msg": "Invalid vesting information"
     },
     {
       "code": 6023,
-      "name": "InsufficientLiquidity",
+      "name": "insufficientLiquidity",
       "msg": "Insufficient liquidity"
     },
     {
       "code": 6024,
-      "name": "InvalidVestingAccount",
+      "name": "invalidVestingAccount",
       "msg": "Invalid vesting account"
     },
     {
       "code": 6025,
-      "name": "InvalidPoolStatus",
+      "name": "invalidPoolStatus",
       "msg": "Invalid pool status"
     },
     {
       "code": 6026,
-      "name": "UnsupportNativeMintToken2022",
+      "name": "unsupportNativeMintToken2022",
       "msg": "Unsupported native mint token2022"
     },
     {
       "code": 6027,
-      "name": "InvalidRewardIndex",
+      "name": "invalidRewardIndex",
       "msg": "Invalid reward index"
     },
     {
       "code": 6028,
-      "name": "InvalidRewardDuration",
+      "name": "invalidRewardDuration",
       "msg": "Invalid reward duration"
     },
     {
       "code": 6029,
-      "name": "RewardInitialized",
+      "name": "rewardInitialized",
       "msg": "Reward already initialized"
     },
     {
       "code": 6030,
-      "name": "RewardUninitialized",
+      "name": "rewardUninitialized",
       "msg": "Reward not initialized"
     },
     {
       "code": 6031,
-      "name": "InvalidRewardVault",
+      "name": "invalidRewardVault",
       "msg": "Invalid reward vault"
     },
     {
       "code": 6032,
-      "name": "MustWithdrawnIneligibleReward",
+      "name": "mustWithdrawnIneligibleReward",
       "msg": "Must withdraw ineligible reward"
     },
     {
       "code": 6033,
-      "name": "IdenticalRewardDuration",
+      "name": "identicalRewardDuration",
       "msg": "Reward duration is the same"
     },
     {
       "code": 6034,
-      "name": "RewardCampaignInProgress",
+      "name": "rewardCampaignInProgress",
       "msg": "Reward campaign in progress"
     },
     {
       "code": 6035,
-      "name": "IdenticalFunder",
+      "name": "identicalFunder",
       "msg": "Identical funder"
     },
     {
       "code": 6036,
-      "name": "InvalidFunder",
+      "name": "invalidFunder",
       "msg": "Invalid funder"
     },
     {
       "code": 6037,
-      "name": "RewardNotEnded",
+      "name": "rewardNotEnded",
       "msg": "Reward not ended"
     },
     {
       "code": 6038,
-      "name": "FeeInverseIsIncorrect",
+      "name": "feeInverseIsIncorrect",
       "msg": "Fee inverse is incorrect"
     },
     {
       "code": 6039,
-      "name": "PositionIsNotEmpty",
+      "name": "positionIsNotEmpty",
       "msg": "Position is not empty"
     },
     {
       "code": 6040,
-      "name": "InvalidPoolCreatorAuthority",
+      "name": "invalidPoolCreatorAuthority",
       "msg": "Invalid pool creator authority"
     },
     {
       "code": 6041,
-      "name": "InvalidConfigType",
+      "name": "invalidConfigType",
       "msg": "Invalid config type"
     },
     {
       "code": 6042,
-      "name": "InvalidPoolCreator",
+      "name": "invalidPoolCreator",
       "msg": "Invalid pool creator"
     },
     {
       "code": 6043,
-      "name": "RewardVaultFrozenSkipRequired",
+      "name": "rewardVaultFrozenSkipRequired",
       "msg": "Reward vault is frozen, must skip reward to proceed"
     },
     {
       "code": 6044,
-      "name": "InvalidSplitPositionParameters",
+      "name": "invalidSplitPositionParameters",
       "msg": "Invalid parameters for split position"
     },
     {
       "code": 6045,
-      "name": "UnsupportPositionHasVestingLock",
+      "name": "unsupportPositionHasVestingLock",
       "msg": "Unsupported split position has vesting lock"
     },
     {
       "code": 6046,
-      "name": "SamePosition",
+      "name": "samePosition",
       "msg": "Same position"
     },
     {
       "code": 6047,
-      "name": "InvalidBaseFeeMode",
+      "name": "invalidBaseFeeMode",
       "msg": "Invalid base fee mode"
     },
     {
       "code": 6048,
-      "name": "InvalidFeeRateLimiter",
+      "name": "invalidFeeRateLimiter",
       "msg": "Invalid fee rate limiter"
     },
     {
       "code": 6049,
-      "name": "FailToValidateSingleSwapInstruction",
+      "name": "failToValidateSingleSwapInstruction",
       "msg": "Fail to validate single swap instruction in rate limiter"
     },
     {
       "code": 6050,
-      "name": "InvalidFeeTimeScheduler",
+      "name": "invalidFeeTimeScheduler",
       "msg": "Invalid fee scheduler"
     },
     {
       "code": 6051,
-      "name": "UndeterminedError",
+      "name": "undeterminedError",
       "msg": "Undetermined error"
     },
     {
       "code": 6052,
-      "name": "InvalidPoolVersion",
+      "name": "invalidPoolVersion",
       "msg": "Invalid pool version"
     },
     {
       "code": 6053,
-      "name": "InvalidAuthority",
+      "name": "invalidAuthority",
       "msg": "Invalid authority to do that action"
     },
     {
       "code": 6054,
-      "name": "InvalidPermission",
+      "name": "invalidPermission",
       "msg": "Invalid permission"
     },
     {
       "code": 6055,
-      "name": "InvalidFeeMarketCapScheduler",
+      "name": "invalidFeeMarketCapScheduler",
       "msg": "Invalid fee market cap scheduler"
     },
     {
       "code": 6056,
-      "name": "CannotUpdateBaseFee",
+      "name": "cannotUpdateBaseFee",
       "msg": "Cannot update base fee"
     },
     {
       "code": 6057,
-      "name": "InvalidDynamicFeeParameters",
+      "name": "invalidDynamicFeeParameters",
       "msg": "Invalid dynamic fee parameters"
     },
     {
       "code": 6058,
-      "name": "InvalidUpdatePoolFeesParameters",
+      "name": "invalidUpdatePoolFeesParameters",
       "msg": "Invalid update pool fees parameters"
     },
     {
       "code": 6059,
-      "name": "MissingOperatorAccount",
+      "name": "missingOperatorAccount",
       "msg": "Missing operator account"
     },
     {
       "code": 6060,
-      "name": "IncorrectATA",
+      "name": "incorrectAta",
       "msg": "Incorrect ATA"
     },
     {
       "code": 6061,
-      "name": "InvalidZapOutParameters",
+      "name": "invalidZapOutParameters",
       "msg": "Invalid zap out parameters"
     },
     {
       "code": 6062,
-      "name": "InvalidWithdrawProtocolFeeZapAccounts",
+      "name": "invalidWithdrawProtocolFeeZapAccounts",
       "msg": "Invalid withdraw protocol fee zap accounts"
     },
     {
       "code": 6063,
-      "name": "MintRestrictedFromZap",
+      "name": "mintRestrictedFromZap",
       "msg": "SOL,USDC protocol fee cannot be withdrawn via zap"
     },
     {
       "code": 6064,
-      "name": "CpiDisabled",
+      "name": "cpiDisabled",
       "msg": "CPI disabled"
     },
     {
       "code": 6065,
-      "name": "MissingZapOutInstruction",
+      "name": "missingZapOutInstruction",
       "msg": "Missing zap out instruction"
     },
     {
       "code": 6066,
-      "name": "InvalidZapAccounts",
+      "name": "invalidZapAccounts",
       "msg": "Invalid zap accounts"
     },
     {
       "code": 6067,
-      "name": "InvalidCompoundingFeeBps",
+      "name": "invalidCompoundingFeeBps",
       "msg": "Invalid compounding fee bps"
     },
     {
       "code": 6068,
-      "name": "InvalidClaimProtocolFeeAccounts",
+      "name": "invalidClaimProtocolFeeAccounts",
       "msg": "Invalid claim protocol fee accounts"
     },
     {
       "code": 6069,
-      "name": "TransferFeeExcludedAmountIsZero",
+      "name": "transferFeeExcludedAmountIsZero",
       "msg": "Transfer fee excluded amount is zero"
     },
     {
       "code": 6070,
-      "name": "DelegatedAmountNonZero",
+      "name": "delegatedAmountNonZero",
       "msg": "Delegated amount is not zero"
     }
   ],
   "types": [
     {
-      "name": "AddLiquidityParameters",
+      "name": "addLiquidityParameters",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "liquidity_delta",
-            "docs": ["delta liquidity"],
+            "name": "liquidityDelta",
+            "docs": [
+              "delta liquidity"
+            ],
             "type": "u128"
           },
           {
-            "name": "token_a_amount_threshold",
-            "docs": ["maximum token a amount"],
+            "name": "tokenAAmountThreshold",
+            "docs": [
+              "maximum token a amount"
+            ],
             "type": "u64"
           },
           {
-            "name": "token_b_amount_threshold",
-            "docs": ["maximum token b amount"],
+            "name": "tokenBAmountThreshold",
+            "docs": [
+              "maximum token b amount"
+            ],
             "type": "u64"
           }
         ]
       }
     },
     {
-      "name": "BaseFeeInfo",
+      "name": "baseFeeInfo",
       "serialization": "bytemuck",
       "repr": {
         "kind": "c"
@@ -2783,28 +4018,34 @@
           {
             "name": "data",
             "type": {
-              "array": ["u8", 32]
+              "array": [
+                "u8",
+                32
+              ]
             }
           }
         ]
       }
     },
     {
-      "name": "BaseFeeParameters",
+      "name": "baseFeeParameters",
       "type": {
         "kind": "struct",
         "fields": [
           {
             "name": "data",
             "type": {
-              "array": ["u8", 27]
+              "array": [
+                "u8",
+                27
+              ]
             }
           }
         ]
       }
     },
     {
-      "name": "BaseFeeStruct",
+      "name": "baseFeeStruct",
       "serialization": "bytemuck",
       "repr": {
         "kind": "c"
@@ -2813,54 +4054,54 @@
         "kind": "struct",
         "fields": [
           {
-            "name": "base_fee_info",
+            "name": "baseFeeInfo",
             "type": {
               "defined": {
-                "name": "BaseFeeInfo"
+                "name": "baseFeeInfo"
               }
             }
           },
           {
-            "name": "padding_1",
+            "name": "padding1",
             "type": "u64"
           }
         ]
       }
     },
     {
-      "name": "BorshFeeMarketCapScheduler",
+      "name": "borshFeeMarketCapScheduler",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "cliff_fee_numerator",
+            "name": "cliffFeeNumerator",
             "type": "u64"
           },
           {
-            "name": "number_of_period",
+            "name": "numberOfPeriod",
             "type": "u16"
           },
           {
-            "name": "sqrt_price_step_bps",
+            "name": "sqrtPriceStepBps",
             "type": "u32"
           },
           {
-            "name": "scheduler_expiration_duration",
+            "name": "schedulerExpirationDuration",
             "type": "u32"
           },
           {
-            "name": "reduction_factor",
+            "name": "reductionFactor",
             "type": "u64"
           },
           {
-            "name": "base_fee_mode",
+            "name": "baseFeeMode",
             "type": "u8"
           }
         ]
       }
     },
     {
-      "name": "BorshFeeRateLimiter",
+      "name": "borshFeeRateLimiter",
       "docs": [
         "we denote reference_amount = x0, cliff_fee_numerator = c, fee_increment = i",
         "if input_amount <= x0, then fee = input_amount * c",
@@ -2878,62 +4119,62 @@
         "kind": "struct",
         "fields": [
           {
-            "name": "cliff_fee_numerator",
+            "name": "cliffFeeNumerator",
             "type": "u64"
           },
           {
-            "name": "fee_increment_bps",
+            "name": "feeIncrementBps",
             "type": "u16"
           },
           {
-            "name": "max_limiter_duration",
+            "name": "maxLimiterDuration",
             "type": "u32"
           },
           {
-            "name": "max_fee_bps",
+            "name": "maxFeeBps",
             "type": "u32"
           },
           {
-            "name": "reference_amount",
+            "name": "referenceAmount",
             "type": "u64"
           },
           {
-            "name": "base_fee_mode",
+            "name": "baseFeeMode",
             "type": "u8"
           }
         ]
       }
     },
     {
-      "name": "BorshFeeTimeScheduler",
+      "name": "borshFeeTimeScheduler",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "cliff_fee_numerator",
+            "name": "cliffFeeNumerator",
             "type": "u64"
           },
           {
-            "name": "number_of_period",
+            "name": "numberOfPeriod",
             "type": "u16"
           },
           {
-            "name": "period_frequency",
+            "name": "periodFrequency",
             "type": "u64"
           },
           {
-            "name": "reduction_factor",
+            "name": "reductionFactor",
             "type": "u64"
           },
           {
-            "name": "base_fee_mode",
+            "name": "baseFeeMode",
             "type": "u8"
           }
         ]
       }
     },
     {
-      "name": "Config",
+      "name": "config",
       "serialization": "bytemuck",
       "repr": {
         "kind": "c"
@@ -2942,99 +4183,126 @@
         "kind": "struct",
         "fields": [
           {
-            "name": "vault_config_key",
-            "docs": ["Vault config key"],
+            "name": "vaultConfigKey",
+            "docs": [
+              "Vault config key"
+            ],
             "type": "pubkey"
           },
           {
-            "name": "pool_creator_authority",
+            "name": "poolCreatorAuthority",
             "docs": [
               "Only pool_creator_authority can use the current config to initialize new pool. When it's Pubkey::default, it's a public config."
             ],
             "type": "pubkey"
           },
           {
-            "name": "pool_fees",
-            "docs": ["Pool fee"],
+            "name": "poolFees",
+            "docs": [
+              "Pool fee"
+            ],
             "type": {
               "defined": {
-                "name": "PoolFeesConfig"
+                "name": "poolFeesConfig"
               }
             }
           },
           {
-            "name": "activation_type",
-            "docs": ["Activation type"],
+            "name": "activationType",
+            "docs": [
+              "Activation type"
+            ],
             "type": "u8"
           },
           {
-            "name": "collect_fee_mode",
-            "docs": ["Collect fee mode"],
+            "name": "collectFeeMode",
+            "docs": [
+              "Collect fee mode"
+            ],
             "type": "u8"
           },
           {
-            "name": "config_type",
-            "docs": ["Config type mode, 0 for static, 1 for dynamic"],
+            "name": "configType",
+            "docs": [
+              "Config type mode, 0 for static, 1 for dynamic"
+            ],
             "type": "u8"
           },
           {
-            "name": "_padding_0",
-            "docs": ["padding 0"],
+            "name": "padding0",
+            "docs": [
+              "padding 0"
+            ],
             "type": {
-              "array": ["u8", 5]
+              "array": [
+                "u8",
+                5
+              ]
             }
           },
           {
             "name": "index",
-            "docs": ["config index"],
+            "docs": [
+              "config index"
+            ],
             "type": "u64"
           },
           {
-            "name": "sqrt_min_price",
-            "docs": ["sqrt min price"],
+            "name": "sqrtMinPrice",
+            "docs": [
+              "sqrt min price"
+            ],
             "type": "u128"
           },
           {
-            "name": "sqrt_max_price",
-            "docs": ["sqrt max price"],
+            "name": "sqrtMaxPrice",
+            "docs": [
+              "sqrt max price"
+            ],
             "type": "u128"
           },
           {
-            "name": "_padding_1",
-            "docs": ["Fee curve point", "Padding for further use"],
+            "name": "padding1",
+            "docs": [
+              "Fee curve point",
+              "Padding for further use"
+            ],
             "type": {
-              "array": ["u64", 10]
+              "array": [
+                "u64",
+                10
+              ]
             }
           }
         ]
       }
     },
     {
-      "name": "DummyParams",
+      "name": "dummyParams",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "borsh_fee_time_scheduler_params",
+            "name": "borshFeeTimeSchedulerParams",
             "type": {
               "defined": {
-                "name": "BorshFeeTimeScheduler"
+                "name": "borshFeeTimeScheduler"
               }
             }
           },
           {
-            "name": "borsh_fee_rate_limiter_params",
+            "name": "borshFeeRateLimiterParams",
             "type": {
               "defined": {
-                "name": "BorshFeeRateLimiter"
+                "name": "borshFeeRateLimiter"
               }
             }
           },
           {
-            "name": "borsh_fee_market_cap_scheduler_params",
+            "name": "borshFeeMarketCapSchedulerParams",
             "type": {
               "defined": {
-                "name": "BorshFeeMarketCapScheduler"
+                "name": "borshFeeMarketCapScheduler"
               }
             }
           }
@@ -3042,19 +4310,19 @@
       }
     },
     {
-      "name": "DynamicConfigParameters",
+      "name": "dynamicConfigParameters",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "pool_creator_authority",
+            "name": "poolCreatorAuthority",
             "type": "pubkey"
           }
         ]
       }
     },
     {
-      "name": "DynamicFeeConfig",
+      "name": "dynamicFeeConfig",
       "serialization": "bytemuck",
       "repr": {
         "kind": "c"
@@ -3069,84 +4337,90 @@
           {
             "name": "padding",
             "type": {
-              "array": ["u8", 7]
+              "array": [
+                "u8",
+                7
+              ]
             }
           },
           {
-            "name": "max_volatility_accumulator",
+            "name": "maxVolatilityAccumulator",
             "type": "u32"
           },
           {
-            "name": "variable_fee_control",
+            "name": "variableFeeControl",
             "type": "u32"
           },
           {
-            "name": "bin_step",
+            "name": "binStep",
             "type": "u16"
           },
           {
-            "name": "filter_period",
+            "name": "filterPeriod",
             "type": "u16"
           },
           {
-            "name": "decay_period",
+            "name": "decayPeriod",
             "type": "u16"
           },
           {
-            "name": "reduction_factor",
+            "name": "reductionFactor",
             "type": "u16"
           },
           {
-            "name": "padding_1",
+            "name": "padding1",
             "type": {
-              "array": ["u8", 8]
+              "array": [
+                "u8",
+                8
+              ]
             }
           },
           {
-            "name": "bin_step_u128",
+            "name": "binStepU128",
             "type": "u128"
           }
         ]
       }
     },
     {
-      "name": "DynamicFeeParameters",
+      "name": "dynamicFeeParameters",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "bin_step",
+            "name": "binStep",
             "type": "u16"
           },
           {
-            "name": "bin_step_u128",
+            "name": "binStepU128",
             "type": "u128"
           },
           {
-            "name": "filter_period",
+            "name": "filterPeriod",
             "type": "u16"
           },
           {
-            "name": "decay_period",
+            "name": "decayPeriod",
             "type": "u16"
           },
           {
-            "name": "reduction_factor",
+            "name": "reductionFactor",
             "type": "u16"
           },
           {
-            "name": "max_volatility_accumulator",
+            "name": "maxVolatilityAccumulator",
             "type": "u32"
           },
           {
-            "name": "variable_fee_control",
+            "name": "variableFeeControl",
             "type": "u32"
           }
         ]
       }
     },
     {
-      "name": "DynamicFeeStruct",
+      "name": "dynamicFeeStruct",
       "serialization": "bytemuck",
       "repr": {
         "kind": "c"
@@ -3161,58 +4435,61 @@
           {
             "name": "padding",
             "type": {
-              "array": ["u8", 7]
+              "array": [
+                "u8",
+                7
+              ]
             }
           },
           {
-            "name": "max_volatility_accumulator",
+            "name": "maxVolatilityAccumulator",
             "type": "u32"
           },
           {
-            "name": "variable_fee_control",
+            "name": "variableFeeControl",
             "type": "u32"
           },
           {
-            "name": "bin_step",
+            "name": "binStep",
             "type": "u16"
           },
           {
-            "name": "filter_period",
+            "name": "filterPeriod",
             "type": "u16"
           },
           {
-            "name": "decay_period",
+            "name": "decayPeriod",
             "type": "u16"
           },
           {
-            "name": "reduction_factor",
+            "name": "reductionFactor",
             "type": "u16"
           },
           {
-            "name": "last_update_timestamp",
+            "name": "lastUpdateTimestamp",
             "type": "u64"
           },
           {
-            "name": "bin_step_u128",
+            "name": "binStepU128",
             "type": "u128"
           },
           {
-            "name": "sqrt_price_reference",
+            "name": "sqrtPriceReference",
             "type": "u128"
           },
           {
-            "name": "volatility_accumulator",
+            "name": "volatilityAccumulator",
             "type": "u128"
           },
           {
-            "name": "volatility_reference",
+            "name": "volatilityReference",
             "type": "u128"
           }
         ]
       }
     },
     {
-      "name": "EvtClaimPositionFee",
+      "name": "evtClaimPositionFee",
       "type": {
         "kind": "struct",
         "fields": [
@@ -3229,18 +4506,18 @@
             "type": "pubkey"
           },
           {
-            "name": "fee_a_claimed",
+            "name": "feeAClaimed",
             "type": "u64"
           },
           {
-            "name": "fee_b_claimed",
+            "name": "feeBClaimed",
             "type": "u64"
           }
         ]
       }
     },
     {
-      "name": "EvtClaimProtocolFee2",
+      "name": "evtClaimProtocolFee2",
       "type": {
         "kind": "struct",
         "fields": [
@@ -3249,11 +4526,11 @@
             "type": "pubkey"
           },
           {
-            "name": "receiver_token_account",
+            "name": "receiverTokenAccount",
             "type": "pubkey"
           },
           {
-            "name": "token_mint",
+            "name": "tokenMint",
             "type": "pubkey"
           },
           {
@@ -3264,7 +4541,7 @@
       }
     },
     {
-      "name": "EvtClaimReward",
+      "name": "evtClaimReward",
       "type": {
         "kind": "struct",
         "fields": [
@@ -3281,41 +4558,47 @@
             "type": "pubkey"
           },
           {
-            "name": "mint_reward",
+            "name": "mintReward",
             "type": "pubkey"
           },
           {
-            "name": "reward_index",
+            "name": "rewardIndex",
             "type": "u8"
           },
           {
-            "name": "total_reward",
+            "name": "totalReward",
             "type": "u64"
           }
         ]
       }
     },
     {
-      "name": "EvtCloseConfig",
-      "docs": ["Close config"],
+      "name": "evtCloseConfig",
+      "docs": [
+        "Close config"
+      ],
       "type": {
         "kind": "struct",
         "fields": [
           {
             "name": "config",
-            "docs": ["Config pubkey"],
+            "docs": [
+              "Config pubkey"
+            ],
             "type": "pubkey"
           },
           {
             "name": "admin",
-            "docs": ["admin pk"],
+            "docs": [
+              "admin pk"
+            ],
             "type": "pubkey"
           }
         ]
       }
     },
     {
-      "name": "EvtClosePosition",
+      "name": "evtClosePosition",
       "type": {
         "kind": "struct",
         "fields": [
@@ -3332,48 +4615,50 @@
             "type": "pubkey"
           },
           {
-            "name": "position_nft_mint",
+            "name": "positionNftMint",
             "type": "pubkey"
           }
         ]
       }
     },
     {
-      "name": "EvtCreateConfig",
-      "docs": ["Create static config"],
+      "name": "evtCreateConfig",
+      "docs": [
+        "Create static config"
+      ],
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "pool_fees",
+            "name": "poolFees",
             "type": {
               "defined": {
-                "name": "PoolFeeParameters"
+                "name": "poolFeeParameters"
               }
             }
           },
           {
-            "name": "vault_config_key",
+            "name": "vaultConfigKey",
             "type": "pubkey"
           },
           {
-            "name": "pool_creator_authority",
+            "name": "poolCreatorAuthority",
             "type": "pubkey"
           },
           {
-            "name": "activation_type",
+            "name": "activationType",
             "type": "u8"
           },
           {
-            "name": "sqrt_min_price",
+            "name": "sqrtMinPrice",
             "type": "u128"
           },
           {
-            "name": "sqrt_max_price",
+            "name": "sqrtMaxPrice",
             "type": "u128"
           },
           {
-            "name": "collect_fee_mode",
+            "name": "collectFeeMode",
             "type": "u8"
           },
           {
@@ -3388,8 +4673,10 @@
       }
     },
     {
-      "name": "EvtCreateDynamicConfig",
-      "docs": ["Create dynamic config"],
+      "name": "evtCreateDynamicConfig",
+      "docs": [
+        "Create dynamic config"
+      ],
       "type": {
         "kind": "struct",
         "fields": [
@@ -3398,7 +4685,7 @@
             "type": "pubkey"
           },
           {
-            "name": "pool_creator_authority",
+            "name": "poolCreatorAuthority",
             "type": "pubkey"
           },
           {
@@ -3409,7 +4696,7 @@
       }
     },
     {
-      "name": "EvtCreatePosition",
+      "name": "evtCreatePosition",
       "type": {
         "kind": "struct",
         "fields": [
@@ -3426,27 +4713,29 @@
             "type": "pubkey"
           },
           {
-            "name": "position_nft_mint",
+            "name": "positionNftMint",
             "type": "pubkey"
           }
         ]
       }
     },
     {
-      "name": "EvtCreateTokenBadge",
-      "docs": ["Create token badge"],
+      "name": "evtCreateTokenBadge",
+      "docs": [
+        "Create token badge"
+      ],
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "token_mint",
+            "name": "tokenMint",
             "type": "pubkey"
           }
         ]
       }
     },
     {
-      "name": "EvtFundReward",
+      "name": "evtFundReward",
       "type": {
         "kind": "struct",
         "fields": [
@@ -3459,11 +4748,11 @@
             "type": "pubkey"
           },
           {
-            "name": "mint_reward",
+            "name": "mintReward",
             "type": "pubkey"
           },
           {
-            "name": "reward_index",
+            "name": "rewardIndex",
             "type": "u8"
           },
           {
@@ -3471,26 +4760,26 @@
             "type": "u64"
           },
           {
-            "name": "transfer_fee_excluded_amount_in",
+            "name": "transferFeeExcludedAmountIn",
             "type": "u64"
           },
           {
-            "name": "reward_duration_end",
+            "name": "rewardDurationEnd",
             "type": "u64"
           },
           {
-            "name": "pre_reward_rate",
+            "name": "preRewardRate",
             "type": "u128"
           },
           {
-            "name": "post_reward_rate",
+            "name": "postRewardRate",
             "type": "u128"
           }
         ]
       }
     },
     {
-      "name": "EvtInitializePool",
+      "name": "evtInitializePool",
       "type": {
         "kind": "struct",
         "fields": [
@@ -3499,11 +4788,11 @@
             "type": "pubkey"
           },
           {
-            "name": "token_a_mint",
+            "name": "tokenAMint",
             "type": "pubkey"
           },
           {
-            "name": "token_b_mint",
+            "name": "tokenBMint",
             "type": "pubkey"
           },
           {
@@ -3515,31 +4804,31 @@
             "type": "pubkey"
           },
           {
-            "name": "alpha_vault",
+            "name": "alphaVault",
             "type": "pubkey"
           },
           {
-            "name": "pool_fees",
+            "name": "poolFees",
             "type": {
               "defined": {
-                "name": "PoolFeeParameters"
+                "name": "poolFeeParameters"
               }
             }
           },
           {
-            "name": "sqrt_min_price",
+            "name": "sqrtMinPrice",
             "type": "u128"
           },
           {
-            "name": "sqrt_max_price",
+            "name": "sqrtMaxPrice",
             "type": "u128"
           },
           {
-            "name": "activation_type",
+            "name": "activationType",
             "type": "u8"
           },
           {
-            "name": "collect_fee_mode",
+            "name": "collectFeeMode",
             "type": "u8"
           },
           {
@@ -3547,46 +4836,46 @@
             "type": "u128"
           },
           {
-            "name": "sqrt_price",
+            "name": "sqrtPrice",
             "type": "u128"
           },
           {
-            "name": "activation_point",
+            "name": "activationPoint",
             "type": "u64"
           },
           {
-            "name": "token_a_flag",
+            "name": "tokenAFlag",
             "type": "u8"
           },
           {
-            "name": "token_b_flag",
+            "name": "tokenBFlag",
             "type": "u8"
           },
           {
-            "name": "token_a_amount",
+            "name": "tokenAAmount",
             "type": "u64"
           },
           {
-            "name": "token_b_amount",
+            "name": "tokenBAmount",
             "type": "u64"
           },
           {
-            "name": "total_amount_a",
+            "name": "totalAmountA",
             "type": "u64"
           },
           {
-            "name": "total_amount_b",
+            "name": "totalAmountB",
             "type": "u64"
           },
           {
-            "name": "pool_type",
+            "name": "poolType",
             "type": "u8"
           }
         ]
       }
     },
     {
-      "name": "EvtInitializeReward",
+      "name": "evtInitializeReward",
       "type": {
         "kind": "struct",
         "fields": [
@@ -3595,7 +4884,7 @@
             "type": "pubkey"
           },
           {
-            "name": "reward_mint",
+            "name": "rewardMint",
             "type": "pubkey"
           },
           {
@@ -3607,18 +4896,18 @@
             "type": "pubkey"
           },
           {
-            "name": "reward_index",
+            "name": "rewardIndex",
             "type": "u8"
           },
           {
-            "name": "reward_duration",
+            "name": "rewardDuration",
             "type": "u64"
           }
         ]
       }
     },
     {
-      "name": "EvtLiquidityChange",
+      "name": "evtLiquidityChange",
       "type": {
         "kind": "struct",
         "fields": [
@@ -3635,50 +4924,50 @@
             "type": "pubkey"
           },
           {
-            "name": "token_a_amount",
+            "name": "tokenAAmount",
             "type": "u64"
           },
           {
-            "name": "token_b_amount",
+            "name": "tokenBAmount",
             "type": "u64"
           },
           {
-            "name": "transfer_fee_included_token_a_amount",
+            "name": "transferFeeIncludedTokenAAmount",
             "type": "u64"
           },
           {
-            "name": "transfer_fee_included_token_b_amount",
+            "name": "transferFeeIncludedTokenBAmount",
             "type": "u64"
           },
           {
-            "name": "reserve_a_amount",
+            "name": "reserveAAmount",
             "type": "u64"
           },
           {
-            "name": "reserve_b_amount",
+            "name": "reserveBAmount",
             "type": "u64"
           },
           {
-            "name": "liquidity_delta",
+            "name": "liquidityDelta",
             "type": "u128"
           },
           {
-            "name": "token_a_amount_threshold",
+            "name": "tokenAAmountThreshold",
             "type": "u64"
           },
           {
-            "name": "token_b_amount_threshold",
+            "name": "tokenBAmountThreshold",
             "type": "u64"
           },
           {
-            "name": "change_type",
+            "name": "changeType",
             "type": "u8"
           }
         ]
       }
     },
     {
-      "name": "EvtLockPosition",
+      "name": "evtLockPosition",
       "type": {
         "kind": "struct",
         "fields": [
@@ -3699,30 +4988,30 @@
             "type": "pubkey"
           },
           {
-            "name": "cliff_point",
+            "name": "cliffPoint",
             "type": "u64"
           },
           {
-            "name": "period_frequency",
+            "name": "periodFrequency",
             "type": "u64"
           },
           {
-            "name": "cliff_unlock_liquidity",
+            "name": "cliffUnlockLiquidity",
             "type": "u128"
           },
           {
-            "name": "liquidity_per_period",
+            "name": "liquidityPerPeriod",
             "type": "u128"
           },
           {
-            "name": "number_of_period",
+            "name": "numberOfPeriod",
             "type": "u16"
           }
         ]
       }
     },
     {
-      "name": "EvtPermanentLockPosition",
+      "name": "evtPermanentLockPosition",
       "type": {
         "kind": "struct",
         "fields": [
@@ -3735,18 +5024,18 @@
             "type": "pubkey"
           },
           {
-            "name": "lock_liquidity_amount",
+            "name": "lockLiquidityAmount",
             "type": "u128"
           },
           {
-            "name": "total_permanent_locked_liquidity",
+            "name": "totalPermanentLockedLiquidity",
             "type": "u128"
           }
         ]
       }
     },
     {
-      "name": "EvtSetPoolStatus",
+      "name": "evtSetPoolStatus",
       "type": {
         "kind": "struct",
         "fields": [
@@ -3762,7 +5051,7 @@
       }
     },
     {
-      "name": "EvtSplitPosition2",
+      "name": "evtSplitPosition2",
       "type": {
         "kind": "struct",
         "fields": [
@@ -3771,54 +5060,54 @@
             "type": "pubkey"
           },
           {
-            "name": "first_owner",
+            "name": "firstOwner",
             "type": "pubkey"
           },
           {
-            "name": "second_owner",
+            "name": "secondOwner",
             "type": "pubkey"
           },
           {
-            "name": "first_position",
+            "name": "firstPosition",
             "type": "pubkey"
           },
           {
-            "name": "second_position",
+            "name": "secondPosition",
             "type": "pubkey"
           },
           {
-            "name": "current_sqrt_price",
+            "name": "currentSqrtPrice",
             "type": "u128"
           },
           {
-            "name": "amount_splits",
+            "name": "amountSplits",
             "type": {
               "defined": {
-                "name": "SplitAmountInfo"
+                "name": "splitAmountInfo"
               }
             }
           },
           {
-            "name": "first_position_info",
+            "name": "firstPositionInfo",
             "type": {
               "defined": {
-                "name": "SplitPositionInfo"
+                "name": "splitPositionInfo"
               }
             }
           },
           {
-            "name": "second_position_info",
+            "name": "secondPositionInfo",
             "type": {
               "defined": {
-                "name": "SplitPositionInfo"
+                "name": "splitPositionInfo"
               }
             }
           },
           {
-            "name": "split_position_parameters",
+            "name": "splitPositionParameters",
             "type": {
               "defined": {
-                "name": "SplitPositionParameters2"
+                "name": "splitPositionParameters2"
               }
             }
           }
@@ -3826,7 +5115,7 @@
       }
     },
     {
-      "name": "EvtSplitPosition3",
+      "name": "evtSplitPosition3",
       "type": {
         "kind": "struct",
         "fields": [
@@ -3835,54 +5124,54 @@
             "type": "pubkey"
           },
           {
-            "name": "first_owner",
+            "name": "firstOwner",
             "type": "pubkey"
           },
           {
-            "name": "second_owner",
+            "name": "secondOwner",
             "type": "pubkey"
           },
           {
-            "name": "first_position",
+            "name": "firstPosition",
             "type": "pubkey"
           },
           {
-            "name": "second_position",
+            "name": "secondPosition",
             "type": "pubkey"
           },
           {
-            "name": "current_sqrt_price",
+            "name": "currentSqrtPrice",
             "type": "u128"
           },
           {
-            "name": "amount_splits",
+            "name": "amountSplits",
             "type": {
               "defined": {
-                "name": "SplitAmountInfo2"
+                "name": "splitAmountInfo2"
               }
             }
           },
           {
-            "name": "first_position_info",
+            "name": "firstPositionInfo",
             "type": {
               "defined": {
-                "name": "SplitPositionInfo2"
+                "name": "splitPositionInfo2"
               }
             }
           },
           {
-            "name": "second_position_info",
+            "name": "secondPositionInfo",
             "type": {
               "defined": {
-                "name": "SplitPositionInfo2"
+                "name": "splitPositionInfo2"
               }
             }
           },
           {
-            "name": "split_position_parameters",
+            "name": "splitPositionParameters",
             "type": {
               "defined": {
-                "name": "SplitPositionParameters3"
+                "name": "splitPositionParameters3"
               }
             }
           }
@@ -3890,7 +5179,7 @@
       }
     },
     {
-      "name": "EvtSwap2",
+      "name": "evtSwap2",
       "type": {
         "kind": "struct",
         "fields": [
@@ -3899,62 +5188,62 @@
             "type": "pubkey"
           },
           {
-            "name": "trade_direction",
+            "name": "tradeDirection",
             "type": "u8"
           },
           {
-            "name": "collect_fee_mode",
+            "name": "collectFeeMode",
             "type": "u8"
           },
           {
-            "name": "has_referral",
+            "name": "hasReferral",
             "type": "bool"
           },
           {
             "name": "params",
             "type": {
               "defined": {
-                "name": "SwapParameters2"
+                "name": "swapParameters2"
               }
             }
           },
           {
-            "name": "swap_result",
+            "name": "swapResult",
             "type": {
               "defined": {
-                "name": "SwapResult2"
+                "name": "swapResult2"
               }
             }
           },
           {
-            "name": "included_transfer_fee_amount_in",
+            "name": "includedTransferFeeAmountIn",
             "type": "u64"
           },
           {
-            "name": "included_transfer_fee_amount_out",
+            "name": "includedTransferFeeAmountOut",
             "type": "u64"
           },
           {
-            "name": "excluded_transfer_fee_amount_out",
+            "name": "excludedTransferFeeAmountOut",
             "type": "u64"
           },
           {
-            "name": "current_timestamp",
+            "name": "currentTimestamp",
             "type": "u64"
           },
           {
-            "name": "reserve_a_amount",
+            "name": "reserveAAmount",
             "type": "u64"
           },
           {
-            "name": "reserve_b_amount",
+            "name": "reserveBAmount",
             "type": "u64"
           }
         ]
       }
     },
     {
-      "name": "EvtUpdateDelegatePermission",
+      "name": "evtUpdateDelegatePermission",
       "type": {
         "kind": "struct",
         "fields": [
@@ -3980,7 +5269,7 @@
       }
     },
     {
-      "name": "EvtUpdatePoolFees",
+      "name": "evtUpdatePoolFees",
       "type": {
         "kind": "struct",
         "fields": [
@@ -3996,7 +5285,7 @@
             "name": "params",
             "type": {
               "defined": {
-                "name": "UpdatePoolFeesParameters"
+                "name": "updatePoolFeesParameters"
               }
             }
           }
@@ -4004,7 +5293,7 @@
       }
     },
     {
-      "name": "EvtUpdateRewardDuration",
+      "name": "evtUpdateRewardDuration",
       "type": {
         "kind": "struct",
         "fields": [
@@ -4013,22 +5302,22 @@
             "type": "pubkey"
           },
           {
-            "name": "reward_index",
+            "name": "rewardIndex",
             "type": "u8"
           },
           {
-            "name": "old_reward_duration",
+            "name": "oldRewardDuration",
             "type": "u64"
           },
           {
-            "name": "new_reward_duration",
+            "name": "newRewardDuration",
             "type": "u64"
           }
         ]
       }
     },
     {
-      "name": "EvtUpdateRewardFunder",
+      "name": "evtUpdateRewardFunder",
       "type": {
         "kind": "struct",
         "fields": [
@@ -4037,22 +5326,22 @@
             "type": "pubkey"
           },
           {
-            "name": "reward_index",
+            "name": "rewardIndex",
             "type": "u8"
           },
           {
-            "name": "old_funder",
+            "name": "oldFunder",
             "type": "pubkey"
           },
           {
-            "name": "new_funder",
+            "name": "newFunder",
             "type": "pubkey"
           }
         ]
       }
     },
     {
-      "name": "EvtWithdrawDeadLiquidityReward",
+      "name": "evtWithdrawDeadLiquidityReward",
       "type": {
         "kind": "struct",
         "fields": [
@@ -4061,7 +5350,7 @@
             "type": "pubkey"
           },
           {
-            "name": "reward_mint",
+            "name": "rewardMint",
             "type": "pubkey"
           },
           {
@@ -4072,7 +5361,7 @@
       }
     },
     {
-      "name": "EvtWithdrawIneligibleReward",
+      "name": "evtWithdrawIneligibleReward",
       "type": {
         "kind": "struct",
         "fields": [
@@ -4081,7 +5370,7 @@
             "type": "pubkey"
           },
           {
-            "name": "reward_mint",
+            "name": "rewardMint",
             "type": "pubkey"
           },
           {
@@ -4092,59 +5381,75 @@
       }
     },
     {
-      "name": "InitializeCustomizablePoolParameters",
+      "name": "initializeCustomizablePoolParameters",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "pool_fees",
-            "docs": ["pool fees"],
+            "name": "poolFees",
+            "docs": [
+              "pool fees"
+            ],
             "type": {
               "defined": {
-                "name": "PoolFeeParameters"
+                "name": "poolFeeParameters"
               }
             }
           },
           {
-            "name": "sqrt_min_price",
-            "docs": ["sqrt min price"],
+            "name": "sqrtMinPrice",
+            "docs": [
+              "sqrt min price"
+            ],
             "type": "u128"
           },
           {
-            "name": "sqrt_max_price",
-            "docs": ["sqrt max price"],
+            "name": "sqrtMaxPrice",
+            "docs": [
+              "sqrt max price"
+            ],
             "type": "u128"
           },
           {
-            "name": "has_alpha_vault",
-            "docs": ["has alpha vault"],
+            "name": "hasAlphaVault",
+            "docs": [
+              "has alpha vault"
+            ],
             "type": "bool"
           },
           {
             "name": "liquidity",
-            "docs": ["initialize liquidity"],
+            "docs": [
+              "initialize liquidity"
+            ],
             "type": "u128"
           },
           {
-            "name": "sqrt_price",
+            "name": "sqrtPrice",
             "docs": [
               "The init price of the pool as a sqrt(token_b/token_a) Q64.64 value. Market cap fee scheduler minimum price will be derived from this value"
             ],
             "type": "u128"
           },
           {
-            "name": "activation_type",
-            "docs": ["activation type"],
+            "name": "activationType",
+            "docs": [
+              "activation type"
+            ],
             "type": "u8"
           },
           {
-            "name": "collect_fee_mode",
-            "docs": ["collect fee mode"],
+            "name": "collectFeeMode",
+            "docs": [
+              "collect fee mode"
+            ],
             "type": "u8"
           },
           {
-            "name": "activation_point",
-            "docs": ["activation point"],
+            "name": "activationPoint",
+            "docs": [
+              "activation point"
+            ],
             "type": {
               "option": "u64"
             }
@@ -4153,25 +5458,29 @@
       }
     },
     {
-      "name": "InitializePoolParameters",
+      "name": "initializePoolParameters",
       "type": {
         "kind": "struct",
         "fields": [
           {
             "name": "liquidity",
-            "docs": ["initialize liquidity"],
+            "docs": [
+              "initialize liquidity"
+            ],
             "type": "u128"
           },
           {
-            "name": "sqrt_price",
+            "name": "sqrtPrice",
             "docs": [
               "The init price of the pool as a sqrt(token_b/token_a) Q64.64 value"
             ],
             "type": "u128"
           },
           {
-            "name": "activation_point",
-            "docs": ["activation point"],
+            "name": "activationPoint",
+            "docs": [
+              "activation point"
+            ],
             "type": {
               "option": "u64"
             }
@@ -4180,7 +5489,7 @@
       }
     },
     {
-      "name": "InnerVesting",
+      "name": "innerVesting",
       "serialization": "bytemuck",
       "repr": {
         "kind": "c"
@@ -4189,40 +5498,43 @@
         "kind": "struct",
         "fields": [
           {
-            "name": "cliff_point",
+            "name": "cliffPoint",
             "type": "u64"
           },
           {
-            "name": "period_frequency",
+            "name": "periodFrequency",
             "type": "u64"
           },
           {
-            "name": "cliff_unlock_liquidity",
+            "name": "cliffUnlockLiquidity",
             "type": "u128"
           },
           {
-            "name": "liquidity_per_period",
+            "name": "liquidityPerPeriod",
             "type": "u128"
           },
           {
-            "name": "total_released_liquidity",
+            "name": "totalReleasedLiquidity",
             "type": "u128"
           },
           {
-            "name": "number_of_period",
+            "name": "numberOfPeriod",
             "type": "u16"
           },
           {
             "name": "padding",
             "type": {
-              "array": ["u8", 14]
+              "array": [
+                "u8",
+                14
+              ]
             }
           }
         ]
       }
     },
     {
-      "name": "Operator",
+      "name": "operator",
       "serialization": "bytemuck",
       "repr": {
         "kind": "c"
@@ -4231,7 +5543,7 @@
         "kind": "struct",
         "fields": [
           {
-            "name": "whitelisted_address",
+            "name": "whitelistedAddress",
             "type": "pubkey"
           },
           {
@@ -4241,14 +5553,17 @@
           {
             "name": "padding",
             "type": {
-              "array": ["u64", 2]
+              "array": [
+                "u64",
+                2
+              ]
             }
           }
         ]
       }
     },
     {
-      "name": "PodAlignedFeeMarketCapScheduler",
+      "name": "podAlignedFeeMarketCapScheduler",
       "serialization": "bytemuck",
       "repr": {
         "kind": "c"
@@ -4257,40 +5572,43 @@
         "kind": "struct",
         "fields": [
           {
-            "name": "cliff_fee_numerator",
+            "name": "cliffFeeNumerator",
             "type": "u64"
           },
           {
-            "name": "base_fee_mode",
+            "name": "baseFeeMode",
             "type": "u8"
           },
           {
             "name": "padding",
             "type": {
-              "array": ["u8", 5]
+              "array": [
+                "u8",
+                5
+              ]
             }
           },
           {
-            "name": "number_of_period",
+            "name": "numberOfPeriod",
             "type": "u16"
           },
           {
-            "name": "sqrt_price_step_bps",
+            "name": "sqrtPriceStepBps",
             "type": "u32"
           },
           {
-            "name": "scheduler_expiration_duration",
+            "name": "schedulerExpirationDuration",
             "type": "u32"
           },
           {
-            "name": "reduction_factor",
+            "name": "reductionFactor",
             "type": "u64"
           }
         ]
       }
     },
     {
-      "name": "PodAlignedFeeRateLimiter",
+      "name": "podAlignedFeeRateLimiter",
       "serialization": "bytemuck",
       "repr": {
         "kind": "c"
@@ -4299,40 +5617,43 @@
         "kind": "struct",
         "fields": [
           {
-            "name": "cliff_fee_numerator",
+            "name": "cliffFeeNumerator",
             "type": "u64"
           },
           {
-            "name": "base_fee_mode",
+            "name": "baseFeeMode",
             "type": "u8"
           },
           {
             "name": "padding",
             "type": {
-              "array": ["u8", 5]
+              "array": [
+                "u8",
+                5
+              ]
             }
           },
           {
-            "name": "fee_increment_bps",
+            "name": "feeIncrementBps",
             "type": "u16"
           },
           {
-            "name": "max_limiter_duration",
+            "name": "maxLimiterDuration",
             "type": "u32"
           },
           {
-            "name": "max_fee_bps",
+            "name": "maxFeeBps",
             "type": "u32"
           },
           {
-            "name": "reference_amount",
+            "name": "referenceAmount",
             "type": "u64"
           }
         ]
       }
     },
     {
-      "name": "PodAlignedFeeTimeScheduler",
+      "name": "podAlignedFeeTimeScheduler",
       "serialization": "bytemuck",
       "repr": {
         "kind": "c"
@@ -4341,36 +5662,39 @@
         "kind": "struct",
         "fields": [
           {
-            "name": "cliff_fee_numerator",
+            "name": "cliffFeeNumerator",
             "type": "u64"
           },
           {
-            "name": "base_fee_mode",
+            "name": "baseFeeMode",
             "type": "u8"
           },
           {
             "name": "padding",
             "type": {
-              "array": ["u8", 5]
+              "array": [
+                "u8",
+                5
+              ]
             }
           },
           {
-            "name": "number_of_period",
+            "name": "numberOfPeriod",
             "type": "u16"
           },
           {
-            "name": "period_frequency",
+            "name": "periodFrequency",
             "type": "u64"
           },
           {
-            "name": "reduction_factor",
+            "name": "reductionFactor",
             "type": "u64"
           }
         ]
       }
     },
     {
-      "name": "Pool",
+      "name": "pool",
       "serialization": "bytemuck",
       "repr": {
         "kind": "c"
@@ -4379,211 +5703,280 @@
         "kind": "struct",
         "fields": [
           {
-            "name": "pool_fees",
-            "docs": ["Pool fee"],
+            "name": "poolFees",
+            "docs": [
+              "Pool fee"
+            ],
             "type": {
               "defined": {
-                "name": "PoolFeesStruct"
+                "name": "poolFeesStruct"
               }
             }
           },
           {
-            "name": "token_a_mint",
-            "docs": ["token a mint"],
+            "name": "tokenAMint",
+            "docs": [
+              "token a mint"
+            ],
             "type": "pubkey"
           },
           {
-            "name": "token_b_mint",
-            "docs": ["token b mint"],
+            "name": "tokenBMint",
+            "docs": [
+              "token b mint"
+            ],
             "type": "pubkey"
           },
           {
-            "name": "token_a_vault",
-            "docs": ["token a vault"],
+            "name": "tokenAVault",
+            "docs": [
+              "token a vault"
+            ],
             "type": "pubkey"
           },
           {
-            "name": "token_b_vault",
-            "docs": ["token b vault"],
+            "name": "tokenBVault",
+            "docs": [
+              "token b vault"
+            ],
             "type": "pubkey"
           },
           {
-            "name": "whitelisted_vault",
+            "name": "whitelistedVault",
             "docs": [
               "Whitelisted vault to be able to buy pool before activation_point"
             ],
             "type": "pubkey"
           },
           {
-            "name": "padding_0",
+            "name": "padding0",
             "docs": [
               "padding, previously partner pubkey, be careful when using this field"
             ],
             "type": {
-              "array": ["u8", 32]
+              "array": [
+                "u8",
+                32
+              ]
             }
           },
           {
             "name": "liquidity",
-            "docs": ["liquidity share"],
+            "docs": [
+              "liquidity share"
+            ],
             "type": "u128"
           },
           {
-            "name": "padding_1",
+            "name": "padding1",
             "docs": [
               "padding, previous reserve amount, be careful to use that field"
             ],
             "type": "u128"
           },
           {
-            "name": "protocol_a_fee",
-            "docs": ["protocol a fee"],
+            "name": "protocolAFee",
+            "docs": [
+              "protocol a fee"
+            ],
             "type": "u64"
           },
           {
-            "name": "protocol_b_fee",
-            "docs": ["protocol b fee"],
+            "name": "protocolBFee",
+            "docs": [
+              "protocol b fee"
+            ],
             "type": "u64"
           },
           {
-            "name": "padding_2",
+            "name": "padding2",
             "type": "u128"
           },
           {
-            "name": "sqrt_min_price",
-            "docs": ["min price"],
+            "name": "sqrtMinPrice",
+            "docs": [
+              "min price"
+            ],
             "type": "u128"
           },
           {
-            "name": "sqrt_max_price",
-            "docs": ["max price"],
+            "name": "sqrtMaxPrice",
+            "docs": [
+              "max price"
+            ],
             "type": "u128"
           },
           {
-            "name": "sqrt_price",
-            "docs": ["current price"],
+            "name": "sqrtPrice",
+            "docs": [
+              "current price"
+            ],
             "type": "u128"
           },
           {
-            "name": "activation_point",
-            "docs": ["Activation point, can be slot or timestamp"],
+            "name": "activationPoint",
+            "docs": [
+              "Activation point, can be slot or timestamp"
+            ],
             "type": "u64"
           },
           {
-            "name": "activation_type",
-            "docs": ["Activation type, 0 means by slot, 1 means by timestamp"],
+            "name": "activationType",
+            "docs": [
+              "Activation type, 0 means by slot, 1 means by timestamp"
+            ],
             "type": "u8"
           },
           {
-            "name": "pool_status",
-            "docs": ["pool status, 0: enable, 1 disable"],
+            "name": "poolStatus",
+            "docs": [
+              "pool status, 0: enable, 1 disable"
+            ],
             "type": "u8"
           },
           {
-            "name": "token_a_flag",
-            "docs": ["token a flag"],
+            "name": "tokenAFlag",
+            "docs": [
+              "token a flag"
+            ],
             "type": "u8"
           },
           {
-            "name": "token_b_flag",
-            "docs": ["token b flag"],
+            "name": "tokenBFlag",
+            "docs": [
+              "token b flag"
+            ],
             "type": "u8"
           },
           {
-            "name": "collect_fee_mode",
+            "name": "collectFeeMode",
             "docs": [
               "0 is collect fee in both token, 1 only collect fee only in token b"
             ],
             "type": "u8"
           },
           {
-            "name": "pool_type",
-            "docs": ["pool type"],
+            "name": "poolType",
+            "docs": [
+              "pool type"
+            ],
             "type": "u8"
           },
           {
-            "name": "fee_version",
+            "name": "feeVersion",
             "docs": [
               "pool fee version, 0: max_fee is still capped at 50%, 1: max_fee is capped at 99%"
             ],
             "type": "u8"
           },
           {
-            "name": "padding_3",
-            "docs": ["padding"],
+            "name": "padding3",
+            "docs": [
+              "padding"
+            ],
             "type": "u8"
           },
           {
-            "name": "fee_a_per_liquidity",
-            "docs": ["cumulative"],
+            "name": "feeAPerLiquidity",
+            "docs": [
+              "cumulative"
+            ],
             "type": {
-              "array": ["u8", 32]
+              "array": [
+                "u8",
+                32
+              ]
             }
           },
           {
-            "name": "fee_b_per_liquidity",
-            "docs": ["cumulative"],
+            "name": "feeBPerLiquidity",
+            "docs": [
+              "cumulative"
+            ],
             "type": {
-              "array": ["u8", 32]
+              "array": [
+                "u8",
+                32
+              ]
             }
           },
           {
-            "name": "permanent_lock_liquidity",
+            "name": "permanentLockLiquidity",
             "type": "u128"
           },
           {
             "name": "metrics",
-            "docs": ["metrics"],
+            "docs": [
+              "metrics"
+            ],
             "type": {
               "defined": {
-                "name": "PoolMetrics"
+                "name": "poolMetrics"
               }
             }
           },
           {
             "name": "creator",
-            "docs": ["pool creator"],
+            "docs": [
+              "pool creator"
+            ],
             "type": "pubkey"
           },
           {
-            "name": "token_a_amount",
-            "docs": ["token a amount"],
+            "name": "tokenAAmount",
+            "docs": [
+              "token a amount"
+            ],
             "type": "u64"
           },
           {
-            "name": "token_b_amount",
-            "docs": ["token b amount"],
+            "name": "tokenBAmount",
+            "docs": [
+              "token b amount"
+            ],
             "type": "u64"
           },
           {
-            "name": "layout_version",
+            "name": "layoutVersion",
             "docs": [
               "layout version: version 0: haven't track token_a_amount and token_b_amount, version 1: track token_a_amount and token_b_amount"
             ],
             "type": "u8"
           },
           {
-            "name": "padding_4",
-            "docs": ["Padding for further use"],
+            "name": "padding4",
+            "docs": [
+              "Padding for further use"
+            ],
             "type": {
-              "array": ["u8", 7]
+              "array": [
+                "u8",
+                7
+              ]
             }
           },
           {
-            "name": "padding_5",
-            "docs": ["Padding for further use"],
+            "name": "padding5",
+            "docs": [
+              "Padding for further use"
+            ],
             "type": {
-              "array": ["u64", 3]
+              "array": [
+                "u64",
+                3
+              ]
             }
           },
           {
-            "name": "reward_infos",
-            "docs": ["Farming reward information"],
+            "name": "rewardInfos",
+            "docs": [
+              "Farming reward information"
+            ],
             "type": {
               "array": [
                 {
                   "defined": {
-                    "name": "RewardInfo"
+                    "name": "rewardInfo"
                   }
                 },
                 2
@@ -4594,22 +5987,26 @@
       }
     },
     {
-      "name": "PoolFeeParameters",
-      "docs": ["Information regarding fee charges"],
+      "name": "poolFeeParameters",
+      "docs": [
+        "Information regarding fee charges"
+      ],
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "base_fee",
-            "docs": ["Base fee"],
+            "name": "baseFee",
+            "docs": [
+              "Base fee"
+            ],
             "type": {
               "defined": {
-                "name": "BaseFeeParameters"
+                "name": "baseFeeParameters"
               }
             }
           },
           {
-            "name": "compounding_fee_bps",
+            "name": "compoundingFeeBps",
             "docs": [
               "compounding fee bps, only have value if CollectFeeMode::Compounding"
             ],
@@ -4617,16 +6014,20 @@
           },
           {
             "name": "padding",
-            "docs": ["padding for future use"],
+            "docs": [
+              "padding for future use"
+            ],
             "type": "u8"
           },
           {
-            "name": "dynamic_fee",
-            "docs": ["dynamic fee"],
+            "name": "dynamicFee",
+            "docs": [
+              "dynamic fee"
+            ],
             "type": {
               "option": {
                 "defined": {
-                  "name": "DynamicFeeParameters"
+                  "name": "dynamicFeeParameters"
                 }
               }
             }
@@ -4635,7 +6036,7 @@
       }
     },
     {
-      "name": "PoolFeesConfig",
+      "name": "poolFeesConfig",
       "serialization": "bytemuck",
       "repr": {
         "kind": "c"
@@ -4644,57 +6045,63 @@
         "kind": "struct",
         "fields": [
           {
-            "name": "base_fee",
+            "name": "baseFee",
             "type": {
               "defined": {
-                "name": "BaseFeeInfo"
+                "name": "baseFeeInfo"
               }
             }
           },
           {
-            "name": "dynamic_fee",
+            "name": "dynamicFee",
             "type": {
               "defined": {
-                "name": "DynamicFeeConfig"
+                "name": "dynamicFeeConfig"
               }
             }
           },
           {
-            "name": "protocol_fee_percent",
+            "name": "protocolFeePercent",
             "type": "u8"
           },
           {
-            "name": "padding_0",
+            "name": "padding0",
             "type": "u8"
           },
           {
-            "name": "referral_fee_percent",
+            "name": "referralFeePercent",
             "type": "u8"
           },
           {
-            "name": "padding_1",
+            "name": "padding1",
             "type": {
-              "array": ["u8", 3]
+              "array": [
+                "u8",
+                3
+              ]
             }
           },
           {
-            "name": "compounding_fee_bps",
+            "name": "compoundingFeeBps",
             "docs": [
               "Compounding fee bps, only non-zero if collect_fee_mode is compounding"
             ],
             "type": "u16"
           },
           {
-            "name": "padding_2",
+            "name": "padding2",
             "type": {
-              "array": ["u64", 5]
+              "array": [
+                "u64",
+                5
+              ]
             }
           }
         ]
       }
     },
     {
-      "name": "PoolFeesStruct",
+      "name": "poolFeesStruct",
       "docs": [
         "Information regarding fee charges",
         "trading_fee = amount * trade_fee_numerator / denominator",
@@ -4709,7 +6116,7 @@
         "kind": "struct",
         "fields": [
           {
-            "name": "base_fee",
+            "name": "baseFee",
             "docs": [
               "Trade fees are extra token amounts that are held inside the token",
               "accounts during a trade, making the value of liquidity tokens rise.",
@@ -4717,12 +6124,12 @@
             ],
             "type": {
               "defined": {
-                "name": "BaseFeeStruct"
+                "name": "baseFeeStruct"
               }
             }
           },
           {
-            "name": "protocol_fee_percent",
+            "name": "protocolFeePercent",
             "docs": [
               "Protocol trading fees are extra token amounts that are held inside the token",
               "accounts during a trade, with the equivalent in pool tokens minted to",
@@ -4732,47 +6139,58 @@
             "type": "u8"
           },
           {
-            "name": "padding_0",
-            "docs": ["padding for future use"],
+            "name": "padding0",
+            "docs": [
+              "padding for future use"
+            ],
             "type": "u8"
           },
           {
-            "name": "referral_fee_percent",
-            "docs": ["referral fee"],
+            "name": "referralFeePercent",
+            "docs": [
+              "referral fee"
+            ],
             "type": "u8"
           },
           {
-            "name": "padding_1",
-            "docs": ["padding"],
+            "name": "padding1",
+            "docs": [
+              "padding"
+            ],
             "type": {
-              "array": ["u8", 3]
+              "array": [
+                "u8",
+                3
+              ]
             }
           },
           {
-            "name": "compounding_fee_bps",
+            "name": "compoundingFeeBps",
             "docs": [
               "compounding fee bps, only non-zero in CollectFeeMode::Compounding"
             ],
             "type": "u16"
           },
           {
-            "name": "dynamic_fee",
-            "docs": ["dynamic fee"],
+            "name": "dynamicFee",
+            "docs": [
+              "dynamic fee"
+            ],
             "type": {
               "defined": {
-                "name": "DynamicFeeStruct"
+                "name": "dynamicFeeStruct"
               }
             }
           },
           {
-            "name": "init_sqrt_price",
+            "name": "initSqrtPrice",
             "type": "u128"
           }
         ]
       }
     },
     {
-      "name": "PoolMetrics",
+      "name": "poolMetrics",
       "serialization": "bytemuck",
       "repr": {
         "kind": "c"
@@ -4781,29 +6199,32 @@
         "kind": "struct",
         "fields": [
           {
-            "name": "total_lp_a_fee",
+            "name": "totalLpAFee",
             "type": "u128"
           },
           {
-            "name": "total_lp_b_fee",
+            "name": "totalLpBFee",
             "type": "u128"
           },
           {
-            "name": "total_protocol_a_fee",
+            "name": "totalProtocolAFee",
             "type": "u64"
           },
           {
-            "name": "total_protocol_b_fee",
+            "name": "totalProtocolBFee",
             "type": "u64"
           },
           {
-            "name": "padding_0",
+            "name": "padding0",
             "type": {
-              "array": ["u64", 2]
+              "array": [
+                "u64",
+                2
+              ]
             }
           },
           {
-            "name": "total_position",
+            "name": "totalPosition",
             "type": "u64"
           },
           {
@@ -4814,7 +6235,7 @@
       }
     },
     {
-      "name": "Position",
+      "name": "position",
       "serialization": "bytemuck",
       "repr": {
         "kind": "c"
@@ -4827,66 +6248,92 @@
             "type": "pubkey"
           },
           {
-            "name": "nft_mint",
-            "docs": ["nft mint"],
+            "name": "nftMint",
+            "docs": [
+              "nft mint"
+            ],
             "type": "pubkey"
           },
           {
-            "name": "fee_a_per_token_checkpoint",
-            "docs": ["fee a checkpoint"],
+            "name": "feeAPerTokenCheckpoint",
+            "docs": [
+              "fee a checkpoint"
+            ],
             "type": {
-              "array": ["u8", 32]
+              "array": [
+                "u8",
+                32
+              ]
             }
           },
           {
-            "name": "fee_b_per_token_checkpoint",
-            "docs": ["fee b checkpoint"],
+            "name": "feeBPerTokenCheckpoint",
+            "docs": [
+              "fee b checkpoint"
+            ],
             "type": {
-              "array": ["u8", 32]
+              "array": [
+                "u8",
+                32
+              ]
             }
           },
           {
-            "name": "fee_a_pending",
-            "docs": ["fee a pending"],
+            "name": "feeAPending",
+            "docs": [
+              "fee a pending"
+            ],
             "type": "u64"
           },
           {
-            "name": "fee_b_pending",
-            "docs": ["fee b pending"],
+            "name": "feeBPending",
+            "docs": [
+              "fee b pending"
+            ],
             "type": "u64"
           },
           {
-            "name": "unlocked_liquidity",
-            "docs": ["unlock liquidity"],
+            "name": "unlockedLiquidity",
+            "docs": [
+              "unlock liquidity"
+            ],
             "type": "u128"
           },
           {
-            "name": "vested_liquidity",
-            "docs": ["vesting liquidity"],
+            "name": "vestedLiquidity",
+            "docs": [
+              "vesting liquidity"
+            ],
             "type": "u128"
           },
           {
-            "name": "permanent_locked_liquidity",
-            "docs": ["permanent locked liquidity"],
+            "name": "permanentLockedLiquidity",
+            "docs": [
+              "permanent locked liquidity"
+            ],
             "type": "u128"
           },
           {
             "name": "metrics",
-            "docs": ["metrics"],
+            "docs": [
+              "metrics"
+            ],
             "type": {
               "defined": {
-                "name": "PositionMetrics"
+                "name": "positionMetrics"
               }
             }
           },
           {
-            "name": "reward_infos",
-            "docs": ["Farming reward information"],
+            "name": "rewardInfos",
+            "docs": [
+              "Farming reward information"
+            ],
             "type": {
               "array": [
                 {
                   "defined": {
-                    "name": "UserRewardInfo"
+                    "name": "userRewardInfo"
                   }
                 },
                 2
@@ -4894,16 +6341,18 @@
             }
           },
           {
-            "name": "inner_vesting",
-            "docs": ["inner vesting info"],
+            "name": "innerVesting",
+            "docs": [
+              "inner vesting info"
+            ],
             "type": {
               "defined": {
-                "name": "InnerVesting"
+                "name": "innerVesting"
               }
             }
           },
           {
-            "name": "delegate_permission",
+            "name": "delegatePermission",
             "docs": [
               "delegate permission bitmask (paired with SPL token Approve)"
             ],
@@ -4911,16 +6360,21 @@
           },
           {
             "name": "padding",
-            "docs": ["padding for future usage"],
+            "docs": [
+              "padding for future usage"
+            ],
             "type": {
-              "array": ["u8", 12]
+              "array": [
+                "u8",
+                12
+              ]
             }
           }
         ]
       }
     },
     {
-      "name": "PositionMetrics",
+      "name": "positionMetrics",
       "serialization": "bytemuck",
       "repr": {
         "kind": "c"
@@ -4929,41 +6383,47 @@
         "kind": "struct",
         "fields": [
           {
-            "name": "total_claimed_a_fee",
+            "name": "totalClaimedAFee",
             "type": "u64"
           },
           {
-            "name": "total_claimed_b_fee",
+            "name": "totalClaimedBFee",
             "type": "u64"
           }
         ]
       }
     },
     {
-      "name": "RemoveLiquidityParameters",
+      "name": "removeLiquidityParameters",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "liquidity_delta",
-            "docs": ["delta liquidity"],
+            "name": "liquidityDelta",
+            "docs": [
+              "delta liquidity"
+            ],
             "type": "u128"
           },
           {
-            "name": "token_a_amount_threshold",
-            "docs": ["minimum token a amount"],
+            "name": "tokenAAmountThreshold",
+            "docs": [
+              "minimum token a amount"
+            ],
             "type": "u64"
           },
           {
-            "name": "token_b_amount_threshold",
-            "docs": ["minimum token b amount"],
+            "name": "tokenBAmountThreshold",
+            "docs": [
+              "minimum token b amount"
+            ],
             "type": "u64"
           }
         ]
       }
     },
     {
-      "name": "RewardInfo",
+      "name": "rewardInfo",
       "docs": [
         "Stores the state relevant for tracking liquidity mining rewards"
       ],
@@ -4976,23 +6436,32 @@
         "fields": [
           {
             "name": "initialized",
-            "docs": ["Indicates if the reward has been initialized"],
+            "docs": [
+              "Indicates if the reward has been initialized"
+            ],
             "type": "u8"
           },
           {
-            "name": "reward_token_flag",
-            "docs": ["reward token flag"],
+            "name": "rewardTokenFlag",
+            "docs": [
+              "reward token flag"
+            ],
             "type": "u8"
           },
           {
-            "name": "_padding_0",
-            "docs": ["padding"],
+            "name": "padding0",
+            "docs": [
+              "padding"
+            ],
             "type": {
-              "array": ["u8", 6]
+              "array": [
+                "u8",
+                6
+              ]
             }
           },
           {
-            "name": "dead_liquidity_reward_checkpoint",
+            "name": "deadLiquidityRewardCheckpoint",
             "docs": [
               "Cumulative dead-liquidity reward (Compounding Pool only)"
             ],
@@ -5000,48 +6469,67 @@
           },
           {
             "name": "mint",
-            "docs": ["Reward token mint."],
+            "docs": [
+              "Reward token mint."
+            ],
             "type": "pubkey"
           },
           {
             "name": "vault",
-            "docs": ["Reward vault token account."],
+            "docs": [
+              "Reward vault token account."
+            ],
             "type": "pubkey"
           },
           {
             "name": "funder",
-            "docs": ["Authority account that allows to fund rewards"],
+            "docs": [
+              "Authority account that allows to fund rewards"
+            ],
             "type": "pubkey"
           },
           {
-            "name": "reward_duration",
-            "docs": ["reward duration"],
+            "name": "rewardDuration",
+            "docs": [
+              "reward duration"
+            ],
             "type": "u64"
           },
           {
-            "name": "reward_duration_end",
-            "docs": ["reward duration end"],
+            "name": "rewardDurationEnd",
+            "docs": [
+              "reward duration end"
+            ],
             "type": "u64"
           },
           {
-            "name": "reward_rate",
-            "docs": ["reward rate"],
+            "name": "rewardRate",
+            "docs": [
+              "reward rate"
+            ],
             "type": "u128"
           },
           {
-            "name": "reward_per_token_stored",
-            "docs": ["Reward per token stored"],
+            "name": "rewardPerTokenStored",
+            "docs": [
+              "Reward per token stored"
+            ],
             "type": {
-              "array": ["u8", 32]
+              "array": [
+                "u8",
+                32
+              ]
             }
           },
           {
-            "name": "last_update_time",
-            "docs": ["The last time reward states were updated."],
+            "name": "lastUpdateTime",
+            "docs": [
+              "The last time reward states were updated."
+            ],
             "type": "u64"
           },
           {
-            "name": "cumulative_seconds_with_empty_liquidity_reward",
+            "name": "cumulativeSecondsWithEmptyLiquidityReward",
             "docs": [
               "Accumulated seconds when the farm distributed rewards but the bin was empty.",
               "These rewards will be carried over to the next reward time window."
@@ -5052,75 +6540,75 @@
       }
     },
     {
-      "name": "SplitAmountInfo",
+      "name": "splitAmountInfo",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "permanent_locked_liquidity",
+            "name": "permanentLockedLiquidity",
             "type": "u128"
           },
           {
-            "name": "unlocked_liquidity",
+            "name": "unlockedLiquidity",
             "type": "u128"
           },
           {
-            "name": "fee_a",
+            "name": "feeA",
             "type": "u64"
           },
           {
-            "name": "fee_b",
+            "name": "feeB",
             "type": "u64"
           },
           {
-            "name": "reward_0",
+            "name": "reward0",
             "type": "u64"
           },
           {
-            "name": "reward_1",
+            "name": "reward1",
             "type": "u64"
           }
         ]
       }
     },
     {
-      "name": "SplitAmountInfo2",
+      "name": "splitAmountInfo2",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "permanent_locked_liquidity",
+            "name": "permanentLockedLiquidity",
             "type": "u128"
           },
           {
-            "name": "unlocked_liquidity",
+            "name": "unlockedLiquidity",
             "type": "u128"
           },
           {
-            "name": "vested_liquidity",
+            "name": "vestedLiquidity",
             "type": "u128"
           },
           {
-            "name": "fee_a",
+            "name": "feeA",
             "type": "u64"
           },
           {
-            "name": "fee_b",
+            "name": "feeB",
             "type": "u64"
           },
           {
-            "name": "reward_0",
+            "name": "reward0",
             "type": "u64"
           },
           {
-            "name": "reward_1",
+            "name": "reward1",
             "type": "u64"
           }
         ]
       }
     },
     {
-      "name": "SplitPositionInfo",
+      "name": "splitPositionInfo",
       "type": {
         "kind": "struct",
         "fields": [
@@ -5129,320 +6617,331 @@
             "type": "u128"
           },
           {
-            "name": "fee_a",
+            "name": "feeA",
             "type": "u64"
           },
           {
-            "name": "fee_b",
+            "name": "feeB",
             "type": "u64"
           },
           {
-            "name": "reward_0",
+            "name": "reward0",
             "type": "u64"
           },
           {
-            "name": "reward_1",
-            "type": "u64"
-          }
-        ]
-      }
-    },
-    {
-      "name": "SplitPositionInfo2",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "unlocked_liquidity",
-            "type": "u128"
-          },
-          {
-            "name": "permanent_locked_liquidity",
-            "type": "u128"
-          },
-          {
-            "name": "vested_liquidity",
-            "type": "u128"
-          },
-          {
-            "name": "fee_a",
-            "type": "u64"
-          },
-          {
-            "name": "fee_b",
-            "type": "u64"
-          },
-          {
-            "name": "reward_0",
-            "type": "u64"
-          },
-          {
-            "name": "reward_1",
+            "name": "reward1",
             "type": "u64"
           }
         ]
       }
     },
     {
-      "name": "SplitPositionParameters",
+      "name": "splitPositionInfo2",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "unlocked_liquidity_percentage",
+            "name": "unlockedLiquidity",
+            "type": "u128"
+          },
+          {
+            "name": "permanentLockedLiquidity",
+            "type": "u128"
+          },
+          {
+            "name": "vestedLiquidity",
+            "type": "u128"
+          },
+          {
+            "name": "feeA",
+            "type": "u64"
+          },
+          {
+            "name": "feeB",
+            "type": "u64"
+          },
+          {
+            "name": "reward0",
+            "type": "u64"
+          },
+          {
+            "name": "reward1",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "splitPositionParameters",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "unlockedLiquidityPercentage",
             "docs": [
               "Percentage of unlocked liquidity to split to the second position"
             ],
             "type": "u8"
           },
           {
-            "name": "permanent_locked_liquidity_percentage",
+            "name": "permanentLockedLiquidityPercentage",
             "docs": [
               "Percentage of permanent locked liquidity to split to the second position"
             ],
             "type": "u8"
           },
           {
-            "name": "fee_a_percentage",
+            "name": "feeAPercentage",
             "docs": [
               "Percentage of fee A pending to split to the second position"
             ],
             "type": "u8"
           },
           {
-            "name": "fee_b_percentage",
+            "name": "feeBPercentage",
             "docs": [
               "Percentage of fee B pending to split to the second position"
             ],
             "type": "u8"
           },
           {
-            "name": "reward_0_percentage",
+            "name": "reward0Percentage",
             "docs": [
               "Percentage of reward 0 pending to split to the second position"
             ],
             "type": "u8"
           },
           {
-            "name": "reward_1_percentage",
+            "name": "reward1Percentage",
             "docs": [
               "Percentage of reward 1 pending to split to the second position"
             ],
             "type": "u8"
           },
           {
-            "name": "inner_vesting_liquidity_percentage",
-            "docs": ["Percentage of inner vesting liquidity"],
+            "name": "innerVestingLiquidityPercentage",
+            "docs": [
+              "Percentage of inner vesting liquidity"
+            ],
             "type": "u8"
           },
           {
             "name": "padding",
-            "docs": ["padding for future"],
+            "docs": [
+              "padding for future"
+            ],
             "type": {
-              "array": ["u8", 15]
+              "array": [
+                "u8",
+                15
+              ]
             }
           }
         ]
       }
     },
     {
-      "name": "SplitPositionParameters2",
+      "name": "splitPositionParameters2",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "unlocked_liquidity_numerator",
+            "name": "unlockedLiquidityNumerator",
             "type": "u32"
           },
           {
-            "name": "permanent_locked_liquidity_numerator",
+            "name": "permanentLockedLiquidityNumerator",
             "type": "u32"
           },
           {
-            "name": "fee_a_numerator",
+            "name": "feeANumerator",
             "type": "u32"
           },
           {
-            "name": "fee_b_numerator",
+            "name": "feeBNumerator",
             "type": "u32"
           },
           {
-            "name": "reward_0_numerator",
+            "name": "reward0Numerator",
             "type": "u32"
           },
           {
-            "name": "reward_1_numerator",
+            "name": "reward1Numerator",
             "type": "u32"
           }
         ]
       }
     },
     {
-      "name": "SplitPositionParameters3",
+      "name": "splitPositionParameters3",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "unlocked_liquidity_numerator",
+            "name": "unlockedLiquidityNumerator",
             "type": "u32"
           },
           {
-            "name": "permanent_locked_liquidity_numerator",
+            "name": "permanentLockedLiquidityNumerator",
             "type": "u32"
           },
           {
-            "name": "fee_a_numerator",
+            "name": "feeANumerator",
             "type": "u32"
           },
           {
-            "name": "fee_b_numerator",
+            "name": "feeBNumerator",
             "type": "u32"
           },
           {
-            "name": "reward_0_numerator",
+            "name": "reward0Numerator",
             "type": "u32"
           },
           {
-            "name": "reward_1_numerator",
+            "name": "reward1Numerator",
             "type": "u32"
           },
           {
-            "name": "inner_vesting_liquidity_numerator",
+            "name": "innerVestingLiquidityNumerator",
             "type": "u32"
           }
         ]
       }
     },
     {
-      "name": "StaticConfigParameters",
+      "name": "staticConfigParameters",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "pool_fees",
+            "name": "poolFees",
             "type": {
               "defined": {
-                "name": "PoolFeeParameters"
+                "name": "poolFeeParameters"
               }
             }
           },
           {
-            "name": "sqrt_min_price",
+            "name": "sqrtMinPrice",
             "type": "u128"
           },
           {
-            "name": "sqrt_max_price",
+            "name": "sqrtMaxPrice",
             "type": "u128"
           },
           {
-            "name": "vault_config_key",
+            "name": "vaultConfigKey",
             "type": "pubkey"
           },
           {
-            "name": "pool_creator_authority",
+            "name": "poolCreatorAuthority",
             "type": "pubkey"
           },
           {
-            "name": "activation_type",
+            "name": "activationType",
             "type": "u8"
           },
           {
-            "name": "collect_fee_mode",
+            "name": "collectFeeMode",
             "type": "u8"
           }
         ]
       }
     },
     {
-      "name": "SwapParameters",
+      "name": "swapParameters",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "amount_in",
+            "name": "amountIn",
             "type": "u64"
           },
           {
-            "name": "minimum_amount_out",
+            "name": "minimumAmountOut",
             "type": "u64"
           }
         ]
       }
     },
     {
-      "name": "SwapParameters2",
+      "name": "swapParameters2",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "amount_0",
+            "name": "amount0",
             "docs": [
               "When it's exact in, partial fill, this will be amount_in. When it's exact out, this will be amount_out"
             ],
             "type": "u64"
           },
           {
-            "name": "amount_1",
+            "name": "amount1",
             "docs": [
               "When it's exact in, partial fill, this will be minimum_amount_out. When it's exact out, this will be maximum_amount_in"
             ],
             "type": "u64"
           },
           {
-            "name": "swap_mode",
-            "docs": ["Swap mode, refer [SwapMode]"],
+            "name": "swapMode",
+            "docs": [
+              "Swap mode, refer [SwapMode]"
+            ],
             "type": "u8"
           }
         ]
       }
     },
     {
-      "name": "SwapResult2",
+      "name": "swapResult2",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "included_fee_input_amount",
+            "name": "includedFeeInputAmount",
             "type": "u64"
           },
           {
-            "name": "excluded_fee_input_amount",
+            "name": "excludedFeeInputAmount",
             "type": "u64"
           },
           {
-            "name": "amount_left",
+            "name": "amountLeft",
             "type": "u64"
           },
           {
-            "name": "output_amount",
+            "name": "outputAmount",
             "type": "u64"
           },
           {
-            "name": "next_sqrt_price",
+            "name": "nextSqrtPrice",
             "type": "u128"
           },
           {
-            "name": "claiming_fee",
+            "name": "claimingFee",
             "type": "u64"
           },
           {
-            "name": "protocol_fee",
+            "name": "protocolFee",
             "type": "u64"
           },
           {
-            "name": "compounding_fee",
+            "name": "compoundingFee",
             "type": "u64"
           },
           {
-            "name": "referral_fee",
+            "name": "referralFee",
             "type": "u64"
           }
         ]
       }
     },
     {
-      "name": "TokenBadge",
-      "docs": ["Parameter that set by the protocol"],
+      "name": "tokenBadge",
+      "docs": [
+        "Parameter that set by the protocol"
+      ],
       "serialization": "bytemuck",
       "repr": {
         "kind": "c"
@@ -5451,27 +6950,34 @@
         "kind": "struct",
         "fields": [
           {
-            "name": "token_mint",
-            "docs": ["token mint"],
+            "name": "tokenMint",
+            "docs": [
+              "token mint"
+            ],
             "type": "pubkey"
           },
           {
-            "name": "_padding",
-            "docs": ["Reserve"],
+            "name": "padding",
+            "docs": [
+              "Reserve"
+            ],
             "type": {
-              "array": ["u8", 128]
+              "array": [
+                "u8",
+                128
+              ]
             }
           }
         ]
       }
     },
     {
-      "name": "UpdatePoolFeesParameters",
+      "name": "updatePoolFeesParameters",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "cliff_fee_numerator",
+            "name": "cliffFeeNumerator",
             "docs": [
               "Base fee update mode:",
               "- None: skip base fee update",
@@ -5482,7 +6988,7 @@
             }
           },
           {
-            "name": "dynamic_fee",
+            "name": "dynamicFee",
             "docs": [
               "Dynamic fee update mode:",
               "- None: skip dynamic fee update",
@@ -5492,13 +6998,13 @@
             "type": {
               "option": {
                 "defined": {
-                  "name": "DynamicFeeParameters"
+                  "name": "dynamicFeeParameters"
                 }
               }
             }
           },
           {
-            "name": "compounding_fee_bps",
+            "name": "compoundingFeeBps",
             "docs": [
               "Compounding fee update mode:",
               "- None: skip compounding fee update",
@@ -5512,7 +7018,7 @@
       }
     },
     {
-      "name": "UserRewardInfo",
+      "name": "userRewardInfo",
       "serialization": "bytemuck",
       "repr": {
         "kind": "c"
@@ -5521,27 +7027,36 @@
         "kind": "struct",
         "fields": [
           {
-            "name": "reward_per_token_checkpoint",
-            "docs": ["The latest update reward checkpoint"],
+            "name": "rewardPerTokenCheckpoint",
+            "docs": [
+              "The latest update reward checkpoint"
+            ],
             "type": {
-              "array": ["u8", 32]
+              "array": [
+                "u8",
+                32
+              ]
             }
           },
           {
-            "name": "reward_pendings",
-            "docs": ["Current pending rewards"],
+            "name": "rewardPendings",
+            "docs": [
+              "Current pending rewards"
+            ],
             "type": "u64"
           },
           {
-            "name": "total_claimed_rewards",
-            "docs": ["Total claimed rewards"],
+            "name": "totalClaimedRewards",
+            "docs": [
+              "Total claimed rewards"
+            ],
             "type": "u64"
           }
         ]
       }
     },
     {
-      "name": "Vesting",
+      "name": "vesting",
       "serialization": "bytemuck",
       "repr": {
         "kind": "c"
@@ -5554,47 +7069,50 @@
             "type": "pubkey"
           },
           {
-            "name": "inner_vesting",
+            "name": "innerVesting",
             "type": {
               "defined": {
-                "name": "InnerVesting"
+                "name": "innerVesting"
               }
             }
           },
           {
             "name": "padding2",
             "type": {
-              "array": ["u128", 4]
+              "array": [
+                "u128",
+                4
+              ]
             }
           }
         ]
       }
     },
     {
-      "name": "VestingParameters",
+      "name": "vestingParameters",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "cliff_point",
+            "name": "cliffPoint",
             "type": {
               "option": "u64"
             }
           },
           {
-            "name": "period_frequency",
+            "name": "periodFrequency",
             "type": "u64"
           },
           {
-            "name": "cliff_unlock_liquidity",
+            "name": "cliffUnlockLiquidity",
             "type": "u128"
           },
           {
-            "name": "liquidity_per_period",
+            "name": "liquidityPerPeriod",
             "type": "u128"
           },
           {
-            "name": "number_of_period",
+            "name": "numberOfPeriod",
             "type": "u16"
           }
         ]
@@ -5603,29 +7121,32 @@
   ],
   "constants": [
     {
-      "name": "BIN_STEP_BPS_DEFAULT",
+      "name": "binStepBpsDefault",
       "type": "u16",
       "value": "1"
     },
     {
-      "name": "BIN_STEP_U128_DEFAULT_LE_BYTES",
+      "name": "binStepU128DefaultLeBytes",
       "type": {
-        "array": ["u8", 16]
+        "array": [
+          "u8",
+          16
+        ]
       },
       "value": "[203, 16, 199, 186, 184, 141, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0]"
     },
     {
-      "name": "CURRENT_POOL_VERSION",
+      "name": "currentPoolVersion",
       "type": "u8",
       "value": "1"
     },
     {
-      "name": "CUSTOMIZABLE_POOL_PREFIX",
+      "name": "customizablePoolPrefix",
       "type": "bytes",
       "value": "[99, 112, 111, 111, 108]"
     },
     {
-      "name": "FEE_DENOMINATOR",
+      "name": "feeDenominator",
       "docs": [
         "Default fee denominator. DO NOT simply update it as it will break logic that depends on it as default value."
       ],
@@ -5633,69 +7154,77 @@
       "value": "1000000000"
     },
     {
-      "name": "MAX_BASIS_POINT",
-      "docs": ["Max basis point. 100% in pct"],
+      "name": "maxBasisPoint",
+      "docs": [
+        "Max basis point. 100% in pct"
+      ],
       "type": "u16",
       "value": "10000"
     },
     {
-      "name": "MAX_FEE_NUMERATOR_V0",
+      "name": "maxFeeNumeratorV0",
       "type": "u64",
       "value": "500000000"
     },
     {
-      "name": "MAX_FEE_NUMERATOR_V1",
+      "name": "maxFeeNumeratorV1",
       "type": "u64",
       "value": "990000000"
     },
     {
-      "name": "MAX_SQRT_PRICE_LE_BYTES",
+      "name": "maxSqrtPriceLeBytes",
       "type": {
-        "array": ["u8", 16]
+        "array": [
+          "u8",
+          16
+        ]
       },
       "value": "[155, 87, 105, 78, 169, 26, 92, 132, 177, 196, 254, 255, 0, 0, 0, 0]"
     },
     {
-      "name": "MIN_FEE_NUMERATOR",
+      "name": "minFeeNumerator",
       "type": "u64",
       "value": "100000"
     },
     {
-      "name": "MIN_SQRT_PRICE_LE_BYTES",
+      "name": "minSqrtPriceLeBytes",
       "type": {
-        "array": ["u8", 16]
+        "array": [
+          "u8",
+          16
+        ]
       },
       "value": "[80, 59, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]"
     },
     {
-      "name": "POOL_AUTHORITY_PREFIX",
+      "name": "poolAuthorityPrefix",
       "type": "bytes",
       "value": "[112, 111, 111, 108, 95, 97, 117, 116, 104, 111, 114, 105, 116, 121]"
     },
     {
-      "name": "POOL_PREFIX",
+      "name": "poolPrefix",
       "type": "bytes",
       "value": "[112, 111, 111, 108]"
     },
     {
-      "name": "POSITION_NFT_ACCOUNT_PREFIX",
+      "name": "positionNftAccountPrefix",
       "type": "bytes",
       "value": "[112, 111, 115, 105, 116, 105, 111, 110, 95, 110, 102, 116, 95, 97, 99, 99, 111, 117, 110, 116]"
     },
     {
-      "name": "POSITION_PREFIX",
+      "name": "positionPrefix",
       "type": "bytes",
       "value": "[112, 111, 115, 105, 116, 105, 111, 110]"
     },
     {
-      "name": "SPLIT_POSITION_DENOMINATOR",
+      "name": "splitPositionDenominator",
       "type": "u32",
       "value": "1000000000"
     },
     {
-      "name": "TOKEN_VAULT_PREFIX",
+      "name": "tokenVaultPrefix",
       "type": "bytes",
       "value": "[116, 111, 107, 101, 110, 95, 118, 97, 117, 108, 116]"
     }
   ]
-}
+};
