@@ -17,14 +17,14 @@ import {
   createTokenWithTransferHook,
   warpSlotBy,
 } from "../common";
-import { TOKEN_PROGRAM_ID } from "@coral-xyz/anchor/dist/cjs/utils/token";
-import { expect } from "chai";
-
-import ZapIDL from "../../target/idl/zap.json";
 import {
+  TOKEN_PROGRAM_ID,
   getAssociatedTokenAddressSync,
   TOKEN_2022_PROGRAM_ID,
 } from "@solana/spl-token";
+import { expect } from "chai";
+
+import ZapIDL from "../../target/idl/zap.json";
 import {
   binIdToBinArrayIndex,
   createBinArrays,
@@ -37,7 +37,7 @@ import {
   removeAllLiquidity,
   createDlmmPermissionlessPool,
 } from "../common/dlmm";
-import { BN } from "@coral-xyz/anchor";
+import { BN } from "@anchor-lang/core";
 import {
   createExtraAccountMetaListAndCounter,
   TRANSFER_HOOK_COUNTER_PROGRAM_ID,

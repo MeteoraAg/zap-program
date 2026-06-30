@@ -16,7 +16,7 @@ import {
   ZapProgram,
   zapOutDammv2,
 } from "../common";
-import { TOKEN_PROGRAM_ID } from "@coral-xyz/anchor/dist/cjs/utils/token";
+import { TOKEN_PROGRAM_ID, getAssociatedTokenAddressSync } from "@solana/spl-token";
 import { expect } from "chai";
 
 import ZapIDL from "../../target/idl/zap.json";
@@ -26,7 +26,6 @@ import {
   createPositionAndAddLiquidity,
   removeLiquidity,
 } from "../common/damm_v2";
-import { getAssociatedTokenAddressSync } from "@solana/spl-token";
 
 describe("Zap out damm V2", () => {
   let zapProgram: ZapProgram;

@@ -42,7 +42,7 @@ import {
   getBinArrayAccountMetaByBinRange,
   initializeBinArrayBitmapExtension,
 } from "../common/dlmm";
-import { BN } from "@coral-xyz/anchor";
+import { BN } from "@anchor-lang/core";
 import { deriveBinArrayBitmapExtension } from "../common/pda";
 
 describe("Zapin DLMM with Uninitialize position", () => {

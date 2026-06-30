@@ -1,6 +1,6 @@
 [package]
 name = "zap"
-version = "0.2.2"
+version = "0.2.3"
 description = "Created with Anchor"
 edition = "2021"
 
@@ -16,6 +16,12 @@ no-entrypoint = []
 no-idl = []
 no-log-ix-name = []
 idl-build = ["anchor-lang/idl-build", "anchor-spl/idl-build"]
+custom-heap = []
+custom-panic = []
+anchor-debug = []
+
+[lints]
+workspace = true
 
 
 [dependencies]
@@ -25,6 +31,6 @@ bytemuck = { workspace = true, features = ["derive", "min_const_generics"] }
 dlmm = { path = "../../libs/dlmm" }
 damm-v2 = { git = "https://github.com/MeteoraAg/damm-v2", features = [
     "cpi",
-], rev = "58a13fcf45516a9f27f2bd2a2056fb66673454e0", package = "cp-amm" }
+], rev = "b66f6d04e6f64ff79e5a0037d5aedd5753c1886e", package = "cp-amm" }
 ruint = { workspace = true }
 zap-sdk = { path = "../../zap-sdk" }

@@ -87,7 +87,7 @@ impl<'info> ZapInDammv2Ctx<'info> {
         };
         damm_v2::cpi::swap2(
             CpiContext::new(
-                self.damm_program.to_account_info(),
+                self.damm_program.key(),
                 damm_v2::cpi::accounts::SwapCtx {
                     pool_authority: self.pool_authority.to_account_info(),
                     input_token_account,
@@ -118,7 +118,7 @@ impl<'info> ZapInDammv2Ctx<'info> {
     fn add_liquidity(&self, liquidity: u128) -> Result<()> {
         damm_v2::cpi::add_liquidity(
             CpiContext::new(
-                self.damm_program.to_account_info(),
+                self.damm_program.key(),
                 damm_v2::cpi::accounts::AddLiquidityCtx {
                     pool: self.pool.to_account_info(),
                     position: self.position.to_account_info(),
@@ -129,7 +129,7 @@ impl<'info> ZapInDammv2Ctx<'info> {
                     token_a_mint: self.token_a_mint.to_account_info(),
                     token_b_mint: self.token_b_mint.to_account_info(),
                     position_nft_account: self.position_nft_account.to_account_info(),
-                    owner: self.owner.to_account_info(),
+                    signer: self.owner.to_account_info(),
                     token_a_program: self.token_a_program.to_account_info(),
                     token_b_program: self.token_b_program.to_account_info(),
                     event_authority: self.damm_event_authority.to_account_info(),
@@ -146,8 +146,8 @@ impl<'info> ZapInDammv2Ctx<'info> {
     }
 }
 
-pub fn handle_zap_in_damm_v2<'c: 'info, 'info>(
-    ctx: Context<'_, '_, 'c, 'info, ZapInDammv2Ctx<'info>>,
+pub fn handle_zap_in_damm_v2<'info>(
+    ctx: Context<'info, ZapInDammv2Ctx<'info>>,
     pre_sqrt_price: u128,           // sqrt price user observe in local
     max_sqrt_price_change_bps: u32, // max sqrt price change after swap
 ) -> Result<()> {
