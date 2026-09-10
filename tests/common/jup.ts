@@ -15,12 +15,19 @@ export type RoutePlanStep = IdlTypes<Jupiter>["routePlanStep"];
 
 export const JUP_V6_PROGRAM_ID = new PublicKey(JupIDL.address);
 export const JUP_ROUTE_DISC = [229, 23, 203, 151, 122, 227, 173, 42];
+export const JUP_ROUTE_V2_DISC = [187, 100, 250, 204, 49, 196, 175, 20];
 export function deriveJupV6EventAuthority() {
   return PublicKey.findProgramAddressSync(
     [Buffer.from("__event_authority")],
     JUP_V6_PROGRAM_ID
   )[0];
 }
+
+type RemainingAccount = {
+  isSigner: boolean;
+  isWritable: boolean;
+  pubkey: PublicKey;
+};
 
 // https://explorer.solana.com/tx/4r5gcvi3j2RoPedr1zYxUmLRfMt29U9FNucCfGkxoYSC5sxnv6U5nuYNzVqjJpV4RCZb9qBrMzp2A3dhN4NHH6G9
 export function getJupRemainingAccounts(
@@ -32,17 +39,8 @@ export function getJupRemainingAccounts(
   outputMint: PublicKey,
   tokenAProgram = TOKEN_PROGRAM_ID,
   tokenBProgram = TOKEN_PROGRAM_ID
-): Array<{
-  isSigner: boolean;
-  isWritable: boolean;
-  pubkey: PublicKey;
-}> {
-  const poolState = getDammV2Pool(svm, pool);
-  const accounts: Array<{
-    isSigner: boolean;
-    isWritable: boolean;
-    pubkey: PublicKey;
-  }> = [
+): Array<RemainingAccount> {
+  const accounts: Array<RemainingAccount> = [
     {
       isSigner: false,
       isWritable: false,
@@ -88,6 +86,108 @@ export function getJupRemainingAccounts(
       isWritable: false,
       pubkey: JUP_V6_PROGRAM_ID,
     },
+    ...getDammV2SwapAccounts(
+      svm,
+      pool,
+      user,
+      userTokenInAccount,
+      userTokenOutAccount,
+      tokenAProgram,
+      tokenBProgram
+    ),
+  ];
+  return accounts;
+}
+
+export function getJupRouteV2RemainingAccounts(
+  svm: LiteSVM,
+  pool: PublicKey,
+  user: PublicKey,
+  userTokenInAccount: PublicKey,
+  userTokenOutAccount: PublicKey,
+  inputMint: PublicKey,
+  outputMint: PublicKey,
+  inputTokenProgram = TOKEN_PROGRAM_ID,
+  outputTokenProgram = TOKEN_PROGRAM_ID,
+  tokenAProgram = TOKEN_PROGRAM_ID,
+  tokenBProgram = TOKEN_PROGRAM_ID
+): Array<RemainingAccount> {
+  const accounts: Array<RemainingAccount> = [
+    {
+      pubkey: user,
+      isSigner: true,
+      isWritable: false,
+    },
+    {
+      pubkey: userTokenInAccount,
+      isSigner: false,
+      isWritable: true,
+    },
+    {
+      pubkey: userTokenOutAccount,
+      isSigner: false,
+      isWritable: true,
+    },
+    {
+      pubkey: inputMint,
+      isSigner: false,
+      isWritable: false,
+    },
+    {
+      pubkey: outputMint,
+      isSigner: false,
+      isWritable: false,
+    },
+    {
+      pubkey: inputTokenProgram,
+      isSigner: false,
+      isWritable: false,
+    },
+    {
+      pubkey: outputTokenProgram,
+      isSigner: false,
+      isWritable: false,
+    },
+    // optional destination_token_account
+    {
+      pubkey: JUP_V6_PROGRAM_ID,
+      isSigner: false,
+      isWritable: false,
+    },
+    {
+      isSigner: false,
+      isWritable: false,
+      pubkey: deriveJupV6EventAuthority(),
+    },
+    {
+      isSigner: false,
+      isWritable: false,
+      pubkey: JUP_V6_PROGRAM_ID,
+    },
+    ...getDammV2SwapAccounts(
+      svm,
+      pool,
+      user,
+      userTokenInAccount,
+      userTokenOutAccount,
+      tokenAProgram,
+      tokenBProgram
+    ),
+  ];
+  return accounts;
+}
+
+function getDammV2SwapAccounts(
+  svm: LiteSVM,
+  pool: PublicKey,
+  user: PublicKey,
+  userTokenInAccount: PublicKey,
+  userTokenOutAccount: PublicKey,
+  tokenAProgram: PublicKey,
+  tokenBProgram: PublicKey
+): Array<RemainingAccount> {
+  const poolState = getDammV2Pool(svm, pool);
+  return [
     // swap pool account
     {
       pubkey: DAMM_V2_PROGRAM_ID,
@@ -165,5 +265,4 @@ export function getJupRemainingAccounts(
       pubkey: DAMM_V2_PROGRAM_ID,
     },
   ];
-  return accounts;
 }
