@@ -43,7 +43,6 @@ import { expect } from "chai";
 import {
   BaseFeeMode,
   encodeFeeMarketCapSchedulerParams,
-  encodeFeeRateLimiterParams,
   encodeFeeTimeSchedulerParams,
 } from "../common/damm_v2";
 
@@ -173,44 +172,6 @@ describe("Zap In damm V2", () => {
     );
 
     const amountTokenA = new BN(LAMPORTS_PER_SOL);
-    const amountSwap = amountTokenA.divn(2);
-    await zapInFullFlow({
-      svm,
-      user,
-      pool,
-      position,
-      positionNftAccount,
-      inputTokenMint: tokenAMint,
-      outputTokenMint: tokenBMint,
-      totalAmount: amountTokenA,
-      amountSwap,
-    });
-  });
-
-  it("zap in with pool has rate limiter", async () => {
-    const baseFee = encodeFeeRateLimiterParams(
-      new BN(10_000_000), // 1% cliff fee
-      10, // 10 bps fee increment
-      10, // max limiter duration
-      5000, // 50% max fee
-      new BN(LAMPORTS_PER_SOL) // reference amount: 1 SOL
-    );
-
-    const pool = await createDammV2Pool({
-      svm,
-      creator: admin,
-      tokenAMint,
-      tokenBMint,
-      baseFee,
-    });
-
-    const { position, positionNftAccount } = await createDammV2Position(
-      svm,
-      user,
-      pool
-    );
-
-    const amountTokenA = new BN(5 * LAMPORTS_PER_SOL); // 5 SOL
     const amountSwap = amountTokenA.divn(2);
     await zapInFullFlow({
       svm,
@@ -769,15 +730,7 @@ describe("Zap In damm V2", () => {
     });
   });
 
-  it("zap in without external swap with rate limiter and remaining accounts", async () => {
-    const baseFee = encodeFeeRateLimiterParams(
-      new BN(10_000_00), // 1% cliff fee
-      1, // 10 bps fee increment
-      10, // max limiter duration
-      5000, // 50% max fee
-      new BN(LAMPORTS_PER_SOL) // reference amount: 1 SOL
-    );
-
+  it("zap in without external swap (BtoA)", async () => {
     const pool = await createDammV2Pool({
       svm,
       creator: admin,
@@ -785,7 +738,6 @@ describe("Zap In damm V2", () => {
       tokenBMint,
       amountA: new BN(LAMPORTS_PER_SOL),
       amountB: new BN(LAMPORTS_PER_SOL),
-      baseFee,
     });
 
     const { position, positionNftAccount } = await createDammV2Position(
@@ -799,7 +751,6 @@ describe("Zap In damm V2", () => {
     const totalAmountB = new BN(LAMPORTS_PER_SOL / 2); // 0.5 SOL
     const initializeLedgerTx = await initializeLedgerAccount(user.publicKey);
 
-    // swap BtoA to trigger remaining account validation in dammv2
     const setLedgerBalanceTx = await setLedgerBalance(
       user.publicKey,
       totalAmountB,
