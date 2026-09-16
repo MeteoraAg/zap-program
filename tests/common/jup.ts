@@ -1,4 +1,8 @@
-import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import {
+  getAssociatedTokenAddressSync,
+  TOKEN_2022_PROGRAM_ID,
+  TOKEN_PROGRAM_ID,
+} from "@solana/spl-token";
 import { PublicKey } from "@solana/web3.js";
 import { LiteSVM } from "litesvm";
 import { Jupiter } from "./idl/jupiter";
@@ -16,9 +20,26 @@ export type RoutePlanStep = IdlTypes<Jupiter>["routePlanStep"];
 export const JUP_V6_PROGRAM_ID = new PublicKey(JupIDL.address);
 export const JUP_ROUTE_DISC = [229, 23, 203, 151, 122, 227, 173, 42];
 export const JUP_ROUTE_V2_DISC = [187, 100, 250, 204, 49, 196, 175, 20];
+export const JUP_SHARED_ACCOUNT_ROUTE_DISC = [
+  193, 32, 155, 51, 65, 214, 156, 129,
+];
+export const JUP_SHARED_ACCOUNT_ROUTE_V2_DISC = [
+  209, 152, 83, 147, 124, 254, 216, 233,
+];
+// `id` arg of shared_accounts_route / shared_accounts_route_v2, also the program authority seed
+export const JUP_SHARED_ACCOUNT_AUTHORITY_ID = 0;
 export function deriveJupV6EventAuthority() {
   return PublicKey.findProgramAddressSync(
     [Buffer.from("__event_authority")],
+    JUP_V6_PROGRAM_ID
+  )[0];
+}
+
+export function deriveJupV6ProgramAuthority(
+  id = JUP_SHARED_ACCOUNT_AUTHORITY_ID
+) {
+  return PublicKey.findProgramAddressSync(
+    [Buffer.from("authority"), Buffer.from([id])],
     JUP_V6_PROGRAM_ID
   )[0];
 }
@@ -177,6 +198,213 @@ export function getJupRouteV2RemainingAccounts(
   return accounts;
 }
 
+export function getJupSharedAccountRouteRemainingAccounts(
+  svm: LiteSVM,
+  pool: PublicKey,
+  user: PublicKey,
+  userTokenInAccount: PublicKey,
+  userTokenOutAccount: PublicKey,
+  inputMint: PublicKey,
+  outputMint: PublicKey,
+  tokenAProgram = TOKEN_PROGRAM_ID,
+  tokenBProgram = TOKEN_PROGRAM_ID
+): Array<RemainingAccount> {
+  const programAuthority = deriveJupV6ProgramAuthority();
+  const programSourceTokenAccount = getAssociatedTokenAddressSync(
+    inputMint,
+    programAuthority,
+    true
+  );
+  const programDestinationTokenAccount = getAssociatedTokenAddressSync(
+    outputMint,
+    programAuthority,
+    true
+  );
+  const accounts: Array<RemainingAccount> = [
+    {
+      pubkey: TOKEN_PROGRAM_ID,
+      isSigner: false,
+      isWritable: false,
+    },
+    {
+      pubkey: programAuthority,
+      isSigner: false,
+      isWritable: false,
+    },
+    {
+      pubkey: user,
+      isSigner: true,
+      isWritable: false,
+    },
+    {
+      pubkey: userTokenInAccount,
+      isSigner: false,
+      isWritable: true,
+    },
+    {
+      pubkey: programSourceTokenAccount,
+      isSigner: false,
+      isWritable: true,
+    },
+    {
+      pubkey: programDestinationTokenAccount,
+      isSigner: false,
+      isWritable: true,
+    },
+    {
+      pubkey: userTokenOutAccount,
+      isSigner: false,
+      isWritable: true,
+    },
+    {
+      pubkey: inputMint,
+      isSigner: false,
+      isWritable: false,
+    },
+    {
+      pubkey: outputMint,
+      isSigner: false,
+      isWritable: false,
+    },
+    // optional platform_fee_account
+    {
+      pubkey: JUP_V6_PROGRAM_ID,
+      isSigner: false,
+      isWritable: false,
+    },
+    // optional token_2022_program
+    {
+      pubkey: TOKEN_2022_PROGRAM_ID,
+      isSigner: false,
+      isWritable: false,
+    },
+    {
+      isSigner: false,
+      isWritable: false,
+      pubkey: deriveJupV6EventAuthority(),
+    },
+    {
+      isSigner: false,
+      isWritable: false,
+      pubkey: JUP_V6_PROGRAM_ID,
+    },
+    // the swap is executed from the program owned token accounts, signed by the program authority PDA
+    ...getDammV2SwapAccounts(
+      svm,
+      pool,
+      programAuthority,
+      programSourceTokenAccount,
+      programDestinationTokenAccount,
+      tokenAProgram,
+      tokenBProgram,
+      false
+    ),
+  ];
+  return accounts;
+}
+
+export function getJupSharedAccountRouteV2RemainingAccounts(
+  svm: LiteSVM,
+  pool: PublicKey,
+  user: PublicKey,
+  userTokenInAccount: PublicKey,
+  userTokenOutAccount: PublicKey,
+  inputMint: PublicKey,
+  outputMint: PublicKey,
+  inputTokenProgram = TOKEN_PROGRAM_ID,
+  outputTokenProgram = TOKEN_PROGRAM_ID,
+  tokenAProgram = TOKEN_PROGRAM_ID,
+  tokenBProgram = TOKEN_PROGRAM_ID
+): Array<RemainingAccount> {
+  const programAuthority = deriveJupV6ProgramAuthority();
+  const programSourceTokenAccount = getAssociatedTokenAddressSync(
+    inputMint,
+    programAuthority,
+    true,
+    inputTokenProgram
+  );
+  const programDestinationTokenAccount = getAssociatedTokenAddressSync(
+    outputMint,
+    programAuthority,
+    true,
+    outputTokenProgram
+  );
+  const accounts: Array<RemainingAccount> = [
+    {
+      pubkey: programAuthority,
+      isSigner: false,
+      isWritable: false,
+    },
+    {
+      pubkey: user,
+      isSigner: true,
+      isWritable: false,
+    },
+    {
+      pubkey: userTokenInAccount,
+      isSigner: false,
+      isWritable: true,
+    },
+    {
+      pubkey: programSourceTokenAccount,
+      isSigner: false,
+      isWritable: true,
+    },
+    {
+      pubkey: programDestinationTokenAccount,
+      isSigner: false,
+      isWritable: true,
+    },
+    {
+      pubkey: userTokenOutAccount,
+      isSigner: false,
+      isWritable: true,
+    },
+    {
+      pubkey: inputMint,
+      isSigner: false,
+      isWritable: false,
+    },
+    {
+      pubkey: outputMint,
+      isSigner: false,
+      isWritable: false,
+    },
+    {
+      pubkey: inputTokenProgram,
+      isSigner: false,
+      isWritable: false,
+    },
+    {
+      pubkey: outputTokenProgram,
+      isSigner: false,
+      isWritable: false,
+    },
+    {
+      isSigner: false,
+      isWritable: false,
+      pubkey: deriveJupV6EventAuthority(),
+    },
+    {
+      isSigner: false,
+      isWritable: false,
+      pubkey: JUP_V6_PROGRAM_ID,
+    },
+    // the swap is executed from the program owned token accounts, signed by the program authority PDA
+    ...getDammV2SwapAccounts(
+      svm,
+      pool,
+      programAuthority,
+      programSourceTokenAccount,
+      programDestinationTokenAccount,
+      tokenAProgram,
+      tokenBProgram,
+      false
+    ),
+  ];
+  return accounts;
+}
+
 function getDammV2SwapAccounts(
   svm: LiteSVM,
   pool: PublicKey,
@@ -184,7 +412,8 @@ function getDammV2SwapAccounts(
   userTokenInAccount: PublicKey,
   userTokenOutAccount: PublicKey,
   tokenAProgram: PublicKey,
-  tokenBProgram: PublicKey
+  tokenBProgram: PublicKey,
+  userIsSigner = true
 ): Array<RemainingAccount> {
   const poolState = getDammV2Pool(svm, pool);
   return [
@@ -236,7 +465,7 @@ function getDammV2SwapAccounts(
     },
     {
       pubkey: user,
-      isSigner: true,
+      isSigner: userIsSigner,
       isWritable: false,
     },
     {
