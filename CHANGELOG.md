@@ -31,6 +31,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add Jupiter's `route_v2` and `shared_account_route_v2` as whitelisted instructions for `zap_out`
 
+### Deprecated
+
+- Jupiter's `route` and `shared_account_route` are deprecated in favor of `route_v2` and `shared_account_route_v2`. They remain whitelisted for `zap_out` for backward compatibility.
+
 ## zap [0.2.2] [PR #46](https://github.com/MeteoraAg/zap-program/pull/46)
 
 ### Added
