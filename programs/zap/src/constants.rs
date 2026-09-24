@@ -8,10 +8,12 @@ use zap_sdk::constants::{
 #[allow(deprecated)]
 use zap_sdk::constants::{JUP_V6_ROUTE_DISC, JUP_V6_SHARED_ACCOUNT_ROUTE_DISC};
 
+pub const INSTRUCTION_DISCRIMINATOR_SIZE: usize = 8;
+
 // Jupiter `route` and `shared_accounts_route` are deprecated in favor of their v2 variants.
 #[allow(deprecated)]
 #[constant]
-pub const WHITELISTED_AMM_PROGRAMS: [(Pubkey, [u8; 8]); 6] = [
+pub const WHITELISTED_AMM_PROGRAMS: [(Pubkey, [u8; INSTRUCTION_DISCRIMINATOR_SIZE]); 6] = [
     (DAMM_V2, DAMM_V2_SWAP_DISC),
     (DLMM, DLMM_SWAP2_DISC),
     (JUP_V6, JUP_V6_ROUTE_DISC),

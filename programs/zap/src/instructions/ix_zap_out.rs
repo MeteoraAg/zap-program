@@ -6,7 +6,11 @@ use anchor_lang::{
 };
 use anchor_spl::token_interface::TokenAccount;
 
-use crate::{constants::WHITELISTED_AMM_PROGRAMS, error::ZapError, safe_math::SafeMath};
+use crate::{
+    constants::{INSTRUCTION_DISCRIMINATOR_SIZE, WHITELISTED_AMM_PROGRAMS},
+    error::ZapError,
+    safe_math::SafeMath,
+};
 
 #[derive(AnchorSerialize, AnchorDeserialize)]
 pub struct ZapOutParameters {
@@ -21,6 +25,11 @@ impl ZapOutParameters {
     fn validate(&self) -> Result<()> {
         require!(
             self.percentage <= 100 && self.percentage > 0,
+            ZapError::InvalidZapOutParameters
+        );
+
+        require!(
+            self.payload_data.len() >= INSTRUCTION_DISCRIMINATOR_SIZE,
             ZapError::InvalidZapOutParameters
         );
 
@@ -64,6 +73,12 @@ pub fn modify_instruction_data(
     let amount_in_bytes = amount_in.to_le_bytes();
     let end_offset_index = offset_amount_in.safe_add(amount_in_bytes.len())?;
 
+    // offset_amount_in cannot overlap with discriminator
+    require!(
+        offset_amount_in >= INSTRUCTION_DISCRIMINATOR_SIZE,
+        ZapError::InvalidOffset
+    );
+
     require!(
         end_offset_index <= payload_data.len(),
         ZapError::InvalidOffset
@@ -82,7 +97,7 @@ pub fn handle_zap_out<'info>(
 ) -> Result<()> {
     // validate params
     params.validate()?;
-    let discriminator = &params.payload_data[..8]; // first 8 bytes is discriminator
+    let discriminator = &params.payload_data[..INSTRUCTION_DISCRIMINATOR_SIZE];
     require!(
         is_support_amm_program(ctx.accounts.amm_program.key, discriminator),
         ZapError::AmmIsNotSupported
