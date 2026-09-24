@@ -1,10 +1,13 @@
 {
   "compilerOptions": {
+    "strict": false,
     "types": ["mocha", "chai"],
     "typeRoots": ["./node_modules/@types"],
     "lib": ["es2015"],
     "module": "commonjs",
     "target": "es6",
+    "noEmit": true,
+    "skipLibCheck": true,
     "esModuleInterop": true,
     "resolveJsonModule": true
   }
