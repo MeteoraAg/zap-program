@@ -6,8 +6,15 @@ use anchor_lang::{
 };
 use anchor_spl::token_interface::TokenAccount;
 
+use zap_sdk::constants::JUP_V6_SHARED_ACCOUNT_ROUTE_V2_DISC;
+#[allow(deprecated)]
+use zap_sdk::constants::{JUP_V6_ROUTE_DISC, JUP_V6_SHARED_ACCOUNT_ROUTE_DISC};
+
 use crate::{
-    constants::{INSTRUCTION_DISCRIMINATOR_SIZE, WHITELISTED_AMM_PROGRAMS},
+    constants::{
+        INSTRUCTION_DISCRIMINATOR_SIZE, JUP_V6_LEGACY_ROUTE_IN_AMOUNT_OFFSET_FROM_END,
+        JUP_V6_SHARED_ACCOUNT_ROUTE_V2_ID_SIZE, WHITELISTED_AMM_PROGRAMS,
+    },
     error::ZapError,
     safe_math::SafeMath,
 };
@@ -15,7 +22,7 @@ use crate::{
 #[derive(AnchorSerialize, AnchorDeserialize)]
 pub struct ZapOutParameters {
     pub percentage: u8,
-    pub offset_amount_in: u16,
+    pub offset_amount_in: u16, // deprecated. kept for backward compatibility. this parameter is now derived in the program
     pub pre_user_token_balance: u64,
     pub max_swap_amount: u64, // avoid the issue someone send token to user token account when user zap out
     pub payload_data: Vec<u8>,
@@ -34,6 +41,31 @@ impl ZapOutParameters {
         );
 
         Ok(())
+    }
+
+    pub fn get_amount_in_offset(&self, amm_program: &Pubkey) -> Result<usize> {
+        let discriminator = self
+            .payload_data
+            .first_chunk::<INSTRUCTION_DISCRIMINATOR_SIZE>()
+            .ok_or_else(|| ZapError::InvalidZapOutParameters)?;
+
+        require!(
+            is_support_amm_program(amm_program, discriminator),
+            ZapError::AmmIsNotSupported
+        );
+
+        let offset = match *discriminator {
+            JUP_V6_ROUTE_DISC | JUP_V6_SHARED_ACCOUNT_ROUTE_DISC => self
+                .payload_data
+                .len()
+                .safe_sub(JUP_V6_LEGACY_ROUTE_IN_AMOUNT_OFFSET_FROM_END)?,
+            JUP_V6_SHARED_ACCOUNT_ROUTE_V2_DISC => {
+                INSTRUCTION_DISCRIMINATOR_SIZE + JUP_V6_SHARED_ACCOUNT_ROUTE_V2_ID_SIZE
+            }
+            _ => INSTRUCTION_DISCRIMINATOR_SIZE,
+        };
+
+        Ok(offset)
     }
 
     fn get_swap_amount(&self, balance_change_amount: u64) -> Result<u64> {
@@ -97,11 +129,7 @@ pub fn handle_zap_out<'info>(
 ) -> Result<()> {
     // validate params
     params.validate()?;
-    let discriminator = &params.payload_data[..INSTRUCTION_DISCRIMINATOR_SIZE];
-    require!(
-        is_support_amm_program(ctx.accounts.amm_program.key, discriminator),
-        ZapError::AmmIsNotSupported
-    );
+    let offset_amount_in = params.get_amount_in_offset(ctx.accounts.amm_program.key)?;
     let post_user_token_balance = ctx.accounts.user_token_in_account.amount;
     if params.pre_user_token_balance >= post_user_token_balance {
         // skip if pre_user_token_balance is greater than post_user_token_balance
@@ -112,11 +140,7 @@ pub fn handle_zap_out<'info>(
 
     if swap_amount > 0 {
         let mut payload_data = params.payload_data.to_vec();
-        modify_instruction_data(
-            &mut payload_data,
-            swap_amount,
-            params.offset_amount_in.into(),
-        )?;
+        modify_instruction_data(&mut payload_data, swap_amount, offset_amount_in)?;
 
         let accounts: Vec<AccountMeta> = ctx
             .remaining_accounts
