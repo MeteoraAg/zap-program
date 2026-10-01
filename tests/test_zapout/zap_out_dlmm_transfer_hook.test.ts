@@ -33,6 +33,8 @@ import {
   DLMM_PROGRAM_ID_LOCAL,
   dlmmCreatePositionAndAddLiquidityRadius,
   initializeTokenBadge,
+  createOperatorAccount,
+  OperatorPermission,
   DEFAULT_BIN_PER_POSITION,
   removeAllLiquidity,
   createDlmmPermissionlessPool,
@@ -119,6 +121,11 @@ describe("Zap out dlmm with transfer hook", () => {
     mintToken(svm, admin, tokenBMint, admin, user.publicKey);
 
     console.log("create presetParameter2");
+    console.log("create operator");
+    await createOperatorAccount(svm, admin, admin.publicKey, [
+      OperatorPermission.InitializeTokenBadge,
+    ]);
+
     console.log("create token badge");
     await initializeTokenBadge(svm, admin, tokenAMint);
 

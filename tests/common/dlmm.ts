@@ -8,7 +8,7 @@ import {
 } from "@anchor-lang/core";
 import * as borsh from "borsh";
 import { LbClmm } from "./idl/dlmm";
-import DlmmIDL from "./idl/dlmm.json";
+import DlmmIDL from "../../idls/dlmm.json";
 import {
   clusterApiUrl,
   Connection,
@@ -37,6 +37,7 @@ import {
   deriveDlmmEventAuthority,
   deriveLbCustomizablePermissionless2,
   deriveLbPermissionless2,
+  deriveOperator,
   deriveOracle,
   derivePresetParameter2,
   deriveReserve,
@@ -402,18 +403,44 @@ export async function createBinArrays(
   }
 }
 
-export async function initializeTokenBadge(
+export enum OperatorPermission {
+  InitializePresetParameter,
+  ClosePresetParameter,
+  SetPairStatus,
+  UpdateFeeParameters,
+  SetActivationPoint,
+  InitializePermissionedPool,
+  InitializeTokenBadge,
+  CloseTokenBadge,
+  InitializeReward,
+  UpdateRewardFunder,
+  UpdateRewardDuration,
+  ResetTombstoneFields,
+  ClaimProtocolFee,
+  ZapProtocolFee,
+  GoToABin,
+}
+
+export function encodePermissions(permissions: OperatorPermission[]): BN {
+  return permissions.reduce((acc, perm) => {
+    return acc.or(new BN(1).shln(perm));
+  }, new BN(0));
+}
+
+export async function createOperatorAccount(
   svm: LiteSVM,
   admin: Keypair,
-  tokenMint: PublicKey
+  whitelistedSigner: PublicKey,
+  permissions: OperatorPermission[]
 ) {
   const program = createDlmmProgram();
   const tx = await program.methods
-    .initializeTokenBadge()
+    .createOperatorAccount(encodePermissions(permissions))
     .accountsPartial({
-      tokenMint,
-      tokenBadge: deriveTokenBadge(tokenMint),
-      admin: admin.publicKey,
+      signer: admin.publicKey,
+      payer: admin.publicKey,
+      operator: deriveOperator(whitelistedSigner),
+      whitelistedSigner,
       systemProgram: SystemProgram.programId,
     })
     .transaction();
@@ -422,6 +449,37 @@ export async function initializeTokenBadge(
   tx.sign(admin);
 
   const result = svm.sendTransaction(tx);
+  if (result instanceof FailedTransactionMetadata) {
+    console.log(result.meta().logs());
+  }
+  expect(result).instanceOf(TransactionMetadata);
+}
+
+export async function initializeTokenBadge(
+  svm: LiteSVM,
+  signer: Keypair,
+  tokenMint: PublicKey
+) {
+  const program = createDlmmProgram();
+  const tx = await program.methods
+    .initializeTokenBadge()
+    .accountsPartial({
+      tokenMint,
+      tokenBadge: deriveTokenBadge(tokenMint),
+      operator: deriveOperator(signer.publicKey),
+      signer: signer.publicKey,
+      payer: signer.publicKey,
+      systemProgram: SystemProgram.programId,
+    })
+    .transaction();
+
+  tx.recentBlockhash = svm.latestBlockhash();
+  tx.sign(signer);
+
+  const result = svm.sendTransaction(tx);
+  if (result instanceof FailedTransactionMetadata) {
+    console.log(result.meta().logs());
+  }
   expect(result).instanceOf(TransactionMetadata);
 }
 
@@ -437,7 +495,9 @@ export async function createPresetParameter2(
   variableFeeControl: number,
   maxVolatilityAccumulator: number,
   protocolShare: number,
-  baseFeePowerFactor: number
+  baseFeePowerFactor: number,
+  concreteFunctionType = 0,
+  collectFeeMode = 0
 ): Promise<PublicKey> {
   const program = createDlmmProgram();
   const [presetParameter] = derivePresetParameter2(index);
@@ -445,7 +505,7 @@ export async function createPresetParameter2(
   const presetParamAccount = svm.getAccount(presetParameter);
   if (!presetParamAccount) {
     const tx = await program.methods
-      .initializePresetParameter2({
+      .initializePresetParameter({
         index: index.toNumber(),
         binStep,
         baseFactor,
@@ -456,9 +516,13 @@ export async function createPresetParameter2(
         maxVolatilityAccumulator,
         protocolShare,
         baseFeePowerFactor,
+        concreteFunctionType,
+        collectFeeMode,
       })
       .accountsPartial({
-        admin: payer.publicKey,
+        operator: deriveOperator(payer.publicKey),
+        signer: payer.publicKey,
+        payer: payer.publicKey,
         presetParameter,
         systemProgram: SystemProgram.programId,
       })
@@ -505,7 +569,7 @@ export async function createDlmmPool(
 
   const tokenBadgeX = deriveTokenBadge(tokenX);
   const tokenBadgeXState = svm.getAccount(tokenBadgeX);
-  const tokenBadgeY = deriveTokenBadge(tokenX);
+  const tokenBadgeY = deriveTokenBadge(tokenY);
   const tokenBadgeYState = svm.getAccount(tokenBadgeY);
 
   const tx = await program.methods
@@ -613,10 +677,10 @@ export async function createDlmmPermissionlessPool(params: {
   );
 
   const userTokenY = getAssociatedTokenAddressSync(
-    tokenX,
+    tokenY,
     creator.publicKey,
     true,
-    tokenProgramX
+    tokenProgramY
   );
 
   const tx = await program.methods
@@ -629,7 +693,9 @@ export async function createDlmmPermissionlessPool(params: {
       hasAlphaVault: false,
       creatorPoolOnOffControl: true,
       baseFeePowerFactor: 0,
-      padding: new Array(63).fill(0),
+      concreteFunctionType: 0,
+      collectFeeMode: 0,
+      padding: new Array(60).fill(0),
     })
     .accountsPartial({
       funder: creator.publicKey,

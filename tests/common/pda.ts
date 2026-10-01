@@ -196,6 +196,13 @@ export function deriveTokenBadge(token: PublicKey) {
   )[0];
 }
 
+export function deriveOperator(whitelistedSigner: PublicKey) {
+  return PublicKey.findProgramAddressSync(
+    [Buffer.from("operator"), whitelistedSigner.toBuffer()],
+    DLMM_PROGRAM_ID_LOCAL
+  )[0];
+}
+
 export async function getBinArraysForModifyLiquidity(
   lbPair: PublicKey,
   minBinId: number
