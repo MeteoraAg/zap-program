@@ -26,7 +26,14 @@ import {
 import { expect } from "chai";
 import {
   getJupRemainingAccounts,
+  getJupRouteV2RemainingAccounts,
+  getJupSharedAccountRouteRemainingAccounts,
+  getJupSharedAccountRouteV2RemainingAccounts,
   JUP_ROUTE_DISC,
+  JUP_ROUTE_V2_DISC,
+  JUP_SHARED_ACCOUNT_AUTHORITY_ID,
+  JUP_SHARED_ACCOUNT_ROUTE_DISC,
+  JUP_SHARED_ACCOUNT_ROUTE_V2_DISC,
   JUP_V6_PROGRAM_ID,
   RoutePlanStep,
 } from "../jup";
@@ -263,6 +270,258 @@ export async function zapOutJupV6(
         JUP_ROUTE_DISC.length +
         routeStepPlanCount.length +
         routeStepPlanBuffer.length,
+      preUserTokenBalance,
+      maxSwapAmount: new BN("100000000000"),
+      payloadData,
+    })
+    .accountsPartial({
+      userTokenInAccount,
+      ammProgram: JUP_V6_PROGRAM_ID,
+    })
+    .remainingAccounts(remainingAccounts)
+    .transaction();
+}
+
+export async function zapOutJupV6RouteV2(
+  svm: LiteSVM,
+  user: PublicKey,
+  inputTokenMint: PublicKey,
+  pool: PublicKey
+): Promise<Transaction> {
+  const zapProgram = createZapProgram();
+  const poolState = getDammV2Pool(svm, pool);
+  const outputTokenMint = poolState.tokenAMint.equals(inputTokenMint)
+    ? poolState.tokenBMint
+    : poolState.tokenAMint;
+  const inputTokenProgram = getTokenProgram(svm, inputTokenMint);
+  const outputTokenProgram = getTokenProgram(svm, outputTokenMint);
+
+  const userTokenInAccount = getAssociatedTokenAddressSync(
+    inputTokenMint,
+    user,
+    true,
+    inputTokenProgram
+  );
+  const userTokenOutAccount = getAssociatedTokenAddressSync(
+    outputTokenMint,
+    user,
+    true,
+    outputTokenProgram
+  );
+
+  const preUserTokenBalance = getTokenBalance(svm, userTokenInAccount);
+
+  const remainingAccounts = getJupRouteV2RemainingAccounts(
+    svm,
+    pool,
+    user,
+    userTokenInAccount,
+    userTokenOutAccount,
+    inputTokenMint,
+    outputTokenMint,
+    inputTokenProgram,
+    outputTokenProgram
+  );
+
+  const inAmount = new BN(0).toArrayLike(Buffer, "le", 8);
+  const quotedOutAmount = new BN(0).toArrayLike(Buffer, "le", 8);
+  const slippageBps = new BN(9900).toArrayLike(Buffer, "le", 2);
+  const platformFeeBps = new BN(0).toArrayLike(Buffer, "le", 2);
+  const positiveSlippageBps = new BN(0).toArrayLike(Buffer, "le", 2);
+
+  const routeStepPlanCount = Buffer.alloc(4);
+  routeStepPlanCount.writeUInt32LE(1, 0); // route plan has 1 item. In Anchor, vector need 4 bytes index.
+  const routeStepPlanBuffer = Buffer.alloc(5);
+  routeStepPlanBuffer.writeUint8(77, 0); // MeteoraDammV2:{} // index 77 in enum
+  routeStepPlanBuffer.writeUInt16LE(10000, 1); // bps
+  routeStepPlanBuffer.writeUint8(0, 3); // input_index
+  routeStepPlanBuffer.writeUint8(1, 4); // output_index
+
+  // route_v2 args: in_amount, quoted_out_amount, slippage_bps, platform_fee_bps, positive_slippage_bps, route_plan
+  const payloadData = Buffer.concat([
+    Buffer.from(JUP_ROUTE_V2_DISC),
+    inAmount,
+    quotedOutAmount,
+    slippageBps,
+    platformFeeBps,
+    positiveSlippageBps,
+    routeStepPlanCount,
+    routeStepPlanBuffer,
+  ]);
+
+  return await zapProgram.methods
+    .zapOut({
+      percentage: 100,
+      offsetAmountIn: JUP_ROUTE_V2_DISC.length, // disc then in_amount
+      preUserTokenBalance,
+      maxSwapAmount: new BN("100000000000"),
+      payloadData,
+    })
+    .accountsPartial({
+      userTokenInAccount,
+      ammProgram: JUP_V6_PROGRAM_ID,
+    })
+    .remainingAccounts(remainingAccounts)
+    .transaction();
+}
+export async function zapOutJupV6SharedAccountRoute(
+  svm: LiteSVM,
+  user: PublicKey,
+  inputTokenMint: PublicKey,
+  pool: PublicKey
+): Promise<Transaction> {
+  const zapProgram = createZapProgram();
+  const poolState = getDammV2Pool(svm, pool);
+  const outputTokenMint = poolState.tokenAMint.equals(inputTokenMint)
+    ? poolState.tokenBMint
+    : poolState.tokenAMint;
+  const inputTokenProgram = getTokenProgram(svm, inputTokenMint);
+  const outputTokenProgram = getTokenProgram(svm, outputTokenMint);
+
+  const userTokenInAccount = getAssociatedTokenAddressSync(
+    inputTokenMint,
+    user,
+    true,
+    inputTokenProgram
+  );
+  const userTokenOutAccount = getAssociatedTokenAddressSync(
+    outputTokenMint,
+    user,
+    true,
+    outputTokenProgram
+  );
+
+  const preUserTokenBalance = getTokenBalance(svm, userTokenInAccount);
+
+  const remainingAccounts = getJupSharedAccountRouteRemainingAccounts(
+    svm,
+    pool,
+    user,
+    userTokenInAccount,
+    userTokenOutAccount,
+    inputTokenMint,
+    outputTokenMint
+  );
+
+  const id = Buffer.from([JUP_SHARED_ACCOUNT_AUTHORITY_ID]);
+  const routeStepPlanCount = Buffer.alloc(4);
+  routeStepPlanCount.writeUInt32LE(1, 0); // route plan has 1 item. In Anchor, vector need 4 bytes index.
+  const routeStepPlanBuffer = Buffer.alloc(4);
+  routeStepPlanBuffer.writeUint8(77, 0); //  MeteoraDammV2:{} // index 77 in enum
+  routeStepPlanBuffer.writeUint8(100, 1); // percent
+  routeStepPlanBuffer.writeUint8(0, 2); //
+  routeStepPlanBuffer.writeUint8(1, 3); //
+
+  const inAmount = new BN(0).toArrayLike(Buffer, "le", 8);
+  const quotedOutAmount = new BN(0).toArrayLike(Buffer, "le", 8);
+  const slippageBps = new BN(9900).toArrayLike(Buffer, "le", 2);
+  const platFormFee = Buffer.from([0]);
+
+  // shared_accounts_route args: id, route_plan, in_amount, quoted_out_amount, slippage_bps, platform_fee_bps
+  const payloadData = Buffer.concat([
+    Buffer.from(JUP_SHARED_ACCOUNT_ROUTE_DISC),
+    id,
+    routeStepPlanCount,
+    routeStepPlanBuffer,
+    inAmount,
+    quotedOutAmount,
+    slippageBps,
+    platFormFee,
+  ]);
+
+  return await zapProgram.methods
+    .zapOut({
+      percentage: 100,
+      offsetAmountIn:
+        JUP_SHARED_ACCOUNT_ROUTE_DISC.length +
+        id.length +
+        routeStepPlanCount.length +
+        routeStepPlanBuffer.length,
+      preUserTokenBalance,
+      maxSwapAmount: new BN("100000000000"),
+      payloadData,
+    })
+    .accountsPartial({
+      userTokenInAccount,
+      ammProgram: JUP_V6_PROGRAM_ID,
+    })
+    .remainingAccounts(remainingAccounts)
+    .transaction();
+}
+
+export async function zapOutJupV6SharedAccountRouteV2(
+  svm: LiteSVM,
+  user: PublicKey,
+  inputTokenMint: PublicKey,
+  pool: PublicKey
+): Promise<Transaction> {
+  const zapProgram = createZapProgram();
+  const poolState = getDammV2Pool(svm, pool);
+  const outputTokenMint = poolState.tokenAMint.equals(inputTokenMint)
+    ? poolState.tokenBMint
+    : poolState.tokenAMint;
+  const inputTokenProgram = getTokenProgram(svm, inputTokenMint);
+  const outputTokenProgram = getTokenProgram(svm, outputTokenMint);
+
+  const userTokenInAccount = getAssociatedTokenAddressSync(
+    inputTokenMint,
+    user,
+    true,
+    inputTokenProgram
+  );
+  const userTokenOutAccount = getAssociatedTokenAddressSync(
+    outputTokenMint,
+    user,
+    true,
+    outputTokenProgram
+  );
+
+  const preUserTokenBalance = getTokenBalance(svm, userTokenInAccount);
+
+  const remainingAccounts = getJupSharedAccountRouteV2RemainingAccounts(
+    svm,
+    pool,
+    user,
+    userTokenInAccount,
+    userTokenOutAccount,
+    inputTokenMint,
+    outputTokenMint,
+    inputTokenProgram,
+    outputTokenProgram
+  );
+
+  const id = Buffer.from([JUP_SHARED_ACCOUNT_AUTHORITY_ID]);
+  const inAmount = new BN(0).toArrayLike(Buffer, "le", 8);
+  const quotedOutAmount = new BN(0).toArrayLike(Buffer, "le", 8);
+  const slippageBps = new BN(9900).toArrayLike(Buffer, "le", 2);
+  const platformFeeBps = new BN(0).toArrayLike(Buffer, "le", 2);
+  const positiveSlippageBps = new BN(0).toArrayLike(Buffer, "le", 2);
+
+  const routeStepPlanCount = Buffer.alloc(4);
+  routeStepPlanCount.writeUInt32LE(1, 0); // route plan has 1 item. In Anchor, vector need 4 bytes index.
+  const routeStepPlanBuffer = Buffer.alloc(5);
+  routeStepPlanBuffer.writeUint8(77, 0); // MeteoraDammV2:{} // index 77 in enum
+  routeStepPlanBuffer.writeUInt16LE(10000, 1); // bps
+  routeStepPlanBuffer.writeUint8(0, 3); // input_index
+  routeStepPlanBuffer.writeUint8(1, 4); // output_index
+
+  // shared_accounts_route_v2 args: id, in_amount, quoted_out_amount, slippage_bps, platform_fee_bps, positive_slippage_bps, route_plan
+  const payloadData = Buffer.concat([
+    Buffer.from(JUP_SHARED_ACCOUNT_ROUTE_V2_DISC),
+    id,
+    inAmount,
+    quotedOutAmount,
+    slippageBps,
+    platformFeeBps,
+    positiveSlippageBps,
+    routeStepPlanCount,
+    routeStepPlanBuffer,
+  ]);
+
+  return await zapProgram.methods
+    .zapOut({
+      percentage: 100,
+      offsetAmountIn: JUP_SHARED_ACCOUNT_ROUTE_V2_DISC.length + id.length, // disc, id, then in_amount
       preUserTokenBalance,
       maxSwapAmount: new BN("100000000000"),
       payloadData,

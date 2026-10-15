@@ -12,11 +12,18 @@ import {
 import {
   createZapProgram,
   createToken,
+  getOrCreateAtA,
   mintToken,
   ZapProgram,
   zapOutJupV6,
+  zapOutJupV6RouteV2,
+  zapOutJupV6SharedAccountRoute,
+  zapOutJupV6SharedAccountRouteV2,
 } from "../common";
-import { TOKEN_PROGRAM_ID, getAssociatedTokenAddressSync } from "@solana/spl-token";
+import {
+  TOKEN_PROGRAM_ID,
+  getAssociatedTokenAddressSync,
+} from "@solana/spl-token";
 import { expect } from "chai";
 
 import ZapIDL from "../../target/idl/zap.json";
@@ -26,7 +33,7 @@ import {
   DAMM_V2_PROGRAM_ID,
   removeLiquidity,
 } from "../common/damm_v2";
-import { JUP_V6_PROGRAM_ID } from "../common/jup";
+import { deriveJupV6ProgramAuthority, JUP_V6_PROGRAM_ID } from "../common/jup";
 
 describe("Zap out Jup V6", () => {
   let zapProgram: ZapProgram;
@@ -61,7 +68,7 @@ describe("Zap out Jup V6", () => {
     mintToken(svm, admin, tokenBMint, admin, user.publicKey);
   });
 
-  it("full flow zap out", async () => {
+  it("full flow zap out with route", async () => {
     const inputTokenAccount = tokenAMint;
     const pool = await createDammV2Pool({
       svm,
@@ -92,6 +99,191 @@ describe("Zap out Jup V6", () => {
     );
 
     const zapOutTx = await zapOutJupV6(
+      svm,
+      user.publicKey,
+      inputTokenAccount,
+      pool
+    );
+
+    const finalTransaction = new Transaction()
+      .add(removeLiquidityTx)
+      .add(zapOutTx);
+
+    finalTransaction.recentBlockhash = svm.latestBlockhash();
+    finalTransaction.sign(user);
+
+    const result = svm.sendTransaction(finalTransaction);
+    if (result instanceof FailedTransactionMetadata) {
+      console.log(result.meta().logs());
+    }
+    expect(result).instanceOf(TransactionMetadata);
+  });
+
+  it("full flow zap out with route_v2", async () => {
+    const inputTokenAccount = tokenAMint;
+    const pool = await createDammV2Pool({
+      svm,
+      creator: admin,
+      tokenAMint,
+      tokenBMint,
+    });
+    const userPosition = await createPositionAndAddLiquidity(svm, user, pool);
+    const tokenAAccount = getAssociatedTokenAddressSync(
+      tokenAMint,
+      user.publicKey,
+      true,
+      TOKEN_PROGRAM_ID
+    );
+    const tokenBAccount = getAssociatedTokenAddressSync(
+      tokenBMint,
+      user.publicKey,
+      true,
+      TOKEN_PROGRAM_ID
+    );
+    const removeLiquidityTx = await removeLiquidity(
+      svm,
+      user.publicKey,
+      pool,
+      userPosition,
+      tokenAAccount,
+      tokenBAccount
+    );
+
+    const zapOutTx = await zapOutJupV6RouteV2(
+      svm,
+      user.publicKey,
+      inputTokenAccount,
+      pool
+    );
+
+    const finalTransaction = new Transaction()
+      .add(removeLiquidityTx)
+      .add(zapOutTx);
+
+    finalTransaction.recentBlockhash = svm.latestBlockhash();
+    finalTransaction.sign(user);
+
+    const result = svm.sendTransaction(finalTransaction);
+    if (result instanceof FailedTransactionMetadata) {
+      console.log(result.meta().logs());
+    }
+    expect(result).instanceOf(TransactionMetadata);
+  });
+
+  it("full flow zap out with shared_accounts_route", async () => {
+    const inputTokenAccount = tokenAMint;
+    const pool = await createDammV2Pool({
+      svm,
+      creator: admin,
+      tokenAMint,
+      tokenBMint,
+    });
+    const userPosition = await createPositionAndAddLiquidity(svm, user, pool);
+    const tokenAAccount = getAssociatedTokenAddressSync(
+      tokenAMint,
+      user.publicKey,
+      true,
+      TOKEN_PROGRAM_ID
+    );
+    const tokenBAccount = getAssociatedTokenAddressSync(
+      tokenBMint,
+      user.publicKey,
+      true,
+      TOKEN_PROGRAM_ID
+    );
+    const removeLiquidityTx = await removeLiquidity(
+      svm,
+      user.publicKey,
+      pool,
+      userPosition,
+      tokenAAccount,
+      tokenBAccount
+    );
+
+    const jupProgramAuthority = deriveJupV6ProgramAuthority();
+    getOrCreateAtA(
+      svm,
+      admin,
+      tokenAMint,
+      jupProgramAuthority,
+      TOKEN_PROGRAM_ID
+    );
+    getOrCreateAtA(
+      svm,
+      admin,
+      tokenBMint,
+      jupProgramAuthority,
+      TOKEN_PROGRAM_ID
+    );
+
+    const zapOutTx = await zapOutJupV6SharedAccountRoute(
+      svm,
+      user.publicKey,
+      inputTokenAccount,
+      pool
+    );
+
+    const finalTransaction = new Transaction()
+      .add(removeLiquidityTx)
+      .add(zapOutTx);
+
+    finalTransaction.recentBlockhash = svm.latestBlockhash();
+    finalTransaction.sign(user);
+
+    const result = svm.sendTransaction(finalTransaction);
+    if (result instanceof FailedTransactionMetadata) {
+      console.log(result.meta().logs());
+    }
+    expect(result).instanceOf(TransactionMetadata);
+  });
+
+  it("full flow zap out with shared_accounts_route_v2", async () => {
+    const inputTokenAccount = tokenAMint;
+    const pool = await createDammV2Pool({
+      svm,
+      creator: admin,
+      tokenAMint,
+      tokenBMint,
+    });
+    const userPosition = await createPositionAndAddLiquidity(svm, user, pool);
+    const tokenAAccount = getAssociatedTokenAddressSync(
+      tokenAMint,
+      user.publicKey,
+      true,
+      TOKEN_PROGRAM_ID
+    );
+    const tokenBAccount = getAssociatedTokenAddressSync(
+      tokenBMint,
+      user.publicKey,
+      true,
+      TOKEN_PROGRAM_ID
+    );
+    const removeLiquidityTx = await removeLiquidity(
+      svm,
+      user.publicKey,
+      pool,
+      userPosition,
+      tokenAAccount,
+      tokenBAccount
+    );
+
+    const jupProgramAuthority = deriveJupV6ProgramAuthority();
+    getOrCreateAtA(
+      svm,
+      admin,
+      tokenAMint,
+      jupProgramAuthority,
+      TOKEN_PROGRAM_ID
+    );
+    getOrCreateAtA(
+      svm,
+      admin,
+      tokenBMint,
+      jupProgramAuthority,
+      TOKEN_PROGRAM_ID
+    );
+
+    const zapOutTx = await zapOutJupV6SharedAccountRouteV2(
       svm,
       user.publicKey,
       inputTokenAccount,
