@@ -1,4 +1,4 @@
-import { BN } from "@coral-xyz/anchor";
+import { BN } from "@anchor-lang/core";
 import { binIdToBinArrayIndex, DLMM_PROGRAM_ID_LOCAL } from "./dlmm";
 import { PublicKey } from "@solana/web3.js";
 import {
@@ -192,6 +192,13 @@ export function deriveBinArray(lbPair: PublicKey, index: BN) {
 export function deriveTokenBadge(token: PublicKey) {
   return PublicKey.findProgramAddressSync(
     [Buffer.from("token_badge"), token.toBuffer()],
+    DLMM_PROGRAM_ID_LOCAL
+  )[0];
+}
+
+export function deriveOperator(whitelistedSigner: PublicKey) {
+  return PublicKey.findProgramAddressSync(
+    [Buffer.from("operator"), whitelistedSigner.toBuffer()],
     DLMM_PROGRAM_ID_LOCAL
   )[0];
 }

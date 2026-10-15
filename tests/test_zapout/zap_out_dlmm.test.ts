@@ -18,11 +18,10 @@ import {
   TOKEN_DECIMALS,
   warpSlotBy,
 } from "../common";
-import { TOKEN_PROGRAM_ID } from "@coral-xyz/anchor/dist/cjs/utils/token";
+import { TOKEN_PROGRAM_ID, getAssociatedTokenAddressSync } from "@solana/spl-token";
 import { expect } from "chai";
 
 import ZapIDL from "../../target/idl/zap.json";
-import { getAssociatedTokenAddressSync } from "@solana/spl-token";
 import {
   binIdToBinArrayIndex,
   createBinArrays,
@@ -34,7 +33,7 @@ import {
   removeAllLiquidity,
   createDlmmPermissionlessPool,
 } from "../common/dlmm";
-import { BN } from "@coral-xyz/anchor";
+import { BN } from "@anchor-lang/core";
 
 describe("Zap out dlmm", () => {
   let zapProgram: ZapProgram;

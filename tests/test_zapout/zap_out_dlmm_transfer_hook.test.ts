@@ -17,14 +17,14 @@ import {
   createTokenWithTransferHook,
   warpSlotBy,
 } from "../common";
-import { TOKEN_PROGRAM_ID } from "@coral-xyz/anchor/dist/cjs/utils/token";
-import { expect } from "chai";
-
-import ZapIDL from "../../target/idl/zap.json";
 import {
+  TOKEN_PROGRAM_ID,
   getAssociatedTokenAddressSync,
   TOKEN_2022_PROGRAM_ID,
 } from "@solana/spl-token";
+import { expect } from "chai";
+
+import ZapIDL from "../../target/idl/zap.json";
 import {
   binIdToBinArrayIndex,
   createBinArrays,
@@ -33,11 +33,13 @@ import {
   DLMM_PROGRAM_ID_LOCAL,
   dlmmCreatePositionAndAddLiquidityRadius,
   initializeTokenBadge,
+  createOperatorAccount,
+  OperatorPermission,
   DEFAULT_BIN_PER_POSITION,
   removeAllLiquidity,
   createDlmmPermissionlessPool,
 } from "../common/dlmm";
-import { BN } from "@coral-xyz/anchor";
+import { BN } from "@anchor-lang/core";
 import {
   createExtraAccountMetaListAndCounter,
   TRANSFER_HOOK_COUNTER_PROGRAM_ID,
@@ -119,6 +121,11 @@ describe("Zap out dlmm with transfer hook", () => {
     mintToken(svm, admin, tokenBMint, admin, user.publicKey);
 
     console.log("create presetParameter2");
+    console.log("create operator");
+    await createOperatorAccount(svm, admin, admin.publicKey, [
+      OperatorPermission.InitializeTokenBadge,
+    ]);
+
     console.log("create token badge");
     await initializeTokenBadge(svm, admin, tokenAMint);
 

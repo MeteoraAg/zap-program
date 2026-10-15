@@ -6,7 +6,7 @@ import {
   IdlTypes,
   Program,
   Wallet,
-} from "@coral-xyz/anchor";
+} from "@anchor-lang/core";
 
 import { CpAmm } from "./idl/damm_v2";
 import CpAmmIDL from "../../idls/damm_v2.json";
@@ -427,7 +427,7 @@ export async function createPositionAndAddLiquidity(
       pool,
       position,
       positionNftAccount,
-      owner: user.publicKey,
+      signer: user.publicKey,
       tokenAAccount,
       tokenBAccount,
       tokenAVault: poolState.tokenAVault,
@@ -484,7 +484,7 @@ export async function removeLiquidity(
       pool,
       position,
       positionNftAccount,
-      owner: user,
+      signer: user,
       tokenAAccount,
       tokenBAccount,
       tokenAVault,
