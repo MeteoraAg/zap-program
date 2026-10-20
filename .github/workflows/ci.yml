@@ -7,16 +7,16 @@ on:
       - release_*
 
 env:
-  SOLANA_CLI_VERSION: 2.3.13
-  NODE_VERSION: 22.15.0
-  ANCHOR_CLI_VERSION: 0.31.1
-  TOOLCHAIN: 1.85.0
+  SOLANA_CLI_VERSION: 3.1.10
+  ANCHOR_CLI_VERSION: 1.0.2
+  TOOLCHAIN: 1.94.0
 
 jobs:
   program_changed_files:
     runs-on: ubuntu-latest
     outputs:
       program: ${{steps.changed-files-specific.outputs.any_changed}}
+      integration: ${{steps.changed-files-integration.outputs.any_changed}}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -27,8 +27,13 @@ jobs:
         with:
           files: |
             programs/zap
-            protocol-zap
             zap-sdk
+      - name: Get integration test changed files
+        id: changed-files-integration
+        uses: tj-actions/changed-files@v18.6
+        with:
+          files: |
+            tests/**
 
   anchor_build:
     runs-on: ubuntu-latest
@@ -50,7 +55,7 @@ jobs:
         with:
           path: ~/.anchor
           key: anchor-${{ runner.os }}-${{ hashFiles('Anchor.toml') }}
-      - run: anchor build
+      - run: anchor build --ignore-keys
         shell: bash
 
   unit_test:
@@ -68,13 +73,11 @@ jobs:
       - uses: Swatinem/rust-cache@v2
       - run: cargo test --package zap
         shell: bash
-      - run: cargo test --package protocol-zap
-        shell: bash
 
   integration_test:
     runs-on: ubuntu-latest
     needs: program_changed_files
-    if: needs.program_changed_files.outputs.program == 'true'
+    if: needs.program_changed_files.outputs.program == 'true' || needs.program_changed_files.outputs.integration == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -82,8 +85,8 @@ jobs:
       - uses: ./.github/actions/setup-solana
       - uses: ./.github/actions/setup-dep
       - uses: ./.github/actions/setup-anchor
-      # Install pnpm
-      - uses: pnpm/action-setup@v4 # docs https://pnpm.io/continuous-integration#github-actions
+      # Install bun
+      - uses: oven-sh/setup-bun@v2
       # Install rust + toolchain
       - uses: dtolnay/rust-toolchain@stable
         with:
@@ -96,9 +99,11 @@ jobs:
         id: cache-node-modules
         with:
           path: ./node_modules
-          key: ${{ runner.os }}-${{ hashFiles('./package-lock.json') }}
+          key: ${{ runner.os }}-${{ hashFiles('./bun.lock') }}
       # Testing
-      - run: pnpm install
+      - run: bun install
         shell: bash
-      - run: pnpm test
+      - run: bun run build-local-test
+        shell: bash
+      - run: bun run typecheck
         shell: bash

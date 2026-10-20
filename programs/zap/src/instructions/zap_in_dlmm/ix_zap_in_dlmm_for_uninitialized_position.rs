@@ -46,7 +46,7 @@ pub struct ZapInDlmmForUnintializedPositionCtx<'info> {
     pub token_x_mint: InterfaceAccount<'info, Mint>,
     pub token_y_mint: InterfaceAccount<'info, Mint>,
 
-    pub dlmm_program: Program<'info, dlmm::program::LbClmm>,
+    pub dlmm_program: Program<'info, dlmm::dlmm::program::LbClmm>,
 
     /// owner of position
     pub owner: Signer<'info>,
@@ -74,7 +74,7 @@ impl<'info> ZapInDlmmForUnintializedPositionCtx<'info> {
     fn initialize_position(&self, lower_bin_id: i32, width: i32) -> Result<()> {
         dlmm::cpi::initialize_position2(
             CpiContext::new(
-                self.dlmm_program.to_account_info(),
+                self.dlmm_program.key(),
                 dlmm::cpi::accounts::InitializePosition2 {
                     payer: self.rent_payer.to_account_info(),
                     position: self.position.to_account_info(),
@@ -92,8 +92,8 @@ impl<'info> ZapInDlmmForUnintializedPositionCtx<'info> {
     }
 }
 
-pub fn handle_zap_in_dlmm_for_uninitialized_position<'c: 'info, 'info>(
-    ctx: Context<'_, '_, 'c, 'info, ZapInDlmmForUnintializedPositionCtx<'info>>,
+pub fn handle_zap_in_dlmm_for_uninitialized_position<'info>(
+    ctx: Context<'info, ZapInDlmmForUnintializedPositionCtx<'info>>,
     min_delta_id: i32,
     max_delta_id: i32,
     active_id: i32,
@@ -208,7 +208,7 @@ pub fn handle_zap_in_dlmm_for_uninitialized_position<'c: 'info, 'info>(
 
     dlmm::cpi::rebalance_liquidity(
         CpiContext::new(
-            ctx.accounts.dlmm_program.to_account_info(),
+            ctx.accounts.dlmm_program.key(),
             dlmm::cpi::accounts::RebalanceLiquidity {
                 position: ctx.accounts.position.to_account_info(),
                 lb_pair: ctx.accounts.lb_pair.to_account_info(),
